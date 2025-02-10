@@ -1,0 +1,9 @@
+Database connection is set up in /config/db.js.
+
+Models (userModel.js) use that connection to run queries.
+
+Controllers (userController.js) call the models to execute logic.
+
+Routes (userRoutes.js) connect the controllers to the API.
+
+server.js brings everything together and runs the serve
