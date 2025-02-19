@@ -4,6 +4,7 @@ const path = require('path');
 
 // Allowed file types
 const fileFilter = (req, file, cb) => {
+    console.log('Uploaded file mime type:', file.mimetype);
     const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
     if (allowedTypes.includes(file.mimetype)) {
         cb(null, true);
@@ -26,17 +27,15 @@ const storage = (folder) => multer.diskStorage({
     }
 });
 
-// Middleware for different upload types
-const uploadProfilePicture = multer({ 
-    storage: storage('profile_pictures'),
+// Middleware for handling three specific images
+const uploadProviderDocuments = multer({
+    storage: storage('provider_documents'),
     fileFilter,
-    limits: { fileSize: 5 * 1024 * 1024 } // 5MB max
-});
+    limits: { fileSize: 10 * 1024 * 1024 } // 10MB max per image
+}).fields([
+    { name: 'front_image', maxCount: 1 },
+    { name: 'back_image', maxCount: 1 },
+    { name: 'diploma_image', maxCount: 1 }
+]);
 
-const uploadProviderPicture = multer({ 
-    storage: storage('provider_pictures'),
-    fileFilter,
-    limits: { fileSize: 5 * 1024 * 1024 } // 5MB max
-});
-
-module.exports = { uploadProfilePicture, uploadProviderPicture };
+module.exports = { uploadProviderDocuments };

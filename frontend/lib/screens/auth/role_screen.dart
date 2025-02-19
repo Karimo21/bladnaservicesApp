@@ -28,6 +28,7 @@ class _SignupScreenState extends State<SignupScreen> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
+            dataUser.clear();
             Navigator.pop(context);
           },
         ),
@@ -49,9 +50,9 @@ class _SignupScreenState extends State<SignupScreen> {
               ),
             ),
             const SizedBox(height: 30),
-            _buildRoleCard("Prestataire", "Je propose un service"),
+            _buildRoleCard("provider", "Je propose un service"),
             const SizedBox(height: 20),
-            _buildRoleCard("Client", "Je cherche des services"),
+            _buildRoleCard("client", "Je cherche des services"),
             Spacer(),
             ElevatedButton(
               style: ElevatedButton.styleFrom(

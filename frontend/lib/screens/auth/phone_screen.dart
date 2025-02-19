@@ -16,6 +16,8 @@ class _PhoneScreenState extends State<PhoneScreen> {
   final TextEditingController _phoneController = TextEditingController();
   String? _errorMessage; // Variable pour stocker le message d'erreur
 
+
+  
   void _sendCode() {
     String phoneNumber = _phoneController.text.trim();
 
@@ -75,6 +77,8 @@ class _PhoneScreenState extends State<PhoneScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
+            
+            widget.dataUser.clear();
             Navigator.pop(context);
           },
         ),

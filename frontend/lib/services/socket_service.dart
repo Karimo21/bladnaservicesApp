@@ -85,6 +85,7 @@ void setOnContactsUpdated(Function(List<dynamic>) callback) {
     
     if (data is Map<String, dynamic> && data.containsKey('contacts')) {
       // Extract the contacts list and pass it to the callback
+      // ignore: unnecessary_null_comparison
       if (callback != null) {
         callback(data['contacts']);
       }

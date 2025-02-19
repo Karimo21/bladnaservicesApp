@@ -10,8 +10,10 @@ class ChatScreen extends StatefulWidget {
   final int userId;
   final int contactId;
   final String contactRole;
+  final String profile_picture;
+  final String name;
 
-  const ChatScreen({required this.userId, required this.contactId, required this.contactRole});
+  const ChatScreen({required this.userId, required this.contactId, required this.contactRole, required this.profile_picture, required this.name});
 
   @override
   _ChatScreenState createState() => _ChatScreenState();
@@ -140,23 +142,23 @@ class _ChatScreenState extends State<ChatScreen> {
             CircleAvatar(
               radius: 20,
               backgroundColor: Colors.grey[300],
-              child: const Icon(Icons.person, color: Colors.white, size: 20),
+              backgroundImage:  NetworkImage(widget.profile_picture),
             ),
             const SizedBox(width: 8),
-            const Column(
+             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "User Name",
-                  style: TextStyle(
+                  widget.name,
+                  style: const TextStyle(
                     fontFamily: "Poppins",
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
                   ),
                 ),
-                Text(
-                  "Online",
+                const Text(
+                  "",
                   style: TextStyle(
                     fontFamily: "Poppins",
                     fontSize: 12,

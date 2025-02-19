@@ -39,6 +39,8 @@ class _ChatListScreenState extends State<ChatListScreen> {
       if (mounted) {
         setState(() {
           contacts = data;
+          print(contacts);
+  
          
         });
       }
@@ -147,11 +149,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                         leading: CircleAvatar(
                           radius: 25,
                           backgroundColor: Colors.grey[300], // Placeholder color
-                          child: const Icon(
-                            Icons.person,
-                            color: Colors.white,
-                            size: 30,
-                          ), // Placeholder icon
+                          backgroundImage: NetworkImage("http://localhost:3000" + contact['profile_picture'].trim()),
                         ),
                         title: Text(
                           contact['contact_name'], // Display the business name
@@ -196,14 +194,18 @@ class _ChatListScreenState extends State<ChatListScreen> {
 
                           socketService.markMessagesAsRead(widget.loggeduserId, contact['contact_user_id']);
                           fetchContacts();
+                          String picture="http://localhost:3000" + contact['profile_picture'].trim();
+                          print(picture);
                           Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => ChatScreen(
                                     userId: widget.loggeduserId,
                                     contactId: contact['contact_user_id'],
-                                    contactRole: contact['role'])),
-                                    
+                                    contactRole: contact['role'],
+                                    profile_picture:picture,
+                                    name:contact['contact_name'],),
+                                    ),        
                           );
                         },
                       );

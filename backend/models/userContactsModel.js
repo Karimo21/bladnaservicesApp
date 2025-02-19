@@ -7,6 +7,7 @@ const UserContact = {
       const [rows] = await db.promise().query(
         `SELECT
         p.business_name AS contact_name,
+        p.profile_picture,
         uc.contact_user_id,
         uc.user_id,
         m.message AS last_message,
@@ -46,6 +47,7 @@ const UserContact = {
     COALESCE(c.username, p.business_name) AS contact_name,
     uc.contact_user_id,
     uc.user_id,
+    COALESCE(c.username, p.business_name) AS contact_name,
     m.message AS last_message,
     m.created_at AS message_time,
     u.role,

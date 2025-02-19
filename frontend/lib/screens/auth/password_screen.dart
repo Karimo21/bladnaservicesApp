@@ -1,5 +1,9 @@
+import 'dart:convert';
 import 'package:bladnaservices/screens/auth/login_screen.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:typed_data';
 
 class PasswordScreen extends StatefulWidget {
   final List<Map<String, dynamic>> dataUser;
@@ -12,8 +16,7 @@ class PasswordScreen extends StatefulWidget {
 
 class _CreatePasswordScreenState extends State<PasswordScreen> {
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
   final TextEditingController _nomController = TextEditingController();
   final TextEditingController _prenomController = TextEditingController();
   final TextEditingController _ageController = TextEditingController();
@@ -21,6 +24,20 @@ class _CreatePasswordScreenState extends State<PasswordScreen> {
 
   bool _passwordVisible = false;
   bool _confirmPasswordVisible = false;
+
+  // Helper function to determine the MediaType
+  MediaType getMediaType(String filePath) {
+    String extension = filePath.split('.').last.toLowerCase();
+    switch (extension) {
+      case 'jpg':
+      case 'jpeg':
+        return MediaType('image', 'jpeg');
+      case 'png':
+        return MediaType('image', 'png');
+      default:
+        return MediaType('image', 'jpeg'); // Default to jpeg if unknown
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +48,10 @@ class _CreatePasswordScreenState extends State<PasswordScreen> {
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => {
+            widget.dataUser.clear(),
+            Navigator.pop(context),
+          },
         ),
       ),
       body: SingleChildScrollView(
@@ -150,34 +170,94 @@ class _CreatePasswordScreenState extends State<PasswordScreen> {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8)),
                     ),
-                    onPressed: () {
+                    onPressed: () async {
                       if (_formKey.currentState!.validate()) {
-                        List<Map<String, dynamic>> updatedDataUser =
-                            List.from(widget.dataUser);
-                        updatedDataUser.add({
-                          "nom": _nomController.text,
-                          "prenom": _prenomController.text,
-                          "age": int.parse(_ageController.text),
-                          "mot_de_passe": _passwordController.text,
-                        });
-                        print(updatedDataUser);
+                        // Extract user data from widget.dataUser
+                        Map<String, dynamic> userData = {
+                          "fname": _nomController.text.trim(),
+                          "lname": _prenomController.text.trim(),
+                          "phone": widget.dataUser.firstWhere(
+                              (element) => element.containsKey("phone"),
+                              orElse: () => {"phone": ""})["phone"],
+                          "password": _passwordController.text,
+                          "role": widget.dataUser.firstWhere(
+                              (element) => element.containsKey("role"),
+                              orElse: () => {"role": "client"})["role"],
+                        };
 
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Mot de passe enregistré !")),
-                        );
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => LoginScreen()),
-                        );
+                        // Create Multipart Request
+                        String url = '';
+                        String role = userData["role"];
+                        if (role == "client") {
+                          url = "http://localhost:3000/create-client";
+                        } else if (role == "provider") {
+                          url = "http://localhost:3000/create-provider";
+                        }
+
+                        var request = http.MultipartRequest('POST', Uri.parse(url))
+                          ..fields['fname'] = userData["fname"]
+                          ..fields['lname'] = userData["lname"]
+                          ..fields['phone'] = userData['phone']
+                          ..fields['password'] = userData["password"]
+                          ..fields['role'] = role;
+  
+                          
+                        // Attach images if available
+                        if (widget.dataUser[0]["front_image"] != null) {
+                          String frontImagePath = 'front_image.jpg'; // Adjust if necessary
+                          MediaType frontImageType = getMediaType(frontImagePath);
+                          request.files.add(http.MultipartFile.fromBytes(
+                            'front_image',
+                            widget.dataUser[0]["front_image"],
+                            filename: frontImagePath,
+                            contentType: frontImageType,
+                          ));
+                        }
+                        if (widget.dataUser[0]["back_image"] != null) {
+                          String backImagePath = 'back_image.jpg'; // Adjust if necessary
+                          MediaType backImageType = getMediaType(backImagePath);
+                          request.files.add(http.MultipartFile.fromBytes(
+                            'back_image',
+                            widget.dataUser[0]["back_image"],
+                            filename: backImagePath,
+                            contentType: backImageType,
+                          ));
+                        }
+                        if (widget.dataUser[0]["diploma_image"] != null) {
+                          String diplomaImagePath = 'diploma_image.jpg'; // Adjust if necessary
+                          MediaType diplomaImageType = getMediaType(diplomaImagePath);
+                          request.files.add(http.MultipartFile.fromBytes(
+                            'diploma_image',
+                            widget.dataUser[0]["diploma_image"],
+                            filename: diplomaImagePath,
+                            contentType: diplomaImageType,
+                          ));
+                        }
+
+                        // Send the request
+                        try {
+                          var response = await request.send();
+                          if (response.statusCode == 200) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("Compte créé avec succès!")),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("Erreur: ${response.statusCode}")),
+                            );
+                          }
+                        } catch (e) {
+                          print("Error: $e");
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Impossible de se connecter au serveur")),
+                          );
+                        }
                       }
                     },
-                    child: Text("Enregistrer",
-                        style: TextStyle(fontSize: 17, color: Colors.white)),
+                    child: Text("Enregistrer", style: TextStyle(fontSize: 17, color: Colors.white)),
                   ),
                 ),
-                SizedBox(
-                    height: 20), // Ajout d'un espace pour éviter le débordement
+                SizedBox(height: 20), // Add some space to avoid overflow
               ],
             ),
           ),

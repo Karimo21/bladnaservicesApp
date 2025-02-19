@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const http = require('http'); // Import http module
+const bodyParser = require("body-parser");
 const chatController = require('./controllers/chatController'); // Importer le contrôleur
 const path = require('path');
 const UserContact = require('./models/userContactsModel');
@@ -15,7 +16,11 @@ const io = require('socket.io')(server, {  // Initialize socket.io with the HTTP
 });
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({limit: "50mb"}));
+
+// Augmenter la limite de taille de la requête
+app.use(bodyParser.json({ limit: "50mb" }));
+app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 
 // Serve static files from the 'uploads' directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
