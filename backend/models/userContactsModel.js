@@ -47,7 +47,7 @@ const UserContact = {
     COALESCE(c.username, p.business_name) AS contact_name,
     uc.contact_user_id,
     uc.user_id,
-    COALESCE(c.username, p.business_name) AS contact_name,
+    COALESCE(c.profile_picture, p.profile_picture) AS profile_picture,
     m.message AS last_message,
     m.created_at AS message_time,
     u.role,
