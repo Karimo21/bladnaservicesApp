@@ -1,3 +1,4 @@
+
 import 'package:bladnaservices/screens/auth/role_screen.dart';
 import 'package:bladnaservices/screens/home/main_screen.dart';
 import 'package:bladnaservices/screens/home/profile/User.dart';
@@ -154,7 +155,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     onTap: () {
 
                      Navigator.push(context,MaterialPageRoute(builder: (context) => SignupScreen()),);
-                     
+                      
                     },
                     child: Text(
                       "Inscrivez-vous",
