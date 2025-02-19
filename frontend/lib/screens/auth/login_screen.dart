@@ -1,5 +1,10 @@
+
+import 'package:bladnaservices/screens/auth/role_screen.dart';
+import 'package:bladnaservices/screens/home/main_screen.dart';
+import 'package:bladnaservices/screens/home/profile/User.dart';
 import 'package:flutter/material.dart';
- // Importation de la page d'inscription
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -8,6 +13,34 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool _isHovered = false; // Variable pour l'effet hover
+
+  TextEditingController _phoneController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
+
+    // Function to handle login request
+  Future<void> login() async {
+    final phone = _phoneController.text;
+    final password = _passwordController.text;
+
+    // Make an API call to Node.js backend for authentication
+    final response = await http.post(
+      Uri.parse('http://localhost:3000/login'),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({
+        'phone': phone,
+        'password': password,
+      }),
+    );
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      User.setUserData(data['user']['userId'],data['user']['role']);
+      
+      Navigator.push(context,MaterialPageRoute(builder: (context) => MainScreen()),);
+      print("Logged in");
+    } else {
+      print('Login failed: ${response.body}');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +73,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               SizedBox(height: 90),
               TextField(
+                controller: _phoneController,
                 keyboardType: TextInputType.phone,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.phone),
@@ -55,6 +89,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               SizedBox(height: 20),
               TextField(
+                controller: _passwordController,
                 obscureText: true,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.lock),
@@ -95,10 +130,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       shadowColor: Colors.transparent,
                     ),
                     onPressed: () {
-                      // TODO: Ajouter l'action du bouton
+                     login();
                     },
                     child: Text(
-                      "Sign In",
+                      "Se Connecter",
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -118,7 +153,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   GestureDetector(
                     onTap: () {
-                     // Navigator.push(  context,MaterialPageRoute(builder: (context) => SignupScreen()), );
+
+                     Navigator.push(context,MaterialPageRoute(builder: (context) => SignupScreen()),);
+                      
                     },
                     child: Text(
                       "Inscrivez-vous",
