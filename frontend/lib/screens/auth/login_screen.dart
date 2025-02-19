@@ -1,4 +1,3 @@
-import 'package:bladnaservices/screens/auth/role_screen.dart';
 import 'package:flutter/material.dart';
  // Importation de la page d'inscription
 
@@ -119,10 +118,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => SignupScreen()),
-                      );
+                     // Navigator.push(  context,MaterialPageRoute(builder: (context) => SignupScreen()), );
                     },
                     child: Text(
                       "Inscrivez-vous",
