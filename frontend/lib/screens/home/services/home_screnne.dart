@@ -343,6 +343,7 @@ Container(
                     providers[index]["name"],
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
+                  
                   Text(
                     providers[index]["profession"],
                     style: TextStyle(color: Colors.grey),

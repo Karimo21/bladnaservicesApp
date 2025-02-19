@@ -45,6 +45,7 @@ class ProvidersList extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10),
                       boxShadow: [
                         BoxShadow(
+                          
                           color: Colors.grey.shade300,
                           blurRadius: 5,
                           spreadRadius: 2,

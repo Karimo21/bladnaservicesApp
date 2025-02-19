@@ -6,6 +6,7 @@ class ServicesScreen extends StatelessWidget {
 
   ServicesScreen({required this.providers});
 
+
   final List<Map<String, dynamic>> services = [
     {"name": "Coiffeur", "emoji": "✂️"},
     {"name": "Peintre", "emoji": "🖌️"},

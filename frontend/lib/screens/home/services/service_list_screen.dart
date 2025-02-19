@@ -85,6 +85,7 @@ class ServiceProvidersList extends StatelessWidget {
 
   ServiceProvidersList({required this.providers});
 
+
   @override
   Widget build(BuildContext context) {
     // Grouper les prestataires par profession
