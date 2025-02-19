@@ -1,8 +1,7 @@
-import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'password_screen.dart';
-
 class DocumentUploadScreen extends StatefulWidget {
   final List<Map<String, dynamic>> dataUser;
 
@@ -13,9 +12,9 @@ class DocumentUploadScreen extends StatefulWidget {
 }
 
 class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
-  File? _frontImage;
-  File? _backImage;
-  File? _diplomaImage;
+  Uint8List? _frontImage;
+  Uint8List? _backImage;
+  Uint8List? _diplomaImage;
 
   String? _frontError;
   String? _backError;
@@ -24,28 +23,31 @@ class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
   Future<void> _pickImage(ImageSource source, String type) async {
     try {
       final pickedFile = await ImagePicker().pickImage(source: source);
-      setState(() {
-        if (pickedFile != null) {
-          File imageFile = File(pickedFile.path);
+      if (pickedFile != null) {
+        Uint8List imageBytes = await pickedFile.readAsBytes(); // Read as Uint8List
+
+        setState(() {
           if (type == "front") {
-            _frontImage = imageFile;
-            widget.dataUser[0]["front_image"] = pickedFile.path;
-            _frontError = null; // Réinitialiser l'erreur
+            _frontImage = imageBytes;
+            widget.dataUser[0]["front_image"] = imageBytes;
+            _frontError = null;
           } else if (type == "back") {
-            _backImage = imageFile;
-            widget.dataUser[0]["back_image"] = pickedFile.path;
+            _backImage = imageBytes;
+            widget.dataUser[0]["back_image"] = imageBytes;
             _backError = null;
           } else if (type == "diploma") {
-            _diplomaImage = imageFile;
-            widget.dataUser[0]["diploma_image"] = pickedFile.path;
+            _diplomaImage = imageBytes;
+            widget.dataUser[0]["diploma_image"] = imageBytes;
             _diplomaError = null;
           }
-        } else {
+        });
+      } else {
+        setState(() {
           if (type == "front") _frontError = "Veuillez sélectionner une image.";
           if (type == "back") _backError = "Veuillez sélectionner une image.";
           if (type == "diploma") _diplomaError = "Veuillez sélectionner une image.";
-        }
-      });
+        });
+      }
     } catch (e) {
       setState(() {
         if (type == "front") _frontError = "Erreur lors du chargement de l'image.";
@@ -64,9 +66,9 @@ class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          onPressed: () =>{
+             widget.dataUser.clear(),
+             Navigator.pop(context),}
         ),
         centerTitle: true,
       ),
@@ -94,7 +96,7 @@ class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
               _buildSectionTitle("Importer votre diplôme"),
               _buildUploadButton(_diplomaImage, "diploma", _diplomaError),
 
-              const SizedBox(height: 40), // Ajout d'un espace pour éviter les débordements
+              const SizedBox(height: 40),
 
               SizedBox(
                 width: double.infinity,
@@ -107,21 +109,9 @@ class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
                     ),
                   ),
                   onPressed: () {
-                    if (_frontImage == null) {
-                      setState(() {
-                        _frontError = "Veuillez sélectionner une image.";
-                      });
-                    }
-                    if (_backImage == null) {
-                      setState(() {
-                        _backError = "Veuillez sélectionner une image.";
-                      });
-                    }
-                    if (_diplomaImage == null) {
-                      setState(() {
-                        _diplomaError = "Veuillez sélectionner une image.";
-                      });
-                    }
+                    if (_frontImage == null) setState(() => _frontError = "Veuillez sélectionner une image.");
+                    if (_backImage == null) setState(() => _backError = "Veuillez sélectionner une image.");
+                    if (_diplomaImage == null) setState(() => _diplomaError = "Veuillez sélectionner une image.");
 
                     if (_frontImage != null && _backImage != null && _diplomaImage != null) {
                       Navigator.push(
@@ -163,7 +153,7 @@ class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
     );
   }
 
-  Widget _buildUploadButton(File? imageFile, String type, String? errorText) {
+  Widget _buildUploadButton(Uint8List? imageBytes, String type, String? errorText) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -178,8 +168,8 @@ class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
             ),
             child: Column(
               children: [
-                imageFile != null
-                    ? Image.file(imageFile, height: 100, fit: BoxFit.cover)
+                imageBytes != null
+                    ? Image.memory(imageBytes, height: 100, fit: BoxFit.cover)
                     : const Icon(Icons.upload_file, color: Colors.blue, size: 30),
                 const SizedBox(height: 8),
                 const Text(

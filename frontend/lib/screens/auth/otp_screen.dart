@@ -27,13 +27,13 @@ class _OTPVerificationScreenState extends State<OTPVerification> {
         SnackBar(content: Text("Code validé : $otp")),
       );
 
-      if (widget.role == "Client") {
+      if (widget.role == "client") {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
               builder: (context) => PasswordScreen(dataUser: widget.dataUser)),
         );
-      } else if (widget.role == "Prestataire") {
+      } else if (widget.role == "provider") {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(

@@ -29,6 +29,8 @@ class _PrestataireSignupScreenState extends State<PrestataireSignupScreen> {
           "description": descriptionController.text,
         });
 
+        print(widget.dataUser);
+
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -75,7 +77,9 @@ class _PrestataireSignupScreenState extends State<PrestataireSignupScreen> {
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () =>{ 
+          widget.dataUser.clear(),
+          Navigator.pop(context),}
         ),
         centerTitle: true,
       ),

@@ -1,9 +1,14 @@
 const express = require('express');
-const { getUsers, getUser, createUser } = require('../controllers/userController');
+const { createClientUser,createProviderUser, getUsers, getUser, createUser, loginUser } = require('../controllers/userController');
+const { uploadImages } = require('../middlewares/uploadMiddleware'); // Import the middleware
 const router = express.Router();
 
-router.get('/', getUsers);
-router.get('/:id', getUser);
+router.post('/login', loginUser);
+router.post("/create-client", createClientUser);
+router.post("/create-provider", createProviderUser);
+router.get('/api/allUsers', getUsers);
+router.get('/api/users/:id', getUser);
 router.post('/', createUser);
+
 
 module.exports = router;
