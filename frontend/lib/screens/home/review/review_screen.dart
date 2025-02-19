@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 
-
 class ReviewsScreen extends StatelessWidget {
   final List<Map<String, dynamic>> reviews = [
     {
-      "name": "khalid",
+      "name": "khalidDaoudi",
       "rating": 4.5,
       "date": "12/12/2024",
       "avatar": "assets/female.png"
@@ -41,7 +40,9 @@ class ReviewsScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text("Avis",
             style: TextStyle(
-                color: const Color(0xFF0054A5), fontSize: 20, fontWeight: FontWeight.bold)),
+                color: const Color(0xFF0054A5),
+                fontSize: 20,
+                fontWeight: FontWeight.bold)),
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: false,
@@ -66,7 +67,6 @@ class ReviewsScreen extends StatelessWidget {
                     rating: reviews[index]['rating'],
                     date: reviews[index]['date'],
                     avatar: reviews[index]['avatar'],
-                  
                   );
                 },
               ),

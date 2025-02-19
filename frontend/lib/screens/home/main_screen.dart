@@ -22,7 +22,7 @@ class _MainScreenState extends State<MainScreen> {
     ExplorerScreen(), // Tab 2: Explorer
     SuiviScreen(),   // Tab 3: Suivi
     ChatListScreen(),   // Tab 4: Message  
-    ProfilScreen(), // Tab 5: Profil
+    ProfileScreen(), // Tab 5: Profil
  
   ];
 

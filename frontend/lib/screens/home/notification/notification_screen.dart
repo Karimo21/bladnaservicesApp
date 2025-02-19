@@ -8,7 +8,8 @@ class NotificationScreen extends StatelessWidget {
     const Color primaryColor = Color(0xFF0054A5); // Nouvelle couleur
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9F9F9), // ✅ Fond gris clair pour l'écran
+      backgroundColor:
+          const Color(0xFFF9F9F9), // ✅ Fond gris clair pour l'écrann
       appBar: AppBar(
         backgroundColor: const Color(0xFFF9F9F9),
         elevation: 0,
@@ -21,7 +22,6 @@ class NotificationScreen extends StatelessWidget {
           style: TextStyle(
             color: Color(0xFF0054A5),
             fontWeight: FontWeight.bold,
-            
             fontSize: 16,
           ),
         ),
@@ -72,12 +72,15 @@ class NotificationScreen extends StatelessWidget {
     required String date,
   }) {
     return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)), // ✅ Radius 8px
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8)), // ✅ Radius 8px
       color: Colors.white, // ✅ Fond blanc pour chaque notification
       child: Padding(
-        padding: const EdgeInsets.all(12), // ✅ Ajustement de l'espacement interne
+        padding:
+            const EdgeInsets.all(12), // ✅ Ajustement de l'espacement interne
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start, // ✅ Alignement en haut pour les éléments
+          crossAxisAlignment: CrossAxisAlignment
+              .start, // ✅ Alignement en haut pour les éléments
           children: [
             CircleAvatar(
               backgroundImage: AssetImage(image),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -8,6 +9,7 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
 class ReservationsPage extends StatefulWidget {
   @override
   _ReservationsPageState createState() => _ReservationsPageState();
@@ -92,10 +94,14 @@ class _ReservationsPageState extends State<ReservationsPage> {
         margin: EdgeInsets.symmetric(horizontal: 4),
         padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
         decoration: BoxDecoration(
-          color: _selectedIndex == index ? Color(0xFF0054A5) : Colors.transparent,
+          color:
+              _selectedIndex == index ? Color(0xFF0054A5) : Colors.transparent,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: _selectedIndex == index || _selectedIndex == 0 || _selectedIndex == 1 || _selectedIndex == 2
+            color: _selectedIndex == index ||
+                    _selectedIndex == 0 ||
+                    _selectedIndex == 1 ||
+                    _selectedIndex == 2
                 ? const Color.fromARGB(255, 61, 61, 61)
                 : const Color.fromARGB(255, 61, 61, 61),
             width: 0,
@@ -187,20 +193,20 @@ class ReservationCard extends StatelessWidget {
           buildInfoRow("Heure", data["time"]!),
           buildInfoRow("Ville", data["city"]!),
           buildInfoRow(
-            "Téléphone", 
-            data["phone"]!, 
-            isLink: true, 
+            "Téléphone",
+            data["phone"]!,
+            isLink: true,
             color: Color(0xFF0054A5),
             underline: true, // Souligner le numéro de téléphone
             underlineColor: Colors.green, // Custom underline color
           ),
           buildInfoRow(
-            "Statut", 
-            data["status"]!, 
-            isLink: true, 
-            color: Color(0xFF0054A5), 
+            "Statut",
+            data["status"]!,
+            isLink: true,
+            color: Color(0xFF0054A5),
             underline: data["status"] == "En cours",
-            
+
             underlineColor: Colors.blue, // Custom underline color
           ),
           SizedBox(height: 15),
@@ -244,7 +250,11 @@ class ReservationCard extends StatelessWidget {
     );
   }
 
-  Widget buildInfoRow(String label, String value, {bool isLink = false, Color? color, bool underline = false, Color? underlineColor}) {
+  Widget buildInfoRow(String label, String value,
+      {bool isLink = false,
+      Color? color,
+      bool underline = false,
+      Color? underlineColor}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -252,7 +262,10 @@ class ReservationCard extends StatelessWidget {
         children: [
           Text(
             label,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Color(0xFF565656)),
+            style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF565656)),
           ),
           GestureDetector(
             onTap: isLink ? () {} : null,
@@ -262,8 +275,11 @@ class ReservationCard extends StatelessWidget {
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
                 color: color ?? Color(0xFF565656),
-                decoration: underline ? TextDecoration.underline : TextDecoration.none,
-                decorationColor: underlineColor ?? const Color.fromARGB(160, 5, 67, 118), // Set the underline color here
+                decoration:
+                    underline ? TextDecoration.underline : TextDecoration.none,
+                decorationColor: underlineColor ??
+                    const Color.fromARGB(
+                        160, 5, 67, 118), // Set the underline color here
               ),
             ),
           ),
@@ -272,7 +288,8 @@ class ReservationCard extends StatelessWidget {
     );
   }
 }
-//HistoryCard 
+
+//HistoryCard
 class HistoryCard extends StatelessWidget {
   final Map<String, String> data;
   final bool isSelected;
@@ -287,7 +304,7 @@ class HistoryCard extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isSelected ? Color(0xFF0054A5) : Colors.transparent, 
+          color: isSelected ? Color(0xFF0054A5) : Colors.transparent,
           width: 1.5,
         ),
         boxShadow: [
@@ -314,7 +331,7 @@ class HistoryCard extends StatelessWidget {
                     data["name"]!,
                     style: TextStyle(
                       fontWeight: FontWeight.normal,
-                     color: Color(0xFF565656),
+                      color: Color(0xFF565656),
                       fontSize: 16,
                     ),
                   ),
@@ -332,10 +349,10 @@ class HistoryCard extends StatelessWidget {
           buildInfoRow("Heure", data["time"]!),
           buildInfoRow("Ville", data["city"]!),
           buildInfoRow(
-            "Statut", 
-            data["status"]!, 
-            isLink: true, 
-            color: Colors.blue, 
+            "Statut",
+            data["status"]!,
+            isLink: true,
+            color: Colors.blue,
             underline: true,
           ),
         ],
@@ -343,7 +360,8 @@ class HistoryCard extends StatelessWidget {
     );
   }
 
-  Widget buildInfoRow(String label, String value, {bool isLink = false, Color? color, bool underline = false}) {
+  Widget buildInfoRow(String label, String value,
+      {bool isLink = false, Color? color, bool underline = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -351,7 +369,10 @@ class HistoryCard extends StatelessWidget {
         children: [
           Text(
             label,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Color(0xFF565656)),
+            style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF565656)),
           ),
           GestureDetector(
             onTap: isLink ? () {} : null,
@@ -361,7 +382,8 @@ class HistoryCard extends StatelessWidget {
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
                 color: color ?? Color(0xFF565656),
-                decoration: underline ? TextDecoration.underline : TextDecoration.none,
+                decoration:
+                    underline ? TextDecoration.underline : TextDecoration.none,
               ),
             ),
           ),
@@ -370,6 +392,7 @@ class HistoryCard extends StatelessWidget {
     );
   }
 }
+
 //
 //myReservationCard
 class myReservationCard extends StatelessWidget {
@@ -413,21 +436,22 @@ class myReservationCard extends StatelessWidget {
           buildInfoRow("Heure", data["time"]!),
           buildInfoRow("Ville", data["city"]!),
           buildInfoRow(
-            "Téléphone", 
-            data["phone"]!, 
-            isLink: true, 
+            "Téléphone",
+            data["phone"]!,
+            isLink: true,
             color: Color(0xFF0054A5),
             underline: true, // Souligner le numéro de téléphone
-            underlineColor: const Color.fromARGB(255, 44, 64, 144), // Custom underline color
+            underlineColor: const Color.fromARGB(
+                255, 44, 64, 144), // Custom underline color
           ),
           buildInfoRow(
-            "Statut", 
-            data["status"]!, 
-            isLink: true, 
-            color: Color(0xFF0054A5), 
+            "Statut",
+            data["status"]!,
+            isLink: true,
+            color: Color(0xFF0054A5),
             underline: data["status"] == "En attente",
-            
-            underlineColor: Colors.blue, // Custom underline color
+
+            underlineColor: Colors.blue, // Custom underline color HH
           ),
           SizedBox(height: 15),
           Row(
@@ -448,7 +472,6 @@ class myReservationCard extends StatelessWidget {
                   style: TextStyle(color: Color(0xFF0054A5), fontSize: 20),
                 ),
               ),
-             
             ],
           ),
         ],
@@ -456,7 +479,11 @@ class myReservationCard extends StatelessWidget {
     );
   }
 
-  Widget buildInfoRow(String label, String value, {bool isLink = false, Color? color, bool underline = false, Color? underlineColor}) {
+  Widget buildInfoRow(String label, String value,
+      {bool isLink = false,
+      Color? color,
+      bool underline = false,
+      Color? underlineColor}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -464,7 +491,10 @@ class myReservationCard extends StatelessWidget {
         children: [
           Text(
             label,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Color(0xFF565656)),
+            style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF565656)),
           ),
           GestureDetector(
             onTap: isLink ? () {} : null,
@@ -474,8 +504,11 @@ class myReservationCard extends StatelessWidget {
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
                 color: color ?? Color(0xFF565656),
-                decoration: underline ? TextDecoration.underline : TextDecoration.none,
-                decorationColor: underlineColor ?? const Color.fromARGB(160, 5, 67, 118), // Set the underline color here
+                decoration:
+                    underline ? TextDecoration.underline : TextDecoration.none,
+                decorationColor: underlineColor ??
+                    const Color.fromARGB(
+                        160, 5, 67, 118), // Set the underline color here
               ),
             ),
           ),
@@ -519,7 +552,7 @@ class ReservationsTab extends StatelessWidget {
 }
 
 class HistoryTab extends StatelessWidget {
-   final List<Map<String, String>> reservations = [
+  final List<Map<String, String>> reservations = [
     {
       "name": "Mohsin Korama",
       "date": "18/04/2025",

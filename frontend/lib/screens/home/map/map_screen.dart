@@ -54,7 +54,7 @@ class _MoroccoMapState extends State<MoroccoMap> {
               ),
               SizedBox(height: 8),
 
-              // Carte
+              // Carte mental
               Expanded(
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(15),
@@ -65,9 +65,9 @@ class _MoroccoMapState extends State<MoroccoMap> {
                       zoom: 6.0,
                       interactiveFlags:
                           InteractiveFlag.all & ~InteractiveFlag.rotate,
-                           maxBounds: LatLngBounds(
+                      maxBounds: LatLngBounds(
                         LatLng(21.0, -20.0), // Coin sud-ouest
-                        LatLng(37.5, 2.0),   // Coin nord-est
+                        LatLng(37.5, 2.0), // Coin nord-est
                       ),
                     ),
                     children: [
@@ -76,7 +76,6 @@ class _MoroccoMapState extends State<MoroccoMap> {
                         urlTemplate:
                             "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
                         subdomains: ['a', 'b', 'c'],
-                        
                       ),
 
                       // Marqueurs des prestataires avec design amélioré
@@ -270,4 +269,4 @@ class PrestataireDetails extends StatelessWidget {
       ),
     );
   }
-} 
+}

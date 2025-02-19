@@ -45,13 +45,12 @@ class _ImageUploadPageState extends State<ImageUploadPage> {
         title: Text(
           'Ajouter les images',
           style: TextStyle(
-             color: Color(0xFF0054A5),
+              color: Color(0xFF0054A5),
               fontSize: 16,
               fontWeight: FontWeight.bold),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back,
-                color: Color(0xFF0054A5), size: 22),
+          icon: Icon(Icons.arrow_back, color: Color(0xFF0054A5), size: 22),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -108,7 +107,7 @@ class _ImageUploadPageState extends State<ImageUploadPage> {
                     );
                   }).toList(),
 
-                  // Zone de sélection d'image avec bordure en pointillés
+                  // Zone de sélection d'image avec bordure en pointillés ..
                   GestureDetector(
                     onTap: () => _pickImage(ImageSource.gallery),
                     child: CustomPaint(

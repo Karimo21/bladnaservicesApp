@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 const Color primaryColor = Color(0xFF0054A5);
 const Color backgroundColor = Color(0xFFF9F9F9);
+
 class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -61,7 +62,7 @@ class ProfileScreen extends StatelessWidget {
                               style:
                                   TextStyle(color: primaryColor, fontSize: 18)),
                         ],
-                      ),
+                      ), //
                     ],
                   ),
                 ],
@@ -77,7 +78,8 @@ class ProfileScreen extends StatelessWidget {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => EditProfileScreen()),
+                    MaterialPageRoute(
+                        builder: (context) => EditProfileScreen()),
                   );
                 },
               ),
@@ -100,94 +102,102 @@ class ProfileScreen extends StatelessWidget {
                 icon: Icons.notifications_outlined,
                 title: 'Notification',
                 onTap: () {
-                   Navigator.push(
+                  Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => NotificationScreen()),
+                    MaterialPageRoute(
+                        builder: (context) => NotificationScreen()),
                   ); // Navigate to Notification Page (Create one if needed)
                 },
               ),
-            ProfileOption(
-  icon: Icons.logout,
-  title: 'Déconnexion',
-  isLast: true,
-  showArrow: false,
-  onTap: () {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12), // Arrondir les coins
-        ),
-        contentPadding: EdgeInsets.symmetric(vertical: 20, horizontal: 24),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Image.network(
-              'https://cdn-icons-png.flaticon.com/512/1828/1828479.png', // Image de déconnexion
-              width: 60,
-              height: 60,
-            ),
-            SizedBox(height: 12),
-            Text(
-              "Déconnexion",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.normal,
-                color: Color(0xFF565656),
+              ProfileOption(
+                icon: Icons.logout,
+                title: 'Déconnexion',
+                isLast: true,
+                showArrow: false,
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.circular(12), // Arrondir les coins
+                        ),
+                        contentPadding:
+                            EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Image.network(
+                              'https://cdn-icons-png.flaticon.com/512/1828/1828479.png', // Image de déconnexion
+                              width: 60,
+                              height: 60,
+                            ),
+                            SizedBox(height: 12),
+                            Text(
+                              "Déconnexion",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.normal,
+                                color: Color(0xFF565656),
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            Text(
+                              "Are you sure to logout?",
+                              style: TextStyle(
+                                  fontSize: 13,
+                                  color: Color.fromARGB(255, 86, 86, 86)),
+                              textAlign: TextAlign.center,
+                            ),
+                            SizedBox(height: 20),
+                            Column(
+                              children: [
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.pop(
+                                        context); // Fermer la boîte de dialogue
+                                    // Logique de déconnexion ici
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: primaryColor,
+                                    minimumSize: Size(double.infinity, 45),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    "Déconnexion",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.normal),
+                                  ),
+                                ),
+                                SizedBox(height: 10),
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(
+                                        context); // Fermer la boîte de dialogue
+                                  },
+                                  child: Text(
+                                    "Annuler",
+                                    style: TextStyle(
+                                      color: primaryColor,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.normal,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  );
+                },
               ),
-            ),
-            SizedBox(height: 8),
-            Text(
-              "Are you sure to logout?",
-             style: TextStyle(fontSize: 13, color: Color.fromARGB(255, 86, 86, 86)),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: 20),
-            Column(
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context); // Fermer la boîte de dialogue
-                    // Logique de déconnexion ici
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: primaryColor,
-                    minimumSize: Size(double.infinity, 45),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: Text(
-                    "Déconnexion",
-                    style: TextStyle( color: Colors.white, fontSize: 13, fontWeight: FontWeight.normal),
-                  ),
-                ),
-                SizedBox(height: 10),
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context); // Fermer la boîte de dialogue
-                  },
-                  child: Text(
-                    "Annuler",
-                    style: TextStyle(
-                      color: primaryColor,
-                      fontSize: 13,
-                      fontWeight: FontWeight.normal,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      );
-    },
-  );
-},
-
-),
-
               SizedBox(height: 15),
             ],
           ),
@@ -196,6 +206,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 }
+
 class ProfileOption extends StatelessWidget {
   final IconData icon;
   final String title;
@@ -296,7 +307,8 @@ class ProfileDropdown extends StatelessWidget {
   final List<String> items;
   final Function(String?) onChanged;
 
-  ProfileDropdown({required this.label, required this.items, required this.onChanged});
+  ProfileDropdown(
+      {required this.label, required this.items, required this.onChanged});
 
   @override
   Widget build(BuildContext context) {
