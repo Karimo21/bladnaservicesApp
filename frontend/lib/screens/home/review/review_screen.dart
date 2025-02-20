@@ -1,75 +1,102 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class ReviewsScreen extends StatelessWidget {
-  final List<Map<String, dynamic>> reviews = [
-    {
-      "name": "khalidDaoudi",
-      "rating": 4.5,
-      "date": "12/12/2024",
-      "avatar": "assets/female.png"
-    },
-    {
-      "name": "ilyass",
-      "rating": 3.5,
-      "date": "12/12/2024",
-      "avatar": "assets/male.png"
-    },
-    {
-      "name": "karim",
-      "rating": 4.0,
-      "date": "12/12/2024",
-      "avatar": "assets/female.png"
-    },
-    {
-      "name": "riwaya",
-      "rating": 4.5,
-      "date": "12/12/2024",
-      "avatar": "assets/male.png"
-    },
-    {
-      "name": "Hassan",
-      "rating": 3.5,
-      "date": "12/12/2024",
-      "avatar": "assets/male.png"
-    },
+class ReviewsScreen extends StatefulWidget {
+  @override
+  _ReviewsScreenState createState() => _ReviewsScreenState();
+}
+
+class _ReviewsScreenState extends State<ReviewsScreen> {
+  int providerId = 2;
+  List< dynamic> reviews = [
   ];
+  bool isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchReviews(); // Récupérer les avis dès le chargement de l'écran
+  }
+
+  Future<void> fetchReviews() async {
+    try {
+      setState(() {
+        isLoading = true;
+      });
+
+      final response = await http.get(
+        Uri.parse('http://localhost:3000/api/provider-ratings/$providerId'),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (mounted) {
+          setState(() {
+            reviews = data;
+          });
+
+          print(reviews);
+          print(data);
+        }
+      } else {
+        throw Exception('Échec du chargement des avis.');
+      }
+    } catch (e) {
+      print('Erreur : $e');
+    } finally {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Avis",
-            style: TextStyle(
-                color: const Color(0xFF0054A5),
-                fontSize: 20,
-                fontWeight: FontWeight.bold)),
+        title: Text(
+          "Avis",
+          style: TextStyle(
+              color: const Color(0xFF0054A5),
+              fontSize: 20,
+              fontWeight: FontWeight.bold),
+        ),
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: false,
         leading: IconButton(
           icon:
               Icon(Icons.arrow_back, color: const Color(0xFF0054A5), size: 22),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 14.0),
         child: Column(
           children: [
-            SizedBox(
-                height: 10), // ✅ Ajoute un espace entre l'AppBar et la liste
+            SizedBox(height: 10),
             Expanded(
-              child: ListView.builder(
-                itemCount: reviews.length,
-                itemBuilder: (context, index) {
-                  return ReviewCard(
-                    name: reviews[index]['name'],
-                    rating: reviews[index]['rating'],
-                    date: reviews[index]['date'],
-                    avatar: reviews[index]['avatar'],
-                  );
-                },
-              ),
+              child: isLoading
+                  ? Center(child: CircularProgressIndicator())
+                  : reviews.isEmpty
+                      ? Center(child: Text("Aucun avis disponible."))
+                      : ListView.builder(
+                          itemCount: reviews.length,
+                          itemBuilder: (context, index) {
+                            return ReviewCard(
+                              name: reviews[index]['client_name'],
+                              rating: reviews[index]['rating'],
+                              date: reviews[index]['rating_time'],
+                              avatar: 'frontend/assets/images7khalid.jpg',
+                              feedback: reviews[index]['feedback'],
+                            );
+                          },
+                        ),
             ),
           ],
         ),
@@ -83,6 +110,7 @@ class ReviewCard extends StatelessWidget {
   final double rating;
   final String date;
   final String avatar;
+  final String feedback;
 
   const ReviewCard({
     Key? key,
@@ -90,6 +118,7 @@ class ReviewCard extends StatelessWidget {
     required this.rating,
     required this.date,
     required this.avatar,
+    required this.feedback,
   }) : super(key: key);
 
   @override
@@ -100,6 +129,13 @@ class ReviewCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.2),
+            blurRadius: 5,
+            spreadRadius: 2,
+          )
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -112,18 +148,14 @@ class ReviewCard extends StatelessWidget {
                 radius: 20,
               ),
               SizedBox(width: 10),
-
-              // ✅ Correction du bug avec Expanded
               Expanded(
                 child: Text(
                   name,
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-                  overflow:
-                      TextOverflow.ellipsis, // ✅ Coupe le texte si trop long
+                  overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                 ),
               ),
-
               Text(
                 date,
                 style: TextStyle(color: Colors.grey, fontSize: 13),
@@ -134,8 +166,8 @@ class ReviewCard extends StatelessWidget {
           buildStarRating(rating),
           SizedBox(height: 6),
           Text(
-            "Emily Jani exceeded my expectations! Quick, reliable, and fixed my plumbing issue with precision. Highly recommend.",
-            style: TextStyle(fontSize: 11.5, color: Colors.black87),
+            feedback,
+            style: TextStyle(fontSize: 12.5, color: Colors.black87),
           ),
         ],
       ),
@@ -154,8 +186,7 @@ class ReviewCard extends StatelessWidget {
           return Icon(Icons.star_half,
               color: const Color(0xFF0054A5), size: 18);
         } else {
-          return Icon(Icons.star_border,
-              color: const Color.fromARGB(255, 255, 255, 255), size: 18);
+          return Icon(Icons.star_border, color: Colors.grey, size: 18);
         }
       }),
     );
