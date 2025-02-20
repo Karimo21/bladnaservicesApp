@@ -1,4 +1,3 @@
-
 import 'package:bladnaservices/screens/auth/role_screen.dart';
 import 'package:bladnaservices/screens/home/main_screen.dart';
 import 'package:bladnaservices/screens/home/profile/User.dart';
@@ -17,7 +16,7 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController _phoneController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
 
-    // Function to handle login request
+  // Function to handle login request
   Future<void> login() async {
     final phone = _phoneController.text;
     final password = _passwordController.text;
@@ -33,9 +32,21 @@ class _LoginScreenState extends State<LoginScreen> {
     );
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      User.setUserData(data['user']['userId'],data['user']['role']);
+      if (data.containsKey('user')) {
+        User.setUserData(
+            data['user']['userId'],
+            data['user']['role'],
+            data['user']['profile'],
+            data['user']['fname'] ?? '',
+            data['user']['lname'] ?? '',
+            data['user']['adresse'] ?? '',
+            data['user']['description'] ?? '');
+      }
       
-      Navigator.push(context,MaterialPageRoute(builder: (context) => MainScreen()),);
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => MainScreen()),
+      );
       print("Logged in");
     } else {
       print('Login failed: ${response.body}');
@@ -56,7 +67,8 @@ class _LoginScreenState extends State<LoginScreen> {
           },
         ),
       ),
-      body: SingleChildScrollView( // ✅ Permet de scroller pour éviter l'overflow
+      body: SingleChildScrollView(
+        // ✅ Permet de scroller pour éviter l'overflow
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 20),
           child: Column(
@@ -130,7 +142,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       shadowColor: Colors.transparent,
                     ),
                     onPressed: () {
-                     login();
+                      login();
                     },
                     child: Text(
                       "Se Connecter",
@@ -153,9 +165,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   GestureDetector(
                     onTap: () {
-
-                     Navigator.push(context,MaterialPageRoute(builder: (context) => SignupScreen()),);
-                      
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => SignupScreen()),
+                      );
                     },
                     child: Text(
                       "Inscrivez-vous",
@@ -168,7 +181,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ],
               ),
-              SizedBox(height: 50), // ✅ Ajout d'espace en bas pour éviter l'overflow
+              SizedBox(
+                  height: 50), // ✅ Ajout d'espace en bas pour éviter l'overflow
             ],
           ),
         ),
