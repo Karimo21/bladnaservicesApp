@@ -97,7 +97,14 @@ exports.loginUser = async (req, res) => {
     if (user.password !== password) {
       return res.status(401).json({ message: "Incorrect password" });
     }
-
+    let profile="";
+    if(user.role==="client"){
+       profile =await User.getClientProfile(user.user_id);
+    }
+    if(user.role==="provider"){
+       profile =await User.getProviderProfile(user.user_id);
+    }
+    console.log(profile);
     // If everything matches, return the user data and role
     res.json({
       message: "Login successful",
@@ -105,6 +112,9 @@ exports.loginUser = async (req, res) => {
         userId: user.user_id,
         phone: user.phone,
         role: user.role,
+        adresse:profile[0].adresse,
+        description:profile[0].description,
+        profile:profile[0]['profile_picture'],
       },
     });
   } catch (error) {

@@ -6,7 +6,8 @@ const UserContact = {
     try {
       const [rows] = await db.promise().query(
         `SELECT
-        p.business_name AS contact_name,
+        p.firstname AS firstname,
+        p.lastname AS lastname,
         p.profile_picture,
         uc.contact_user_id,
         uc.user_id,
@@ -44,7 +45,8 @@ const UserContact = {
     try {
       const [rows] = await db.promise().query(
         `SELECT 
-    COALESCE(c.username, p.business_name) AS contact_name,
+    COALESCE(c.firstname, p.firstname) AS firstname,
+    COALESCE(c.lastname, p.lastname) AS lastname,
     uc.contact_user_id,
     uc.user_id,
     COALESCE(c.profile_picture, p.profile_picture) AS profile_picture,

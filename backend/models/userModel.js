@@ -20,8 +20,8 @@ const User = {
 
             // Now, insert the user_id into the clients table
             db.query(
-                "INSERT INTO clients (clients_id, username) VALUES (?, ?)", 
-                [userId, `${fname} ${lname}`], 
+                "INSERT INTO clients (clients_id, firstname,lastname) VALUES (?, ?, ?)", 
+                [userId,fname,lname], 
                 (err, clientResult) => {
                     if (err) return callback(err, null);
 
@@ -43,8 +43,8 @@ createProviderUser: (fname, lname, phone, password, role, callback) => {
 
           // Now, insert the user_id into the clients table
           db.query(
-              "INSERT INTO providers (providers_id, business_name) VALUES (?, ?)", 
-              [userId, `${fname} ${lname}`], 
+              "INSERT INTO providers (providers_id, firstname,lastname) VALUES (?, ?, ?)", 
+              [userId,fname,lname], 
               (err, clientResult) => {
                   if (err) return callback(err, null);
 
@@ -64,7 +64,7 @@ saveProviderDocuments: (providerId, frontImageUrl, backImageUrl, diplomatImageUr
 
 
   
-  async getUserByPhone(phone) {
+ async getUserByPhone(phone) {
     try {
       const [rows] = await db.promise().query("SELECT * FROM users WHERE phone = ?", [phone]);
       return rows; // Return the rows if successful
@@ -72,6 +72,23 @@ saveProviderDocuments: (providerId, frontImageUrl, backImageUrl, diplomatImageUr
       throw error; // Handle errors
     }
   },
+
+async getClientProfile(userId){
+  try{
+   const [rows] = await db.promise().query("SELECT profile_picture,adresse FROM  clients c WHERE c.clients_id = ?", [userId]);
+   return rows;
+  }catch(error){
+  throw error;
+ }
+},
+ async getProviderProfile(userId){
+  try{
+   const [rows] = await db.promise().query("SELECT profile_picture,adresse,description FROM  providers p  WHERE p.providers_id = ?", [userId]);
+   return rows;
+  }catch(error){
+  throw error;
+ }
+ },
   updateClientProfilePicture: (userId, imageUrl, callback) => {
     db.query("UPDATE users u join clients c on u.user_id=c.clients_id SET profile_picture = ? WHERE user_id = ?", [imageUrl, userId], callback);
  }
