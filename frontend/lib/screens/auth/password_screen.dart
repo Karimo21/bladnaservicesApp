@@ -3,7 +3,7 @@ import 'package:bladnaservices/screens/auth/login_screen.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'dart:typed_data';
+
 
 class PasswordScreen extends StatefulWidget {
   final List<Map<String, dynamic>> dataUser;

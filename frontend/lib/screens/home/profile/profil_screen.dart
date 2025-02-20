@@ -1,6 +1,7 @@
 import 'package:bladnaservices/screens/home/notification/notification_screen.dart';
 import 'package:bladnaservices/screens/home/profile/addImage_screen.dart';
 import 'package:bladnaservices/screens/home/profile/editProfil_screen.dart';
+import 'package:bladnaservices/screens/home/profile/User.dart';
 import 'package:flutter/material.dart';
 
 const Color primaryColor = Color(0xFF0054A5);
@@ -31,7 +32,7 @@ class ProfileScreen extends StatelessWidget {
                   CircleAvatar(
                     radius: 40,
                     backgroundImage:
-                        NetworkImage('https://via.placeholder.com/150'),
+                        NetworkImage("http://localhost:3000"+User.profile),
                   ),
                   SizedBox(width: 14),
                   Column(

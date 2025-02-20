@@ -1,8 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:bladnaservices/screens/home/profile/User.dart';
 import 'dart:io';
 import 'dart:typed_data';
+
 
 const Color primaryColor = Color(0xFF0054A5);
 const Color backgroundColor = Color(0xFFF9F9F9);
@@ -17,31 +19,31 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Uint8List? _webImage; // Variable pour stocker l'image sur Web
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  String fullName = '';
+  String firstname = User.fname;
+  String lastname = User.lname;
   String address = '';
   String city = '';
   String description = '';
   bool isSubmitted = false;
 
-  TextEditingController fullNameController = TextEditingController();
+  TextEditingController firstnameController = TextEditingController();
+  TextEditingController lastnameController = TextEditingController();
+  TextEditingController cityController = TextEditingController();
   TextEditingController addressController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
 
-  FocusNode fullNameFocusNode = FocusNode();
+  FocusNode firstnameFocusNode = FocusNode();
+  FocusNode lastnameFocusNode = FocusNode();
+  FocusNode cityFocusNode = FocusNode();
   FocusNode addressFocusNode = FocusNode();
   FocusNode descriptionFocusNode = FocusNode();
 
-  bool fullNameError = false;
+  bool firstnameError = false;
+  bool lastnameError = false;
+  bool cityError = false;
   bool addressError = false;
   bool descriptionError = false;
-/*************  ✨ Codeium Command ⭐  *************/
-  /// Picks an image from the gallery and updates the [_selectedImage] state with the chosen file.
-  ///
-  /// This function utilizes the [ImagePicker] to select an image. If an image is picked, it is
-  /// converted to a [File] and stored in [_selectedImage]. The state is then updated to reflect
-  /// this change.
 
-/******  4b60b8e2-1ac2-446c-919b-f09782a2399b  *******/
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
     final XFile? pickedFile =
@@ -65,7 +67,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   void _validateAndSave() {
     setState(() {
       isSubmitted = true;
-      fullNameError = fullName.isEmpty;
+      firstnameError = firstname.isEmpty;
+      lastnameError = lastname.isEmpty;
       addressError = address.isEmpty;
       descriptionError = description.isEmpty;
     });
@@ -77,9 +80,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   void _onFieldChanged(String value, String fieldName) {
     setState(() {
-      if (fieldName == 'fullName') {
-        fullName = value;
-        fullNameError = value.isEmpty;
+      if (fieldName == 'firstname') {
+        firstname = value;
+        firstnameError = value.isEmpty;
+      } else if (fieldName == 'lastname') {
+        lastname = value;
+        lastnameError = value.isEmpty;
       } else if (fieldName == 'address') {
         address = value;
         addressError = value.isEmpty;
@@ -128,45 +134,28 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   Center(
                     child: Stack(
                       children: [
-                        Center(
-                          child: Stack(
-                            children: [
-                              CircleAvatar(
-                                radius: 50,
-                                backgroundColor: Colors.grey[300],
-                                backgroundImage: kIsWeb
-                                    ? (_webImage != null
-                                        ? MemoryImage(_webImage!)
-                                        : null)
-                                    : (_selectedImage != null
-                                        ? FileImage(_selectedImage!)
-                                        : null),
-                                child: (_selectedImage == null &&
-                                        _webImage == null)
-                                    ? Icon(Icons.person,
-                                        size: 50, color: Colors.grey)
-                                    : null,
+                        CircleAvatar(
+                          radius: 50,
+                          backgroundColor: Colors.grey[300],
+                          backgroundImage: NetworkImage("http://localhost:3000" + User.profile),
+                        ),
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: GestureDetector(
+                            onTap: _pickImage, // Ouvre la galerie au clic
+                            child: Container(
+                              padding: EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: primaryColor,
+                                shape: BoxShape.circle,
                               ),
-                              Positioned(
-                                bottom: 0,
-                                right: 0,
-                                child: GestureDetector(
-                                  onTap: _pickImage, // Ouvre la galerie au clic
-                                  child: Container(
-                                    padding: EdgeInsets.all(6),
-                                    decoration: BoxDecoration(
-                                      color: primaryColor,
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: Icon(
-                                      Icons.edit,
-                                      color: Colors.white,
-                                      size: 20,
-                                    ),
-                                  ),
-                                ),
+                              child: Icon(
+                                Icons.edit,
+                                color: Colors.white,
+                                size: 20,
                               ),
-                            ],
+                            ),
                           ),
                         ),
                       ],
@@ -174,13 +163,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                   SizedBox(height: 24),
                   ProfileTextField(
-                    label: "Nom complet",
-                    hintText: "Nom complet",
-                    controller: fullNameController,
-                    focusNode: fullNameFocusNode,
-                    onChanged: (value) => _onFieldChanged(value, 'fullName'),
-                    errorText:
-                        fullNameError ? "Veuillez entrer un nom valide" : null,
+                    label: "Prénom",
+                    hintText: "Prénom",
+                    controller: firstnameController,
+                    focusNode: firstnameFocusNode,
+                    onChanged: (value) => _onFieldChanged(value, 'firstname'),
+                    errorText: firstnameError ? "Veuillez entrer un prénom valide" : null,
+                  ),
+                  ProfileTextField(
+                    label: "Nom",
+                    hintText: "Nom",
+                    controller: lastnameController,
+                    focusNode: lastnameFocusNode,
+                    onChanged: (value) => _onFieldChanged(value, 'lastname'),
+                    errorText: lastnameError ? "Veuillez entrer un nom valide" : null,
                   ),
                   ProfileTextField(
                     label: "Adresse",
@@ -188,8 +184,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     controller: addressController,
                     focusNode: addressFocusNode,
                     onChanged: (value) => _onFieldChanged(value, 'address'),
-                    errorText:
-                        addressError ? "Veuillez entrer une adresse" : null,
+                    errorText: addressError ? "Veuillez entrer une adresse" : null,
                   ),
                   ProfileDropdown(
                     label: "Ville",
@@ -197,6 +192,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     onChanged: (value) {
                       setState(() {
                         city = value!;
+                        cityError = city.isEmpty;
                       });
                     },
                   ),
@@ -205,9 +201,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     controller: descriptionController,
                     focusNode: descriptionFocusNode,
                     onChanged: (value) => _onFieldChanged(value, 'description'),
-                    errorText: descriptionError
-                        ? "Veuillez entrer une description"
-                        : null,
+                    errorText: descriptionError ? "Veuillez entrer une description" : null,
                   ),
                   SizedBox(height: 20),
                   Center(
