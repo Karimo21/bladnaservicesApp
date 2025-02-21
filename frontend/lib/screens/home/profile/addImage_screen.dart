@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:bladnaservices/screens/home/profile/User.dart';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart'; // Détecter si l'application tourne sur Web

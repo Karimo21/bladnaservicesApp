@@ -152,7 +152,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                           backgroundImage: NetworkImage("http://localhost:3000" + contact['profile_picture'].trim()),
                         ),
                         title: Text(
-                          contact['contact_name'], // Display the business name
+                          contact['firstname']+" "+contact['lastname'], // Display the business name
                           style: const TextStyle(
                             fontFamily: "Poppins",
                             fontSize: 16,
@@ -204,7 +204,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                                     contactId: contact['contact_user_id'],
                                     contactRole: contact['role'],
                                     profile_picture:picture,
-                                    name:contact['contact_name'],),
+                                    name:contact['firstname']+" "+contact['lastname'],),
                                     ),        
                           );
                         },

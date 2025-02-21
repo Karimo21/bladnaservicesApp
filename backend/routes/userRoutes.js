@@ -9,8 +9,10 @@ const router = express.Router();
 router.post('/login', loginUser);
 router.post("/create-client", createClientUser);
 router.post("/create-provider", createProviderUser);
+
+
 router.get('/api/allUsers', );
-router.get('/api/users/:id', getUgetUsersser);
+
 router.post('/', createUser);
 router.get('/api/provider-ratings/:providerId', getProviderRatings);
 router.get("/api/notifications/:userId", getUserNotifications);
