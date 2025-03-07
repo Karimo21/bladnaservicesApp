@@ -1,24 +1,68 @@
+import 'package:bladnaservices/screens/home/main_screen.dart';
+import 'package:bladnaservices/screens/home/profile/User.dart';
+import 'package:bladnaservices/screens/home/services/home_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class ConfirmationScreen extends StatelessWidget {
+class ConfirmationScreen extends StatefulWidget {
   final Map<String, dynamic>? reservationUtilisateur;
 
-  ConfirmationScreen({Key? key, required this.reservationUtilisateur}) : super(key: key);
+  const ConfirmationScreen({Key? key, required this.reservationUtilisateur})
+      : super(key: key);
 
-  final List<Map<String, dynamic>> prestataires = [
-    {
-      "nom": "Hassan Rochdi",
-      "service": "Médecin",
-      "ville": "Agadir",
-      "image": "assets/images/logo.png",
+  @override
+  _ConfirmationScreenState createState() => _ConfirmationScreenState();
+}
+
+class _ConfirmationScreenState extends State<ConfirmationScreen> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  Future<void> createReservation() async {
+    const String apiUrl = 'http://localhost:3000/create-reservation';
+
+    final Map<String, dynamic> reservationData = {
+      "clientId": User.userId,
+      "providerId": widget.reservationUtilisateur?['provider_id'],
+      "startDate": widget.reservationUtilisateur?['date_debut'],
+      "endDate": widget.reservationUtilisateur?['date_fin'],
+      "statutId": 1
+    };
+
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(reservationData),
+      );
+
+      if (response.statusCode == 200) {
+        debugPrint("Réservation créée avec succès !");
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text("Réservation confirmée avec succès !")));
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => MainScreen()),
+          (route) => false, // This removes all previous routes from the stack
+        );
+      } else {
+        debugPrint("Échec de la création de la réservation : ${response.body}");
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Erreur lors de la confirmation !")));
+      }
+    } catch (e) {
+      debugPrint("Erreur de connexion : $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Problème de connexion au serveur !")));
     }
-  ];
+  }
 
   @override
   Widget build(BuildContext context) {
-    Map<String, dynamic> prestataire = prestataires[0];
-
-    if (reservationUtilisateur == null) {
+    if (widget.reservationUtilisateur == null) {
       return Scaffold(
         backgroundColor: Colors.white,
         appBar: _buildAppBar(context),
@@ -27,7 +71,6 @@ class ConfirmationScreen extends StatelessWidget {
     }
 
     return Scaffold(
-      
       appBar: _buildAppBar(context),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -49,8 +92,9 @@ class ConfirmationScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              prestataire["nom"],
-                              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                              widget.reservationUtilisateur?['name'],
+                              style: const TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 5),
                           ],
@@ -58,18 +102,36 @@ class ConfirmationScreen extends StatelessWidget {
                       ),
                       CircleAvatar(
                         radius: 40,
-                        backgroundImage: AssetImage(prestataire["image"]),
+                        backgroundImage: NetworkImage(
+                            widget.reservationUtilisateur?['profile']),
                       ),
                     ],
                   ),
                   const SizedBox(height: 10),
                   const Divider(),
-                  _buildDetailRow("Service", prestataire["service"], true),
-                  _buildDetailRow("Ville", prestataire["ville"], true),
-                  _buildDetailRow("Date de début", reservationUtilisateur?["date_debut"]?.toString() ?? "Non spécifiée", true),
-                  _buildDetailRow("Date de fin", reservationUtilisateur?["date_fin"]?.toString() ?? "Non spécifiée", true),
-                  _buildDetailRow("Heure", reservationUtilisateur?["hour"]?.toString() ?? "Non spécifiée", true),
-                  _buildDetailRow("Lieu de réservation", reservationUtilisateur?["address"]?.toString() ?? "Non spécifié", true),
+                  _buildDetailRow("Service",
+                      widget.reservationUtilisateur?['profession'], true),
+                  _buildDetailRow(
+                      "Date de début",
+                      widget.reservationUtilisateur?["date_debut"]
+                              ?.toString() ??
+                          "Non spécifiée",
+                      true),
+                  _buildDetailRow(
+                      "Date de fin",
+                      widget.reservationUtilisateur?["date_fin"]?.toString() ??
+                          "Non spécifiée",
+                      true),
+                  _buildDetailRow(
+                      "Heure",
+                      widget.reservationUtilisateur?["hour"]?.toString() ??
+                          "Non spécifiée",
+                      true),
+                  _buildDetailRow(
+                      "Lieu de réservation",
+                      widget.reservationUtilisateur?["address"]?.toString() ??
+                          "Non spécifié",
+                      true),
                 ],
               ),
             ),
@@ -85,7 +147,8 @@ class ConfirmationScreen extends StatelessWidget {
 
   AppBar _buildAppBar(BuildContext context) {
     return AppBar(
-      title: const Text("Confirmation", style: TextStyle(color: Color(0xFF0054A5))),
+      title: const Text("Confirmation",
+          style: TextStyle(color: Color(0xFF0054A5))),
       backgroundColor: Colors.white,
       elevation: 0,
       leading: IconButton(
@@ -158,7 +221,7 @@ class ConfirmationScreen extends StatelessWidget {
           width: double.infinity,
           child: ElevatedButton(
             onPressed: () {
-              debugPrint("Réservation confirmée !");
+              createReservation();
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF0054A5),
@@ -186,7 +249,8 @@ class ConfirmationScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-            child: const Text("Annuler", style: TextStyle(fontSize: 16, color: Colors.black)),
+            child: const Text("Annuler",
+                style: TextStyle(fontSize: 16, color: Colors.black)),
           ),
         ),
       ],

@@ -39,10 +39,11 @@ class ProfileScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Hassan Rochdi',
+                        '${User.fname} ${User.lname}',
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.normal),
                       ),
+                      if(User.role=="provider")
                       Text('Médecin',
                           style: TextStyle(color: Colors.grey, fontSize: 18)),
                       SizedBox(height: 5),
@@ -55,6 +56,7 @@ class ProfileScreen extends StatelessWidget {
                         ],
                       ),
                       SizedBox(height: 5),
+                      if(User.role=="provider")
                       Row(
                         children: [
                           Icon(Icons.emoji_events,
@@ -84,6 +86,7 @@ class ProfileScreen extends StatelessWidget {
                   );
                 },
               ),
+              if(User.role=="provider")
               ProfileOption(
                 icon: Icons.image_outlined,
                 title: 'Ajouter des images',

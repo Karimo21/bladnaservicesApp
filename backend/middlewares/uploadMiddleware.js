@@ -38,4 +38,20 @@ const uploadProviderDocuments = multer({
     { name: 'diploma_image', maxCount: 1 }
 ]);
 
-module.exports = { uploadProviderDocuments };
+// Middleware for handling multiple provider images
+const uploadProviderImages = multer({
+    storage: storage('work_images'),
+    fileFilter,
+    limits: { fileSize: 10 * 1024 * 1024 } // 10MB max per image
+}).array('work_images', 10); // Allow up to 10 images for a provider
+
+// Middleware for handling three specific images
+const uploadProfilePicture = multer({
+    storage: storage('profile_pictures'),
+    fileFilter,
+    limits: { fileSize: 10 * 1024 * 1024 } // 10MB max per image
+}).fields([
+    { name: 'profile_image', maxCount: 1 },
+]);
+
+module.exports = { uploadProviderDocuments,uploadProfilePicture,uploadProviderImages };

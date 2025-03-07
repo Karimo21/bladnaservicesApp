@@ -2,13 +2,13 @@
 import 'package:bladnaservices/screens/home/map/map_screen.dart';
 import 'package:bladnaservices/screens/home/profile/profil_screen.dart';
 import 'package:bladnaservices/screens/home/reservation/reservation_screen.dart';
-import 'package:bladnaservices/screens/home/services/acceuil_screen.dart';
-import 'package:bladnaservices/screens/home/services/home_screnne.dart';
+import 'package:bladnaservices/screens/home/services/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:bladnaservices/screens/home/chat/chat_list_screen.dart';
 import 'package:bladnaservices/widgets/bottom_navigation.dart';
 
 class MainScreen extends StatefulWidget {
+  static final GlobalKey<_MainScreenState> mainScreenKey = GlobalKey<_MainScreenState>();
   const MainScreen({Key? key}) : super(key: key);
 
   @override
@@ -30,6 +30,11 @@ class _MainScreenState extends State<MainScreen> {
 
   // This function is called when a tab is tapped.
   void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+    void updateIndex(int index) {
     setState(() {
       _selectedIndex = index;
     });

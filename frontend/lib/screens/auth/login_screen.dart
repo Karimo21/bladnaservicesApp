@@ -43,7 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
             data['user']['description'] ?? '');
       }
       
-      
+      print(data);
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => MainScreen()),

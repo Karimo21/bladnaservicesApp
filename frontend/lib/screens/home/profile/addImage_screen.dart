@@ -1,9 +1,12 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:bladnaservices/screens/home/profile/User.dart';
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:flutter/foundation.dart'; // Détecter si l'application tourne sur Web
+import 'package:flutter/foundation.dart'; // Detect if the app is running on Web
 import 'dart:ui' as ui;
 
 class ImageUploadPage extends StatefulWidget {
@@ -12,23 +15,142 @@ class ImageUploadPage extends StatefulWidget {
 }
 
 class _ImageUploadPageState extends State<ImageUploadPage> {
-  List<dynamic> _images = []; // Peut contenir File (mobile) ou Uint8List (Web)
+  List<dynamic> _images = []; // List for images to upload (File or Uint8List)
+  List<Map<String, dynamic>> _fetchedImages = []; // List for fetched image URLs
+  bool _isUploading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchImages(); // Load the images on init
+    print(_fetchedImages);
+  }
+
+  String getMediaType(String filePath) {
+    final extension = filePath.split('.').last.toLowerCase();
+    switch (extension) {
+      case 'jpg':
+      case 'jpeg':
+        return 'image/jpeg';
+      case 'png':
+        return 'image/png';
+      case 'gif':
+        return 'image/gif';
+      case 'bmp':
+        return 'image/bmp';
+      case 'webp':
+        return 'image/webp';
+      default:
+        return 'application/octet-stream'; // Default for unknown types
+    }
+  }
 
   Future<void> _pickImage(ImageSource source) async {
     final pickedFile = await ImagePicker().pickImage(source: source);
     if (pickedFile != null) {
+      print("Image sélectionnée : ${pickedFile.path}");
       if (kIsWeb) {
-        // Web : Utiliser Uint8List
-        final bytes = await pickedFile.readAsBytes();
-        setState(() {
-          _images.add(bytes);
-        });
+        try {
+          final bytes = await pickedFile.readAsBytes();
+          setState(() {
+            _images
+                .add(Uint8List.fromList(bytes)); // Add Web images as Uint8List
+          });
+        } catch (e) {
+          print("Erreur lors de la lecture du fichier : $e");
+        }
       } else {
-        // Mobile (Android/iOS) : Utiliser File
         setState(() {
-          _images.add(File(pickedFile.path));
+          _images.add(File(pickedFile.path)); // Add mobile images as File
         });
       }
+      _uploadImages();
+    }
+  }
+
+  Future<void> _fetchImages() async {
+    try {
+      final response = await http.get(Uri.parse(
+          'http://localhost:3000/providers-work-images/${User.userId}'));
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final List images = data['images'];
+        print(images);
+
+        if (mounted) {
+          setState(() {
+            _fetchedImages = images
+                .map((image) => {
+                      'id': image['id'],
+                      'image_url': 'http://localhost:3000${image['image_url']}'
+                    })
+                .toList();
+          });
+        }
+      } else {
+        throw Exception('Échec du chargement des images');
+      }
+    } catch (e) {
+      print('Erreur lors du chargement des images: $e');
+    }
+  }
+
+  Future<void> _uploadImages() async {
+    if (_images.isEmpty) return;
+
+    setState(() {
+      _isUploading = true;
+    });
+
+    var uri = Uri.parse(
+        "http://localhost:3000/upload-provider-images/${User.userId}");
+    var request = http.MultipartRequest('POST', uri);
+    // Upload only the new images (not the fetched URLs)
+    for (var image in _images) {
+      if (image is File) {
+        final mediaType = getMediaType(image.path);
+        print("Adding image file: ${image.path} with media type: $mediaType");
+        request.files.add(
+          await http.MultipartFile.fromPath(
+            'work_images', // Ensure this matches the backend expected parameter
+            image.path,
+            contentType: MediaType.parse(mediaType),
+          ),
+        );
+      } else if (image is Uint8List) {
+        final mediaType = 'image/jpeg'; // Default for web images
+        print("Adding image from Uint8List with media type: $mediaType");
+
+        request.files.add(
+          http.MultipartFile.fromBytes(
+            'work_images',
+            image,
+            filename: 'upload.jpg',
+            contentType: MediaType.parse(mediaType),
+          ),
+        );
+      }
+    }
+
+    try {
+      var response = await request.send();
+      if (response.statusCode == 200) {
+        print("Images uploaded successfully!");
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Image upload failed")),
+        );
+      }
+    } catch (e) {
+      print("Error during upload: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error uploading images")),
+      );
+    } finally {
+      setState(() {
+        _isUploading = false;
+      });
     }
   }
 
@@ -38,10 +160,43 @@ class _ImageUploadPageState extends State<ImageUploadPage> {
     });
   }
 
+  Future<void> _deleteImage(int imageId) async {
+    // Extract the image ID from the URL (assuming it's at the end of the URL)
+    
+    final url = 'http://localhost:3000/delete-provider-image/$imageId';
+    print(url);
+    try {
+      final response = await http.post(Uri.parse(url));
+      if (response.statusCode == 200) {
+        // Successfully deleted, now remove from the list
+ 
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Image deleted successfully')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to delete image')),
+        );
+      }
+    } catch (e) {
+      print('Error during delete: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error deleting image')),
+      );
+    }
+  }
+
+void _removeFetchedImage(int id) {
+  setState(() {
+    _fetchedImages.removeWhere((image) => image['id'] == id);
+    _deleteImage(id);
+  });
+}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Définit le fond en blanc
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
           'Ajouter les images',
@@ -67,10 +222,39 @@ class _ImageUploadPageState extends State<ImageUploadPage> {
             Expanded(
               child: ListView(
                 children: [
+                  // Display fetched images with delete button
+                  ..._fetchedImages.map((image) {
+                    return Stack(
+                      children: [
+                        Container(
+                          height: 200,
+                          margin: EdgeInsets.only(bottom: 10),
+                          child: Image.network(image['image_url'],
+                              fit: BoxFit.cover, width: double.infinity),
+                        ),
+                        Positioned(
+                          top: 5,
+                          right: 6,
+                          child: GestureDetector(
+                            onTap: () => _removeFetchedImage(image['id'],),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                              ),
+                              padding: EdgeInsets.all(0),
+                              child: Icon(Icons.delete,
+                                  color: Colors.red, size: 26),
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  }).toList(),
+                  // Display uploaded images with delete button
                   ..._images.asMap().entries.map((entry) {
                     int index = entry.key;
                     var image = entry.value;
-
                     return Stack(
                       children: [
                         Container(
@@ -79,14 +263,19 @@ class _ImageUploadPageState extends State<ImageUploadPage> {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(0),
                           ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(0),
-                            child: kIsWeb
-                                ? Image.memory(image,
-                                    fit: BoxFit.cover, width: double.infinity)
-                                : Image.file(image,
-                                    fit: BoxFit.cover, width: double.infinity),
-                          ),
+                          child: kIsWeb
+                              ? (image is Uint8List
+                                  ? Image.memory(image,
+                                      fit: BoxFit.cover, width: double.infinity)
+                                  : Image.network(image,
+                                      fit: BoxFit.cover,
+                                      width: double.infinity))
+                              : (image is Uint8List
+                                  ? Image.memory(image,
+                                      fit: BoxFit.cover, width: double.infinity)
+                                  : Image.file(image,
+                                      fit: BoxFit.cover,
+                                      width: double.infinity)),
                         ),
                         Positioned(
                           top: 5,
@@ -107,26 +296,24 @@ class _ImageUploadPageState extends State<ImageUploadPage> {
                       ],
                     );
                   }).toList(),
-
-                  // Zone de sélection d'image avec bordure en pointillés ..
+                  // Add new image button
                   GestureDetector(
                     onTap: () => _pickImage(ImageSource.gallery),
                     child: CustomPaint(
-                      painter:
-                          DashedBorderPainter(), // Bordure pointillée du rectangle
+                      painter: DashedBorderPainter(),
                       child: Container(
                         height: 204,
                         width: double.infinity,
                         alignment: Alignment.center,
                         child: Container(
-                          width: 40, // Taille du cercle
+                          width: 40,
                           height: 40,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: Colors.white, // Fond du cercle
+                            color: Colors.white,
                             border: Border.all(
                               color: const Color.fromARGB(255, 4, 73, 130),
-                              width: 2, // Bordure normale du cercle
+                              width: 2,
                             ),
                           ),
                           child: Center(
@@ -148,12 +335,11 @@ class _ImageUploadPageState extends State<ImageUploadPage> {
   }
 }
 
-// Classe pour dessiner une bordure en pointillés
 class DashedBorderPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     Paint paint = Paint()
-      ..color = const Color.fromARGB(255, 6, 71, 124) // Couleur de la bordure
+      ..color = const Color.fromARGB(255, 6, 71, 124)
       ..strokeWidth = 2
       ..style = PaintingStyle.stroke;
 
@@ -161,7 +347,6 @@ class DashedBorderPainter extends CustomPainter {
     final double height = size.height;
     final double width = size.width;
 
-    // Dessiner la bordure en pointillés sur chaque côté du rectangle
     while (startX < width) {
       canvas.drawLine(
         Offset(startX, 0),

@@ -1,15 +1,63 @@
 const db = require('../config/db');
 
 const User = {
-  getAllUsers: (callback) => {
-    db.query("SELECT * FROM users", callback);
-  },
-  getUserById: (id,callback) => {
-    db.query("SELECT * FROM users WHERE user_id = ?", [id], callback);
-  },
 
+getProviderDetails: (callback) => {
+    const query = `
+SELECT p.providers_id,
+             CONCAT(p.firstname, ' ', p.lastname) AS provider_name,
+             p.profile_picture,
+             s.title,
+             ROUND(AVG(r.rating), 1) AS rating,
+             p.adresse,
+             p.description,
+             COUNT(DISTINCT rs.reservations_id) AS nbr_res
+      FROM providers p
+      JOIN services s USING(service_id)
+      LEFT JOIN reservations rs ON p.providers_id = rs.provider_id
+      JOIN ratings r ON p.providers_id = r.provider_id
+      GROUP BY p.providers_id;
+    `;
 
-  createClientUser: (fname, lname, phone, password, role, callback) => {
+    db.query(query, (err, providers) => {
+        if (err) return callback(err, null);
+        callback(null, providers); // Retourne toutes les lignes trouvées
+    });
+},
+getMoreProviderDetails(providerId, callback) {
+  // First, query to get the images associated with the provider
+  const imagesQuery = `
+      SELECT pi.image_url
+      FROM provider_images pi
+      WHERE pi.provider_id = ?;
+  `;
+  
+  // Query to get ratings and feedback for the provider
+  const ratingsQuery = `
+      SELECT c.firstname, c.lastname, r.feedback, DATE_FORMAT(r.created_at, '%M %d, %Y %l:%i %p') AS created_at, r.rating, c.profile_picture
+      FROM clients c
+      JOIN ratings r ON c.clients_id = r.client_id
+      WHERE r.provider_id = ?;
+  `;
+
+  // Execute the image query first
+  db.query(imagesQuery, [providerId], (err, images) => {
+      if (err) return callback(err, null);
+
+      // Execute the ratings query
+      db.query(ratingsQuery, [providerId], (err, ratings) => {
+          if (err) return callback(err, null);
+
+          // Combine both results and return them
+          callback(null, {
+              images: images,   // Array of image URLs
+              ratings: ratings  // Array of ratings and feedback
+          });
+      });
+  });
+},
+
+createClientUser: (fname, lname, phone, password, role, callback) => {
     db.query(
         "INSERT INTO users (phone, password, role) VALUES (?, ?, ?)", 
         [phone, password, role], 
@@ -75,7 +123,7 @@ saveProviderDocuments: (providerId, frontImageUrl, backImageUrl, diplomatImageUr
 
 async getClientProfile(userId){
   try{
-   const [rows] = await db.promise().query("SELECT profile_picture,adresse FROM  clients c WHERE c.clients_id = ?", [userId]);
+   const [rows] = await db.promise().query("SELECT * FROM  clients c WHERE c.clients_id = ?", [userId]);
    return rows;
   }catch(error){
   throw error;
@@ -83,7 +131,7 @@ async getClientProfile(userId){
 },
  async getProviderProfile(userId){
   try{
-   const [rows] = await db.promise().query("SELECT profile_picture,adresse,description FROM  providers p  WHERE p.providers_id = ?", [userId]);
+   const [rows] = await db.promise().query("SELECT * FROM  providers p  WHERE p.providers_id = ?", [userId]);
    return rows;
   }catch(error){
   throw error;

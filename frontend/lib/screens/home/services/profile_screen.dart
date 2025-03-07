@@ -1,84 +1,64 @@
+import 'package:bladnaservices/screens/home/reservation/reservation_prestataire_screen.dart';
+import 'package:bladnaservices/screens/home/review/review_screen.dart';
 import 'package:bladnaservices/screens/home/services/galerie_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   final Map<String, dynamic> provider;
   ProfilePage({Key? key, required this.provider}) : super(key: key);
 
-  final List<Map<String, dynamic>> reviews = [
-    {
-      'name': 'Josh Peter',
-      'date': '12/12/2024',
-      'comment': 'Excellent service!',
-      'rating': 5,
-      'profileImage': 'assets/images/image.jpg',
-    },
-    {
-      'name': 'Caleb',
-      'date': '12/12/2024',
-      'comment': 'Highly recommend!',
-      'rating': 4,
-      'profileImage': 'assets/images/profile2.png',
-    },
-    {
-      'name': 'Ethan',
-      'date': '12/12/2024',
-      'comment': 'Very professional!',
-      'rating': 3,
-      'profileImage': 'assets/images/profile3.png',
-    },
-    {
-      'name': 'Sophia',
-      'date': '11/12/2024',
-      'comment': 'Friendly and efficient!',
-      'rating': 5,
-      'profileImage': 'assets/images/profile4.png',
-    },
-    {
-      'name': 'Liam',
-      'date': '10/12/2024',
-      'comment': 'Good service but a bit slow.',
-      'rating': 3,
-      'profileImage': 'assets/images/profile5.png',
-    },
-    {
-      'name': 'Olivia',
-      'date': '09/12/2024',
-      'comment': 'Affordable and high quality!',
-      'rating': 4,
-      'profileImage': 'assets/images/profile6.png',
-    },
-    {
-      'name': 'Noah',
-      'date': '08/12/2024',
-      'comment': 'Great communication and timely work.',
-      'rating': 5,
-      'profileImage': 'assets/images/profile7.png',
-    },
-    {
-      'name': 'Ava',
-      'date': '07/12/2024',
-      'comment': 'Satisfactory work, could be improved.',
-      'rating': 3,
-      'profileImage': 'assets/images/profile8.png',
-    },
-    {
-      'name': 'Mason',
-      'date': '06/12/2024',
-      'comment': 'Very reliable and honest.',
-      'rating': 5,
-      'profileImage': 'assets/images/profile9.png',
-    },
-  ];
+  @override
+  _ProfilePageState createState() => _ProfilePageState();
+}
 
-  final List<String> galleryImages = [
-    'assets/images/image.jpg',
-    'assets/images/image1.png',
-    'assets/images/logo_bladna_service.jpg',
-    'assets/images/image4.jpg',
-    'assets/images/image5.jpg',
-  ];
+class _ProfilePageState extends State<ProfilePage> {
+  final List<Map<String, dynamic>> reviews = [];
 
+  final List<String> galleryImages = [];
+
+  // Future method to fetch data from API
+  Future<void> fetchData() async {
+    try {
+      final response =
+          await http.get(Uri.parse('http://localhost:3000/provider/${widget.provider['provider_id']}'));
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+
+        // Add fetched images to galleryImages list
+        for (var image in data['images']) {
+          setState(() {
+            galleryImages.add('http://localhost:3000${image['image_url']}');
+          });
+        }
+
+        // Add fetched reviews to reviews list
+        for (var rating in data['ratings']) {
+          setState(() {
+            reviews.add({
+              'name': '${rating['firstname']} ${rating['lastname']}',
+              'date': rating['created_at'],
+              'comment': rating['feedback'],
+              'rating': rating['rating'],
+              'profileImage':'http://localhost:3000${rating['profile_picture']}'
+            });
+          });
+        }
+      } else {
+        throw Exception('Failed to load data');
+      }
+    } catch (e) {
+      print('Error fetching data: $e');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData(); // Call the fetch data method when the page loads
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -97,13 +77,13 @@ class ProfilePage extends StatelessWidget {
                       width: double.infinity,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(0), 
-                          topRight: Radius.circular(0), 
-                          bottomLeft: Radius.circular(22), 
-                          bottomRight: Radius.circular(22), 
+                          topLeft: Radius.circular(0),
+                          topRight: Radius.circular(0),
+                          bottomLeft: Radius.circular(22),
+                          bottomRight: Radius.circular(22),
                         ),
                         image: DecorationImage(
-                          image: AssetImage(provider['image']),
+                          image: NetworkImage(widget.provider['image']),
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -114,10 +94,11 @@ class ProfilePage extends StatelessWidget {
                       top: 1,
                       left: 1,
                       child: IconButton(
-                        icon: Icon(Icons.arrow_back,
-                            color: Colors.black, size: 30),
-                        onPressed: () => Navigator.pop(context),
-                      ),
+                          icon: Icon(Icons.arrow_back,
+                              color: Colors.black, size: 30),
+                          onPressed: () => {
+                                Navigator.pop(context),
+                              }),
                     ),
                     Positioned(
                       top: 10,
@@ -135,7 +116,7 @@ class ProfilePage extends StatelessWidget {
                                 color: Color(0xFF0054A5), size: 18),
                             SizedBox(width: 4),
                             Text(
-                              "${provider['rating']}",
+                              "${widget.provider['rating']}",
                               style: TextStyle(
                                 color: Color(0xFF0054A5),
                                 fontSize: 16,
@@ -163,7 +144,7 @@ class ProfilePage extends StatelessWidget {
                                   Icon(Icons.person, color: Colors.grey),
                                   SizedBox(width: 5),
                                   Text(
-                                    provider['name'],
+                                    widget.provider['name'],
                                     style: TextStyle(
                                         fontSize: 22,
                                         fontWeight: FontWeight.bold),
@@ -175,51 +156,51 @@ class ProfilePage extends StatelessWidget {
                                 children: [
                                   Icon(Icons.work, color: Colors.grey),
                                   SizedBox(width: 5),
-                                  Text(provider['profession']),
+                                  Text(widget.provider['profession']),
                                 ],
                               ),
                             ],
                           ),
-                          Spacer(),
+                          const Spacer(),
                           IconButton(
-                            icon: Icon(Icons.chat, color: Color(0xFF0054A5)),
+                            icon: const Icon(Icons.chat, color: Color(0xFF0054A5)),
                             onPressed: () {},
                           ),
                           IconButton(
-                            icon: Icon(Icons.call, color: Color(0xFF0054A5)),
+                            icon: const Icon(Icons.call, color: Color(0xFF0054A5)),
                             onPressed: () {},
                           ),
                         ],
                       ),
-                      SizedBox(height: 5),
+                      const SizedBox(height: 5),
                       Row(
                         children: [
                           Icon(Icons.bookmark, color: Colors.grey),
                           SizedBox(width: 5),
-                          Text("${provider['reservations']} Réservations"),
+                          Text(
+                              "${widget.provider['reservations']} Réservations"),
                         ],
                       ),
-                      SizedBox(height: 5),
+                     const  SizedBox(height: 5),
                       Row(
                         children: [
-                          Icon(Icons.location_on, color: Colors.grey),
-                          SizedBox(width: 5),
-                          Text(provider['location']),
+                          const Icon(Icons.location_on, color: Colors.grey),
+                          const SizedBox(width: 5),
+                          Text(widget.provider['location']),
                         ],
                       ),
-                      SizedBox(height: 10),
-                      Text(
+                      const SizedBox(height: 10),
+                      const Text(
                         "À propos",
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.bold),
                       ),
-                      SizedBox(height: 5),
+                      const SizedBox(height: 5),
                       Text(
-                        provider['description'],
+                        widget.provider['description'],
                         textAlign: TextAlign.justify,
                       ),
-
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -230,12 +211,13 @@ class ProfilePage extends StatelessWidget {
                           ),
                           TextButton(
                             onPressed: () {
-                                Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => GaleriePage(galleryImages :galleryImages)),
-                      );
-                              
-                              
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => GaleriePage(
+                                        galleryImages: galleryImages)),
+                              );
+
                               // Action pour afficher plus d'images
                             },
                             child: Text(
@@ -266,7 +248,7 @@ class ProfilePage extends StatelessWidget {
                                   const EdgeInsets.symmetric(horizontal: 5.0),
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(10),
-                                child: Image.asset(
+                                child: Image.network(
                                   galleryImages[index],
                                   width: 120,
                                   height: 120,
@@ -282,14 +264,20 @@ class ProfilePage extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                      const    Text(
+                          const Text(
                             'Avis',
                             style: TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                           TextButton(
                             onPressed: () {
-                              // Action pour afficher plus d'images
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ReviewsScreen(
+                                       reviews: reviews
+                                        )),
+                              );
                             },
                             child: const Text(
                               "Voire tout",
@@ -323,7 +311,7 @@ class ProfilePage extends StatelessWidget {
                                       Row(
                                         children: [
                                           CircleAvatar(
-                                            backgroundImage: AssetImage(
+                                            backgroundImage: NetworkImage(
                                                 review['profileImage']!),
                                             radius: 20,
                                           ),
@@ -368,43 +356,48 @@ class ProfilePage extends StatelessWidget {
             ),
           ),
           Positioned(
-  bottom: 0,
-  left: 0,
-  right: 0,
-  child: Container(
-    padding: EdgeInsets.all(10),
-    child: Row(
-      children: [
-        Expanded(
-          flex: 3, // 30% de l'espace
-          child: ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xFFD3D3D3),
-              foregroundColor: Colors.white,
-              minimumSize: Size(double.infinity, 50),
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              padding: EdgeInsets.all(10),
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: 3, // 30% de l'espace
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFFD3D3D3),
+                        foregroundColor: Colors.white,
+                        minimumSize: Size(double.infinity, 50),
+                      ),
+                      child: Text('Évaluer'),
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  Expanded(
+                    flex: 7, // 70% de l'espace
+                    child: ElevatedButton(
+                      onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ReservationPrestataireScreen(provider:widget.provider)),
+                              );     
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFF0054A5),
+                        foregroundColor: Colors.white,
+                        minimumSize: Size(double.infinity, 50),
+                      ),
+                      child: Text('Réserver'),
+                    ),
+                  ),
+                ],
+              ),
             ),
-            child: Text('Évaluer'),
           ),
-        ),
-        SizedBox(width: 10),
-        Expanded(
-          flex: 7, // 70% de l'espace
-          child: ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xFF0054A5),
-              foregroundColor: Colors.white,
-              minimumSize: Size(double.infinity, 50),
-            ),
-            child: Text('Réserver'),
-          ),
-        ),
-      ],
-    ),
-  ),
-),
-
         ],
       ),
     );

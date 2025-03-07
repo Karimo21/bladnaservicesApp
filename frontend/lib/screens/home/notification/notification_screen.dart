@@ -1,9 +1,10 @@
+import 'package:bladnaservices/screens/home/profile/User.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class NotificationScreen extends StatefulWidget {
-   int userId=1;
+   int userId=User.userId;
 
   
 

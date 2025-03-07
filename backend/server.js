@@ -24,15 +24,14 @@ app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 
 // Serve static files from the 'uploads' directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 //routes
 const userRoutes = require('./routes/userRoutes');
 const chatRoutes = require('./routes/chatRoutes'); 
+const reservationRoutes = require('./routes/reservationRoutes'); 
 
 //use the user routes
-app.use(userRoutes);
-
-// use the chat routes
-app.use(chatRoutes); 
+app.use(userRoutes,reservationRoutes,chatRoutes);
 
 io.on('connection', (socket) => {
     console.log('A user connected');

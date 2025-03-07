@@ -31,7 +31,7 @@ class ProvidersList extends StatelessWidget {
           : Padding(
               padding: EdgeInsets.all(10),
               child: GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2, // Deux prestataires par ligne
                   crossAxisSpacing: 10,
                   mainAxisSpacing: 10,
@@ -58,7 +58,7 @@ class ProvidersList extends StatelessWidget {
                         Container(
                           width: double.infinity,
                           height: 100,
-                          margin: EdgeInsets.all(8),
+                          margin: const EdgeInsets.all(8),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(10),
                             child: Image.network(

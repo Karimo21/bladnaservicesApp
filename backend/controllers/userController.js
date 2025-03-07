@@ -3,7 +3,26 @@ const { uploadProviderDocuments } = require('../middlewares/uploadMiddleware'); 
 
 
 
- 
+exports.getProviderProfile = (req, res) => {
+  User.getProviderDetails((err, data) => {
+      if (err){
+        console.log(err);
+        return res.status(500).json({ message: "Database error", error: err });
+      } 
+
+      res.json(data); // Retourne une liste de providers
+  });
+};
+exports.getMoreProviderDetails = (req, res) => {
+  const providerId = req.params.providerId; // Get provider ID from request parameters
+
+  User.getMoreProviderDetails(providerId, (err, providerDetails) => {
+    if (err) return res.status(500).json({ message: "Database error", error: err });
+
+    res.json(providerDetails); // Return the provider details (images and reviews)
+  });
+};
+
 exports.createClientUser = (req, res) => {
 
   uploadProviderDocuments(req, res, (err) => {
@@ -15,8 +34,7 @@ exports.createClientUser = (req, res) => {
      res.json({ message: "Client user created successfully", result });
     });
   });
- };
-
+};
 exports.createProviderUser = (req, res) => {
 
   // Handle image upload
@@ -63,17 +81,12 @@ exports.createProviderUser = (req, res) => {
       });
   });
 };
-
-
-
-
 exports.getUsers = (req, res) => {
   User.getAllUsers((err, results) => {
     if (err) return res.status(500).send(err);
     res.json(results);
   });
 };
-
 exports.getUser = (req, res) => {
   User.getUserById(req.params.id, (err, results) => {
     if (err) return res.status(500).send(err);
@@ -104,12 +117,14 @@ exports.loginUser = async (req, res) => {
     if(user.role==="provider"){
        profile =await User.getProviderProfile(user.user_id);
     }
-    console.log(profile);
+    
     // If everything matches, return the user data and role
     res.json({
       message: "Login successful",
       user: {
         userId: user.user_id,
+        fname:profile[0].firstname,
+        lname:profile[0].lastname,
         phone: user.phone,
         role: user.role,
         adresse:profile[0].adresse,
@@ -122,7 +137,6 @@ exports.loginUser = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-
 exports.uploadProfilePictureController = (req, res) => {
   if (!req.file) {
       return res.status(400).json({ message: "No file uploaded" });
@@ -137,7 +151,6 @@ exports.uploadProfilePictureController = (req, res) => {
       res.json({ message: "Profile picture uploaded successfully", imageUrl });
   });
 };
-
 exports.createUser = (req, res) => {
   const { name, email } = req.body;
   User.createUser(name, email, (err, results) => {

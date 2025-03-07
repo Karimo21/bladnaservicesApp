@@ -1,8 +1,5 @@
 import 'package:bladnaservices/screens/auth/login_screen.dart';
-import 'package:bladnaservices/screens/home/reservation/rate_screen.dart';
-//import 'package:bladnaservices/screens/home/chat/chat_list_screen.dart';
-//import 'package:bladnaservices/screens/home/chat/chat_screen.dart';
-//import 'package:bladnaservices/screens/home/main_screen.dart';
+import 'package:bladnaservices/screens/home/reservation/reservation_prestataire_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:bladnaservices/services/socket_service.dart';
 
@@ -15,7 +12,6 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-  
   @override
   Widget build(BuildContext context) {
     return   MaterialApp(

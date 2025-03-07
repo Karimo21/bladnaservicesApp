@@ -163,7 +163,7 @@ class ProviderCard extends StatelessWidget {
             margin: EdgeInsets.all(8),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10),
-              child: Image.asset(
+              child: Image.network(
                 provider["image"],
                 fit: BoxFit.cover,
               ),

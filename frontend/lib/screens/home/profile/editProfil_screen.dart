@@ -1,10 +1,15 @@
+import 'dart:convert';
+
+import 'package:bladnaservices/screens/home/main_screen.dart';
+import 'package:bladnaservices/screens/home/profile/profil_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
 import 'package:bladnaservices/screens/home/profile/User.dart';
+import 'package:http_parser/http_parser.dart';
 import 'dart:io';
 import 'dart:typed_data';
-
 
 const Color primaryColor = Color(0xFF0054A5);
 const Color backgroundColor = Color(0xFFF9F9F9);
@@ -21,9 +26,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String firstname = User.fname;
   String lastname = User.lname;
-  String address = '';
-  String city = '';
-  String description = '';
+  String address = User.adresse;
+  String city = "agadir"; //User.ville;
+  String description = User.description;
   bool isSubmitted = false;
 
   TextEditingController firstnameController = TextEditingController();
@@ -43,6 +48,24 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   bool cityError = false;
   bool addressError = false;
   bool descriptionError = false;
+  String getMediaType(String filePath) {
+    final extension = filePath.split('.').last.toLowerCase();
+    switch (extension) {
+      case 'jpg':
+      case 'jpeg':
+        return 'image/jpeg';
+      case 'png':
+        return 'image/png';
+      case 'gif':
+        return 'image/gif';
+      case 'bmp':
+        return 'image/bmp';
+      case 'webp':
+        return 'image/webp';
+      default:
+        return 'application/octet-stream'; // Default for unknown types
+    }
+  }
 
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
@@ -61,6 +84,66 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           _selectedImage = File(pickedFile.path);
         });
       }
+      print("first");
+      _uploadProfilePicture(); // Call the upload function
+      print("third");
+    }
+  }
+
+  Future<void> _uploadProfilePicture() async {
+    print("second");
+
+    // Check for selected image (mobile) or web image
+    if (_selectedImage == null && _webImage == null) {
+      print("No image selected.");
+      return;
+    }
+
+    var uri = Uri.parse("http://localhost:3000/profile/picture"); // API URL
+    var request = http.MultipartRequest('POST', uri);
+
+    // For mobile: Add the image from file system
+    if (_selectedImage != null) {
+      final mediaType = getMediaType(_selectedImage!.path);
+      request.files.add(
+        await http.MultipartFile.fromPath('profile_image', _selectedImage!.path,
+            contentType: MediaType.parse(mediaType)),
+      );
+    }
+
+    // For web: Add the image as bytes (base64 or raw bytes)
+    if (_webImage != null) {
+      final mediaType = 'image/jpeg'; // Default MIME type for web images
+      request.files.add(
+        http.MultipartFile.fromBytes(
+          'profile_image',
+          _webImage!,
+          filename: 'profile_image.jpg', // Adjust the filename if needed
+          contentType: MediaType.parse(mediaType),
+        ),
+      );
+    }
+
+    // Add user data (e.g., userId, role)
+    request.fields['userId'] = User.userId.toString();
+    request.fields['role'] = User.role;
+
+    try {
+      var response = await request.send();
+      if (response.statusCode == 200) {
+        print("Upload successful!");
+        final responseString = await response.stream.bytesToString();
+        var jsonResponse = jsonDecode(responseString);
+        setState(() {
+          User.profile = jsonResponse['profileImageUrl'];
+        });
+
+        // Update UI or handle success
+      } else {
+        print("Upload failed: ${response.reasonPhrase}");
+      }
+    } catch (e) {
+      print("Error uploading image: $e");
     }
   }
 
@@ -72,9 +155,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       addressError = address.isEmpty;
       descriptionError = description.isEmpty;
     });
-
     if (_formKey.currentState!.validate()) {
-      // Save logic goes here
+      _submitProfileEdit();
     }
   }
 
@@ -94,6 +176,60 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         descriptionError = value.isEmpty;
       }
     });
+  }
+
+  Future<void> _submitProfileEdit() async {
+    // Construct the API URL using the User's ID
+    var url = Uri.parse("http://localhost:3000/profile-edit/${User.userId}");
+    print(url);
+    // Prepare the data to be sent to the API
+    Map<String, dynamic> requestData = {
+      'firstname': firstname,
+      'lastname': lastname,
+      'address': address,
+      'city': city,
+      'description': description,
+      'role': User.role,
+    };
+    print("test43");
+    try {
+      // Send the POST request with the JSON-encoded body
+      print("43432"); //why it doesnt reach here ?
+      var response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: jsonEncode(requestData),
+      );
+      print("insideTest");
+      // Check if the request was successful
+      if (response.statusCode == 200) {
+        print("Profile updated successfully!");
+        User.fname = firstname;
+        User.lname = lastname;
+        User.adresse = address;
+        User.description = description;
+   Navigator.pushAndRemoveUntil(
+  context,
+  MaterialPageRoute(builder: (context) => MainScreen()),
+  (route) => false, // This removes all previous routes from the stack
+);
+        // Optionally, parse the response body
+        var jsonResponse = jsonDecode(response.body);
+        print("Server Response: $jsonResponse");
+      } else {
+        print("Failed to update profile: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Error while updating profile: $e");
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
   }
 
   @override
@@ -137,7 +273,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         CircleAvatar(
                           radius: 50,
                           backgroundColor: Colors.grey[300],
-                          backgroundImage: NetworkImage("http://localhost:3000" + User.profile),
+                          backgroundImage: NetworkImage(
+                              "http://localhost:3000" + User.profile),
                         ),
                         Positioned(
                           bottom: 0,
@@ -164,27 +301,31 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   SizedBox(height: 24),
                   ProfileTextField(
                     label: "Prénom",
-                    hintText: "Prénom",
+                    hintText: firstname,
                     controller: firstnameController,
                     focusNode: firstnameFocusNode,
                     onChanged: (value) => _onFieldChanged(value, 'firstname'),
-                    errorText: firstnameError ? "Veuillez entrer un prénom valide" : null,
+                    errorText: firstnameError
+                        ? "Veuillez entrer un prénom valide"
+                        : null,
                   ),
                   ProfileTextField(
                     label: "Nom",
-                    hintText: "Nom",
+                    hintText: lastname,
                     controller: lastnameController,
                     focusNode: lastnameFocusNode,
                     onChanged: (value) => _onFieldChanged(value, 'lastname'),
-                    errorText: lastnameError ? "Veuillez entrer un nom valide" : null,
+                    errorText:
+                        lastnameError ? "Veuillez entrer un nom valide" : null,
                   ),
                   ProfileTextField(
                     label: "Adresse",
-                    hintText: "Adresse",
+                    hintText: address,
                     controller: addressController,
                     focusNode: addressFocusNode,
                     onChanged: (value) => _onFieldChanged(value, 'address'),
-                    errorText: addressError ? "Veuillez entrer une adresse" : null,
+                    errorText:
+                        addressError ? "Veuillez entrer une adresse" : null,
                   ),
                   ProfileDropdown(
                     label: "Ville",
@@ -196,13 +337,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       });
                     },
                   ),
-                  ProfileDescription(
-                    label: "Description",
-                    controller: descriptionController,
-                    focusNode: descriptionFocusNode,
-                    onChanged: (value) => _onFieldChanged(value, 'description'),
-                    errorText: descriptionError ? "Veuillez entrer une description" : null,
-                  ),
+                  if (User.role == "provider")
+                    ProfileDescription(
+                      label: "description",
+                      controller: descriptionController,
+                      focusNode: descriptionFocusNode,
+                      onChanged: (value) =>
+                          _onFieldChanged(value, 'description'),
+                      errorText: descriptionError
+                          ? "Veuillez entrer une description"
+                          : null,
+                    ),
                   SizedBox(height: 20),
                   Center(
                     child: SizedBox(
@@ -347,7 +492,7 @@ class ProfileDescription extends StatelessWidget {
           onChanged: onChanged,
           maxLines: 3,
           decoration: InputDecoration(
-            hintText: "Entrez une description",
+            hintText: User.description,
             errorText: errorText,
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(6)),
           ),

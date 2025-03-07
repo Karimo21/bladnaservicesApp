@@ -1,58 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 class ReviewsScreen extends StatefulWidget {
+
+   final List<dynamic> reviews;
+   const ReviewsScreen({super.key, required this.reviews});
   @override
   _ReviewsScreenState createState() => _ReviewsScreenState();
 }
 
 class _ReviewsScreenState extends State<ReviewsScreen> {
   int providerId = 2;
-  List< dynamic> reviews = [
-  ];
   bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    fetchReviews(); // Récupérer les avis dès le chargement de l'écran
+    print(widget.reviews); // Récupérer les avis dès le chargement de l'écran
   }
 
-  Future<void> fetchReviews() async {
-    try {
-      setState(() {
-        isLoading = true;
-      });
-
-      final response = await http.get(
-        Uri.parse('http://localhost:3000/api/provider-ratings/$providerId'),
-      );
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        if (mounted) {
-          setState(() {
-            reviews = data;
-          });
-
-          print(reviews);
-          print(data);
-        }
-      } else {
-        throw Exception('Échec du chargement des avis.');
-      }
-    } catch (e) {
-      print('Erreur : $e');
-    } finally {
-      if (mounted) {
-        setState(() {
-          isLoading = false;
-        });
-      }
-    }
-  }
-
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -83,17 +49,17 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
             Expanded(
               child: isLoading
                   ? Center(child: CircularProgressIndicator())
-                  : reviews.isEmpty
+                  : widget.reviews.isEmpty
                       ? Center(child: Text("Aucun avis disponible."))
                       : ListView.builder(
-                          itemCount: reviews.length,
+                          itemCount: widget.reviews.length,
                           itemBuilder: (context, index) {
                             return ReviewCard(
-                              name: reviews[index]['client_name'],
-                              rating: reviews[index]['rating'],
-                              date: reviews[index]['rating_time'],
-                              avatar: 'frontend/assets/images7khalid.jpg',
-                              feedback: reviews[index]['feedback'],
+                              name: widget.reviews[index]['name'],
+                              rating: widget.reviews[index]['rating'],
+                              date: widget.reviews[index]['date'],
+                              avatar: "${widget.reviews[index]['profileImage']}",
+                              feedback: widget.reviews[index]['comment'],
                             );
                           },
                         ),
@@ -144,7 +110,7 @@ class ReviewCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 backgroundColor: Colors.grey[300],
-                backgroundImage: AssetImage(avatar),
+                backgroundImage: NetworkImage(avatar),
                 radius: 20,
               ),
               SizedBox(width: 10),

@@ -29,7 +29,7 @@ class GaleriePage extends StatelessWidget {
             child: SizedBox(
               height: 328, // Hauteur définie
               width: 199, // Largeur maximale
-              child: Image.asset(
+              child: Image.network(
                 galleryImages[index],
                 fit: BoxFit.cover,
               ),
