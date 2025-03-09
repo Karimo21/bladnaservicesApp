@@ -3,6 +3,8 @@ const { createClientUser,createProviderUser,getMoreProviderDetails, getProviderP
 const { getProviderRatings,createRating, getRatingsBetweenUsers } = require('../controllers/reviewController');
 const { getUserNotifications, markNotificationAsRead } = require("../controllers/notificationController");
 const {uploadProfilePicture,uploadProviderImages,deleteProviderImage,getProviderWorkImages,updateProfileData } = require('../controllers/profileController');
+const SuivieController = require('../controllers/suivieController');
+
 
 const router = express.Router();
 
@@ -24,7 +26,10 @@ router.post('/', createUser);
 router.get('/api/provider-ratings/:providerId', getProviderRatings);
 router.get("/api/notifications/:userId", getUserNotifications);
 
+// Route to create a new rating
+router.post('/api/ratings', createRating);
 
-
+// Récupérer toutes les réservations
+router.get('/api/reservations', SuivieController.getReservations);
 
 module.exports = router;
