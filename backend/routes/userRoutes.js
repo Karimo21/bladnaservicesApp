@@ -1,9 +1,6 @@
 const express = require('express');
-<<<<<<< HEAD
-const { createClientUser,createProviderUser,getMoreProviderDetails, getProviderProfile, createUser, loginUser,updateProviderPosition,getAllProviders } = require('../controllers/userController');
-=======
-const {getAllClients,getAllValidatedProvider,getAllNonValidatedProviders,validerPrestataire,getDocumentsImage,getAllreservation, createClientUser,createProviderUser,getMoreProviderDetails, getProviderProfile, createUser, loginUser,updateProviderAvailiblity } = require('../controllers/userController');
->>>>>>> 064cefb0f146674925f053eb5636e7fc5145044e
+
+const {getAllClients,getAllValidatedProvider,getAllNonValidatedProviders,validerPrestataire,getDocumentsImage,getAllreservation, createClientUser,createProviderUser,getMoreProviderDetails, getProviderProfile, createUser, loginUser,updateProviderPosition,getAllProviders,updateProviderAvailiblity } = require('../controllers/userController');
 const { getProviderRatings,createRating, getRatingsBetweenUsers } = require('../controllers/reviewController');
 const { getUserNotifications, markNotificationAsRead } = require("../controllers/notificationController");
 const {uploadProfilePicture,uploadProviderImages,deleteProviderImage,getProviderWorkImages,updateProfileData } = require('../controllers/profileController');
@@ -38,15 +35,12 @@ router.get("/api/notifications/:userId", getUserNotifications);
 router.post('/api/ratings', createRating);
 
 
-<<<<<<< HEAD
+
 // Update provider's latitude and longitude
 router.post('/api/providers/:providers_id/position', updateProviderPosition);
 
 // Route to get all providers postions
 router.get('/api/providers', getAllProviders);
-
-module.exports = router;
-=======
 
 router.get('/clients', getAllClients);
 router.get('/prestataires', getAllValidatedProvider);
@@ -62,4 +56,3 @@ router.get('/reservation', getAllreservation);
 
 
 module.exports = router;
->>>>>>> 064cefb0f146674925f053eb5636e7fc5145044e
