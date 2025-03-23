@@ -25,6 +25,30 @@ exports.createMessage = async (senderId, receiverId, message, time) => {
       throw new Error('Error saving message: ' + error.message);
   }
 };
+// Send a message
+// Send a message
+exports.createContact = async (req, res) => {
+  try {
+    const { senderId, receiverId } = req.body;
+    console.log(senderId, receiverId);
+
+    // Call the database function to insert the contact
+    const result = await Message.createContact(senderId, receiverId);
+    const result1 = result.result1[0];
+    const result2 = result.result2[0];  
+    // Check if the rows were affected (both insertions should have affected rows)
+    if (result1.affectedRows > 0 && result2.affectedRows > 0) {
+      return res.status(201).json({ message: "Contact created successfully" });
+    } else {
+      return res.status(200).json({ message: "Contact already exists 01" });
+    }
+  } catch (error) {
+    console.error("Error creating contact:", error);
+    return res.status(500).json({ message: "Error creating contact", error: error.message });
+  }
+};
+
+
 
 //mark messages as read
 exports.markAllMessagesAsRead = async (userId, contactId) => {

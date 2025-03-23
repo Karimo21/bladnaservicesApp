@@ -243,6 +243,7 @@ class _MoroccoMapState extends State<MoroccoMap> {
                             subdomains: ['a', 'b', 'c'],
                           ),
 
+<<<<<<< HEAD
                           // Marqueurs des prestataires
                           MarkerLayer(
                             markers: _prestataires
@@ -271,6 +272,17 @@ class _MoroccoMapState extends State<MoroccoMap> {
                                 ),
                               ],
                             ),
+=======
+                      // Marqueurs des prestataires avec design améliorés
+                      MarkerLayer(
+                        markers: [
+                          _buildMarker(30.5731, -4.5898,
+                              "assets/images/khalid.jpg", "Khalid"),
+                          _buildMarker(34.0209, -6.8416,
+                              "assets/images/khalid.jpg", "Omar"),
+                          _buildMarker(35.7595, -5.83395,
+                              "assets/images/khalid.jpg", "ahmed"),
+>>>>>>> 064cefb0f146674925f053eb5636e7fc5145044e
                         ],
                       ),
 

@@ -4,6 +4,7 @@ const cors = require('cors');
 const http = require('http'); // Import http module
 const bodyParser = require("body-parser");
 const chatController = require('./controllers/chatController'); // Importer le contrôleur
+const reservationController = require('./controllers/reservationController');
 const path = require('path');
 const UserContact = require('./models/userContactsModel');
 const app = express();
@@ -14,6 +15,7 @@ const io = require('socket.io')(server, {  // Initialize socket.io with the HTTP
     methods: ["GET", "POST"]
   }
 });
+reservationController.setIo(io); // Pass the socket instance
 
 app.use(cors());
 app.use(express.json({limit: "50mb"}));
@@ -27,11 +29,13 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 //routes
 const userRoutes = require('./routes/userRoutes');
+const otpRoutes = require('./routes/otpRoutes');
 const chatRoutes = require('./routes/chatRoutes'); 
+const chartRoutes = require('./routes/chartRoutes'); 
 const reservationRoutes = require('./routes/reservationRoutes'); 
 
 //use the user routes
-app.use(userRoutes,reservationRoutes,chatRoutes);
+app.use(userRoutes,reservationRoutes,chatRoutes,chartRoutes,otpRoutes);
 
 io.on('connection', (socket) => {
     console.log('A user connected');
@@ -50,14 +54,21 @@ io.on('connection', (socket) => {
             // Appeler la méthode du contrôleur pour enregistrer le message en DB
             await chatController.createMessage(senderId, receiverId, message, time);
 
+          const date = new Date(time);
+          // Format time to show only HH:mm (24-hour format)
+          const formattedTime = date.toLocaleTimeString([], {
+             hour: '2-digit',
+             minute: '2-digit',
+             hour12: false,
+           }); 
+            console.log(formattedTime);         
             
-
             // Diffuser le message à l'utilisateur récepteur
             io.to(receiverId).emit('receiveMessage', {
                 "sender_id": senderId,
                 "receiver_id":receiverId,
                 message,
-                time,
+                formattedTime,
             });
             
         } catch (error) {

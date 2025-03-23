@@ -1,11 +1,28 @@
 const Reservation = require('../models/reservationModel');
+let io; // Store Socket.io instance
 
+// Function to set io (called from server.js)
+exports.setIo = (socketIo) => {
+    io = socketIo;
+};
 // Send a message
 exports.createReservation = async (req,res) => {
     try {
-        const { clientId, providerId, startDate, endDate, statutId } = req.body;
+        const {role, clientId, providerId, startDate, endDate, statutId } = req.body;
+        console.log(role);
         // Enregistrer le message dans la base de données
-        const result = await Reservation.createReservation(clientId, providerId, startDate, endDate,statutId);
+        const result = await Reservation.createReservation(role,clientId, providerId, startDate, endDate,statutId);
+        // Emit event to client for real-time updates
+        if (io) {
+          io.to(clientId).emit('newReservation', {
+              reservationId: result.insertId,
+              clientId,
+              providerId,
+              startDate,
+              endDate,
+              statutId
+          });
+      }
           // Retourner le résultat si nécessaire
         res.json({
             message: "Reservation created successfully",
@@ -41,3 +58,4 @@ exports.getReservationsDate = async (req, res) => {
     res.status(500).json({ error: "Error fetching reservations date: " + error.message });
   }
 };
+

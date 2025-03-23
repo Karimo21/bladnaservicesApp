@@ -55,7 +55,7 @@ exports.getProviderProfile = (req, res) => {
   });
 };
 exports.getMoreProviderDetails = (req, res) => {
-  const providerId = req.params.providerId; // Get provider ID from request parameters
+  const providerId = req.params.providerId; // Get provider ID from request parameterss
 
   User.getMoreProviderDetails(providerId, (err, providerDetails) => {
     if (err) return res.status(500).json({ message: "Database error", error: err });
@@ -136,7 +136,7 @@ exports.getUser = (req, res) => {
 };
 exports.loginUser = async (req, res) => {
   const { phone, password } = req.body;
-  
+
   try {
     // Get user by phone using the async method
     const results = await User.getUserByPhone(phone);
@@ -148,31 +148,61 @@ exports.loginUser = async (req, res) => {
 
     // Check if the password matches (simple comparison for now)
     const user = results[0];
+    console.log(user);
     if (user.password !== password) {
+      
+      console.log(user.password,password);
       return res.status(401).json({ message: "Incorrect password" });
     }
     let profile="";
     if(user.role==="client"){
        profile =await User.getClientProfile(user.user_id);
+       res.json({
+        message: "Login successful",
+        user: {
+          userId: user.user_id,
+          fname:profile[0].firstname,
+          lname:profile[0].lastname,
+          phone: user.phone,
+          role: user.role,
+          adresse:profile[0].adresse,
+          description:profile[0].description,
+          profile:profile[0]['profile_picture'],
+          rate:"",
+          city:"",
+          availability:0,
+          service:"",
+          totalreservations:0
+        },
+      });
     }
     if(user.role==="provider"){
        profile =await User.getProviderProfile(user.user_id);
+       res.json({
+        message: "Login successful",
+        user: {
+          userId: user.user_id,
+          fname:profile[0].firstname,
+          lname:profile[0].lastname,
+          phone: user.phone,
+          role: user.role,
+          adresse:profile[0].adresse,
+          description:profile[0].description,
+          profile:profile[0]['profile_picture'],
+          rate:profile[0].rate,
+          city:profile[0].city_name,
+          service:profile[0].service,
+          availability:profile[0].availability,
+          totalreservations:profile[0].total_reservation
+        },
+      });
     }
+    if(user.role==="admin"){
+      profile =await User.getAdminProfile(user.user_id);
+   }
     
-    // If everything matches, return the user data and role
-    res.json({
-      message: "Login successful",
-      user: {
-        userId: user.user_id,
-        fname:profile[0].firstname,
-        lname:profile[0].lastname,
-        phone: user.phone,
-        role: user.role,
-        adresse:profile[0].adresse,
-        description:profile[0].description,
-        profile:profile[0]['profile_picture'],
-      },
-    });
+
+    
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
@@ -192,6 +222,16 @@ exports.uploadProfilePictureController = (req, res) => {
       res.json({ message: "Profile picture uploaded successfully", imageUrl });
   });
 };
+exports.updateProviderAvailiblity = (req, res) => {
+
+  const { providerId, value } = req.body;
+  
+  // Save image URL in database
+  User.updateProviderAvailiblity(providerId,value,(err, results) => {
+      if (err) return res.status(500).json({ message: "Database error", error: err });
+      res.json({ message: "Provider availiblity updated successfully" });
+  });
+};
 exports.createUser = (req, res) => {
   const { name, email } = req.body;
   User.createUser(name, email, (err, results) => {
@@ -199,6 +239,7 @@ exports.createUser = (req, res) => {
     res.json({ message: "User created successfully", userId: results.insertId });
   });
 };
+<<<<<<< HEAD
 
 
 //MAP
@@ -227,3 +268,133 @@ exports.updateProviderPosition = (req, res) => {
     res.status(200).json({ message: 'Provider position updated successfully' });
   });
 };
+=======
+exports.getAllClients = (req, res) => {
+  User.getAllClients((err, results) => {
+    if (err) {
+      console.error("Erreur lors de la récupération des clients:", err);
+      return res.status(500).json({ message: "Erreur interne du serveur", error: err });
+    }
+    res.json(results);
+  });
+};
+exports.getAllValidatedProvider = (req, res) => {
+  User.getAllValidatedProvider((err, results) => {
+    if (err) {
+      console.error("Erreur lors de la récupération des prestataires:", err);
+      return res.status(500).json({ message: "Erreur interne du serveur", error: err });
+    }
+    res.json(results);
+  });
+}
+exports.getAllNonValidatedProviders = (req, res) => {
+  User.getAllNonValidatedProviders((err, results) => {
+    if (err) {
+      console.error("Erreur lors de la récupération des prestataires:", err);
+      return res.status(500).json({ message: "Erreur interne du serveur", error: err });
+    }
+    res.json(results);
+  });
+  
+  exports.validerPrestataire = (req, res) => {
+    const providerId = req.params.id;
+
+    User.validerPrestataire(providerId, (err, result) => {
+        if (err) {
+            console.error("Erreur lors de la validation du prestataire:", err);
+            return res.status(500).json({ message: "Erreur interne du serveur", error: err });
+        }
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: "Prestataire non trouvé" });
+        }
+
+        res.json({ message: "Prestataire validé avec succès" });
+    });
+};
+
+
+
+const suppremerPrestataire = (req, res) => {
+  const providerId = req.params.id;
+
+  // Vérifier si l'ID est valide
+  if (!providerId) {
+    return res.status(400).json({ message: "ID du prestataire requis" });
+  }
+
+  const sql = "DELETE FROM providers WHERE providers_id = ?";
+
+  db.query(sql, [providerId], (err, result) => {
+    if (err) {
+      console.error("Erreur lors de la suppression du prestataire:", err);
+      return res.status(500).json({ message: "Erreur interne du serveur", error: err });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Prestataire non trouvé" });
+    }
+
+    res.json({ message: "Prestataire supprimé avec succès" });
+  });
+};
+
+}
+exports.validerPrestataire = (req, res) => {
+  const providerId = req.params.id;
+
+  User.validerPrestataire(providerId, (err, result) => {
+      if (err) {
+          console.error("Erreur lors de la validation du prestataire:", err);
+          return res.status(500).json({ message: "Erreur interne du serveur", error: err });
+      }
+
+      if (result.affectedRows === 0) {
+          return res.status(404).json({ message: "Prestataire non trouvé" });
+      }
+
+      res.json({ message: "Prestataire validé avec succès" });
+  });
+  
+}
+exports.suppremerPrestataire = (req, res) => {
+  const providerId = req.params.id;
+
+  User.supprimerPrestataire(providerId, (err, result) => {
+      if (err) {
+          console.error("Erreur lors de la validation du prestataire:", err);
+          return res.status(500).json({ message: "Erreur interne du serveur", error: err });
+      }
+
+      if (result.affectedRows === 0) {
+          return res.status(404).json({ message: "Prestataire non trouvé" });
+      }
+
+      res.json({ message: "Prestataire validé avec succès" });
+  });
+  
+};
+
+exports.getDocumentsImage = (req, res) => {
+  const providerId = req.params.providerId;
+
+  User.getDocumentsImage(providerId, (err, results) => {
+      if (err) {
+          console.error("Erreur lors de la affichage du image :", err);
+          return res.status(500).json({ message: "Erreur interne du serveur", error: err });
+      }
+
+      res.json(results);
+  });
+  
+};
+exports.getAllreservation = (req, res) => {
+  User.getAllreservation((err, results) => {
+    if (err) {
+      console.error("Erreur lors de la récupération des reservation :", err);
+      return res.status(500).json({ message: "Erreur interne du serveur", error: err });
+    }
+    res.json(results);
+  });
+};
+>>>>>>> 064cefb0f146674925f053eb5636e7fc5145044e

@@ -13,8 +13,9 @@ class ChatListScreen extends StatefulWidget {
 
 class _ChatListScreenState extends State<ChatListScreen> {
   List<dynamic> contacts = []; // Store contacts data
+  List<dynamic> filteredContacts = []; // Store filtered contacts for search
+  TextEditingController searchController = TextEditingController(); // Search controller
   bool isLoading = true; // Loading state
-  // Initialize SocketService
   SocketService socketService = SocketService();
 
   // Function to fetch contacts
@@ -36,14 +37,12 @@ class _ChatListScreenState extends State<ChatListScreen> {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
 
-      if (mounted) {
-        setState(() {
-          contacts = data;
-          print(contacts);
-  
-         
-        });
-      }
+        if (mounted) {
+          setState(() {
+            contacts = data;
+            filteredContacts = data;  // Initialize filteredContacts with full data
+          });
+        }
       } else {
         throw Exception('Failed to load contacts');
       }
@@ -56,25 +55,36 @@ class _ChatListScreenState extends State<ChatListScreen> {
     }
   }
 
-
   @override
   void initState() {
     super.initState();
     fetchContacts(); // Fetch contacts when the screen is initialized
-    // Listen to live updates on contacts
     socketService.joinRoom(widget.loggeduserId); 
 
     socketService.setOnContactsUpdated((updatedContacts) {
+      if (mounted) {
+        setState(() {
+          contacts = updatedContacts; // Update the contacts list when there's a new event
+          filteredContacts = updatedContacts; // Update filtered list too
+        });
+      }
+    });
 
-     if (mounted) { 
-      setState(() {
-        contacts = updatedContacts; // Update the contacts list when there's a new event
-        print(updatedContacts);
-      });
-     }
-        
+    // Listen to search input changes
+    searchController.addListener(() {
+      filterContacts(searchController.text);
+    });
+  }
 
-
+  // Function to filter contacts based on search
+  void filterContacts(String query) {
+    setState(() {
+      filteredContacts = contacts.where((contact) {
+        String firstName = contact['firstname'].toLowerCase();
+        String lastName = contact['lastname'].toLowerCase();
+        String searchLower = query.toLowerCase();
+        return firstName.contains(searchLower) || lastName.contains(searchLower);
+      }).toList();
     });
   }
 
@@ -116,6 +126,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                 ],
               ),
               child: TextField(
+                controller: searchController,
                 decoration: InputDecoration(
                   hintText: "Recherche...",
                   hintStyle: const TextStyle(
@@ -142,9 +153,9 @@ class _ChatListScreenState extends State<ChatListScreen> {
                     ),
                   )
                 : ListView.builder(
-                    itemCount: contacts.length, // Use the length of contacts
+                    itemCount: filteredContacts.length, // Use the filtered contacts list
                     itemBuilder: (context, index) {
-                      final contact = contacts[index]; // Get the current contact
+                      final contact = filteredContacts[index]; // Get the current contact
                       return ListTile(
                         leading: CircleAvatar(
                           radius: 25,
@@ -152,7 +163,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                           backgroundImage: NetworkImage("http://localhost:3000" + contact['profile_picture'].trim()),
                         ),
                         title: Text(
-                          contact['firstname']+" "+contact['lastname'], // Display the business name
+                          contact['firstname'] + " " + contact['lastname'], // Display the business name
                           style: const TextStyle(
                             fontFamily: "Poppins",
                             fontSize: 16,
@@ -160,52 +171,49 @@ class _ChatListScreenState extends State<ChatListScreen> {
                             color: Colors.black,
                           ),
                         ),
-                      
                         subtitle: Text(
                           contact['last_message'] ?? "Aucun message", // Add a dynamic subtitle
-                          
                           style: TextStyle(
                             fontFamily: "Poppins",
                             fontSize: 14,
                             color: Colors.grey[600],
                           ),
                         ),
-                trailing: contact['unread_message_count'] > 0
-                    ? Stack(
-                        clipBehavior: Clip.none,
-                        children: [
-                          CircleAvatar(
-                            radius: 12,
-                            backgroundColor:const Color(0xFF0054A5), // Blue circle for unread count
-                            child: Text(
-                              contact['unread_message_count'].toString(),
-                              style: const TextStyle(
-                                fontFamily: "Poppins",
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ],
-                      )
-                    : null,
+                        trailing: contact['unread_message_count'] > 0
+                            ? Stack(
+                                clipBehavior: Clip.none,
+                                children: [
+                                  CircleAvatar(
+                                    radius: 12,
+                                    backgroundColor: const Color(0xFF0054A5), // Blue circle for unread count
+                                    child: Text(
+                                      contact['unread_message_count'].toString(),
+                                      style: const TextStyle(
+                                        fontFamily: "Poppins",
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : null,
                         onTap: () {
-
                           socketService.markMessagesAsRead(widget.loggeduserId, contact['contact_user_id']);
                           fetchContacts();
-                          String picture="http://localhost:3000" + contact['profile_picture'].trim();
-                          print(picture);
+                          String picture = "http://localhost:3000" + contact['profile_picture'].trim();
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => ChatScreen(
-                                    userId: widget.loggeduserId,
-                                    contactId: contact['contact_user_id'],
-                                    contactRole: contact['role'],
-                                    profile_picture:picture,
-                                    name:contact['firstname']+" "+contact['lastname'],),
-                                    ),        
+                              builder: (context) => ChatScreen(
+                                userId: widget.loggeduserId,
+                                contactId: contact['contact_user_id'],
+                                contactRole: contact['role'],
+                                profile_picture: picture,
+                                name: contact['firstname'] + " " + contact['lastname'],
+                              ),
+                            ),
                           );
                         },
                       );

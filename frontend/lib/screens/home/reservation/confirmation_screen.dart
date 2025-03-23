@@ -25,6 +25,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
     const String apiUrl = 'http://localhost:3000/create-reservation';
 
     final Map<String, dynamic> reservationData = {
+      "role": User.role,
       "clientId": User.userId,
       "providerId": widget.reservationUtilisateur?['provider_id'],
       "startDate": widget.reservationUtilisateur?['date_debut'],

@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'clients_tab.dart';
+import 'myreservations_tab.dart';
+import 'history_tab.dart';
+import 'package:bladnaservices/screens/home/profile/User.dart';
 
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: ReservationsPage(),
-    );
-  }
-}
 
 class ReservationsPage extends StatefulWidget {
   @override
@@ -16,6 +13,8 @@ class ReservationsPage extends StatefulWidget {
 }
 
 class _ReservationsPageState extends State<ReservationsPage> {
+  List<Map<String, dynamic>> reservations = [];
+  bool isLoading = true;
   int _selectedIndex = 0;
 
   void _onTabTapped(int index) {
@@ -25,11 +24,14 @@ class _ReservationsPageState extends State<ReservationsPage> {
   }
 
   final List<Widget> _pages = [
+
+    if(User.role=='provider')
     ClientsTab(),
     ReservationsTab(),
     HistoryTab(),
   ];
 
+ 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,9 +74,15 @@ class _ReservationsPageState extends State<ReservationsPage> {
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                  _buildTab("Demandes des clients", 0),
-                  _buildTab("Mes réservations", 1),
-                  _buildTab("Historique", 2),
+                   if(User.role=='provider')...[
+                   _buildTab("Demandes des clients", 0),
+                   _buildTab("Mes réservations", 1),
+                   _buildTab("Historique", 2),
+                   ]else...[
+                     _buildTab("Mes réservations", 0),
+                     _buildTab("Historique", 1),
+
+                   ]
                 ],
               ),
             ),
@@ -97,15 +105,6 @@ class _ReservationsPageState extends State<ReservationsPage> {
           color:
               _selectedIndex == index ? Color(0xFF0054A5) : Colors.transparent,
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: _selectedIndex == index ||
-                    _selectedIndex == 0 ||
-                    _selectedIndex == 1 ||
-                    _selectedIndex == 2
-                ? const Color.fromARGB(255, 61, 61, 61)
-                : const Color.fromARGB(255, 61, 61, 61),
-            width: 0,
-          ),
         ),
         alignment: Alignment.center,
         child: Text(
@@ -120,41 +119,87 @@ class _ReservationsPageState extends State<ReservationsPage> {
   }
 }
 
-class ClientsTab extends StatelessWidget {
-  final List<Map<String, String>> reservations = [
-    {
-      "name": "Mohsin Korama",
-      "date": "18/04/2025",
-      "time": "09:00",
-      "city": "Agadir",
-      "phone": "0650431156",
-      "status": "En cours"
-    },
-    {
-      "name": "Khalid Ayaou",
-      "date": "20/04/2025",
-      "time": "14:30",
-      "city": "Marrakech",
-      "phone": "0623456789",
-      "status": "En cours"
-    },
-  ];
+
+ 
+
+class ReservationCard extends StatefulWidget {
+  final Map<String, String> data;
+  final Function onRemove;
+  
+
+ const ReservationCard({
+    Key? key,
+    required this.data,
+    required this.onRemove,
+  }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      padding: EdgeInsets.all(10),
-      itemCount: reservations.length,
-      itemBuilder: (context, index) {
-        return ReservationCard(data: reservations[index]);
+  _ReservationCardState createState() => _ReservationCardState();
+}
+
+class _ReservationCardState extends State<ReservationCard> {
+  bool isAccepted = false;
+  String? selectedStatus; // Holds the selected status (Terminer/Annuler)
+
+  Future<void> changeStatut(String reservationId, int statutId, int userId) async {
+  print("accessed the function");
+  final url = Uri.parse('http://localhost:3000/api/reservations/update_status');
+  final loggedUser = User.userId;
+  print(reservationId);print(statutId);print(userId);print(loggedUser);
+  final response = await http.post(
+    url,
+    headers: {"Content-Type": "application/json"},
+    body: jsonEncode({"reservationId": reservationId, "statutId": statutId, "userId":userId, "providerId":loggedUser}),
+  );
+
+  if (response.statusCode == 200) {
+    print("Statut mis à jour avec succès");
+  } else {
+    print("Erreur lors de la mise à jour du statut");
+  }
+}
+  // Function to show the confirmation dialog before changing the status
+  void _confirmStatusChange(String status) {
+      int statutId;
+  if (status == "Terminer") {
+    statutId = 4;
+  } else if (status == "Annuler") {
+    statutId = 3;
+  } else {
+    // Fallback, though this case shouldn't occur.
+    statutId = 0;
+  }
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Confirmer l'action"),
+          content: Text(
+              "Êtes-vous sûr de vouloir marquer cette réservation comme '$status'?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Close the dialog
+              },
+              child: Text("Annuler"),
+            ),
+            TextButton(
+              onPressed: () async {
+                
+                 await changeStatut(widget.data["id"]!, statutId,int.parse(widget.data["client_id"].toString()));
+                setState(() {
+                  selectedStatus = status; 
+                });
+                Navigator.pop(context);
+                 widget.onRemove();
+              },
+              child: Text("Confirmer"),
+            ),
+          ],
+        );
       },
     );
   }
-}
-
-class ReservationCard extends StatelessWidget {
-  final Map<String, String> data;
-  ReservationCard({required this.data});
 
   @override
   Widget build(BuildContext context) {
@@ -169,7 +214,7 @@ class ReservationCard extends StatelessWidget {
             color: Colors.grey.withOpacity(0.2),
             blurRadius: 5,
             spreadRadius: 1,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -178,182 +223,113 @@ class ReservationCard extends StatelessWidget {
         children: [
           ListTile(
             leading: CircleAvatar(
-              backgroundImage: AssetImage('assets/profile.png'),
+              backgroundImage: NetworkImage("http://localhost:3000${widget.data['profile_picture']}"),
             ),
             title: Text(
-              data["name"]!,
-              style: TextStyle(
-                fontWeight: FontWeight.normal,
+              widget.data["name"]!,
+              style: const TextStyle(
+                 fontWeight: FontWeight.normal,
                 color: Color(0xFF565656),
               ),
             ),
           ),
           Divider(color: Colors.grey.shade400),
-          buildInfoRow("Date de Réservation", data["date"]!),
-          buildInfoRow("Heure", data["time"]!),
-          buildInfoRow("Ville", data["city"]!),
+          buildInfoRow("Date de début", widget.data["start_date"]!),
+          buildInfoRow("Date de fin", widget.data["end_date"]!),
+          buildInfoRow("Ville", "Agadir"),
           buildInfoRow(
             "Téléphone",
-            data["phone"]!,
+            widget.data["phone"]!,
             isLink: true,
-            color: Color(0xFF0054A5),
-            underline: true, // Souligner le numéro de téléphone
-            underlineColor: Colors.green, // Custom underline color
-          ),
-          buildInfoRow(
-            "Statut",
-            data["status"]!,
-            isLink: true,
-            color: Color(0xFF0054A5),
-            underline: data["status"] == "En cours",
-
-            underlineColor: Colors.blue, // Custom underline color
-          ),
-          SizedBox(height: 15),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  side: BorderSide(color: Color(0xFF0054A5), width: 1),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  padding: EdgeInsets.symmetric(vertical: 18, horizontal: 40),
-                ),
-                onPressed: () {},
-                child: Text(
-                  "Annuler",
-                  style: TextStyle(color: Color(0xFF0054A5), fontSize: 20),
-                ),
-              ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  side: BorderSide(color: Color(0xFF0054A5), width: 1),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  padding: EdgeInsets.symmetric(vertical: 18, horizontal: 40),
-                ),
-                onPressed: () {},
-                child: Text(
-                  "Terminer",
-                  style: TextStyle(color: Color(0xFF0054A5), fontSize: 20),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget buildInfoRow(String label, String value,
-      {bool isLink = false,
-      Color? color,
-      bool underline = false,
-      Color? underlineColor}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFF565656)),
-          ),
-          GestureDetector(
-            onTap: isLink ? () {} : null,
-            child: Text(
-              value,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: color ?? Color(0xFF565656),
-                decoration:
-                    underline ? TextDecoration.underline : TextDecoration.none,
-                decorationColor: underlineColor ??
-                    const Color.fromARGB(
-                        160, 5, 67, 118), // Set the underline color here
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-//HistoryCard
-class HistoryCard extends StatelessWidget {
-  final Map<String, String> data;
-  final bool isSelected;
-  HistoryCard({required this.data, this.isSelected = false});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: isSelected ? Color(0xFF0054A5) : Colors.transparent,
-          width: 1.5,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            blurRadius: 5,
-            spreadRadius: 1,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: ListTile(
-                  leading: CircleAvatar(
-                    backgroundImage: AssetImage('assets/profile.png'),
-                  ),
-                  title: Text(
-                    data["name"]!,
-                    style: TextStyle(
-                      fontWeight: FontWeight.normal,
-                      color: Color(0xFF565656),
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-              ),
-              Icon(
-                Icons.error_outline,
-                color: Colors.red,
-                size: 28,
-              ),
-            ],
-          ),
-          Divider(color: Colors.grey.shade400),
-          buildInfoRow("Date", data["date"]!),
-          buildInfoRow("Heure", data["time"]!),
-          buildInfoRow("Ville", data["city"]!),
-          buildInfoRow(
-            "Statut",
-            data["status"]!,
-            isLink: true,
-            color: Colors.blue,
+            color: const Color(0xFF0054A5),
             underline: true,
+            underlineColor: Colors.green,
+          ),
+          buildInfoRow(
+            "Statut",
+            selectedStatus ?? widget.data["status"]!,
+            isLink: true,
+            color:const  Color(0xFF0054A5),
+            underline: selectedStatus == "En cours",
+            underlineColor: Colors.blue,
+          ),
+          const SizedBox(height: 15),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+             if (!isAccepted && widget.data["status"] != "En cours") ...[
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 40),
+                  ),
+                  onPressed: () {
+                    widget.onRemove(); // Remove the card from the list
+                  },
+                  child: const Text(
+                    "Refuser",
+                    style: TextStyle(color: Colors.white, fontSize: 20),
+                  ),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    padding: EdgeInsets.symmetric(vertical: 18, horizontal: 40),
+                  ),
+                  onPressed: () async {
+                  print(widget.data);
+                  print(widget.data["client_id"]);
+                  print("Accepter button clicked!");
+                 await changeStatut(widget.data["id"]!, 2,int.parse(widget.data["client_id"].toString()));
+                  print("after the await call clicked!");
+                  setState(() {
+                   isAccepted = true; // Show dropdown to select status
+                   widget.data["status"] = "En cours";
+                  });
+                 print(widget.data["id"]);print(int.parse(widget.data["client_id"].toString()));
+                  },
+                  child: const Text(
+                    "Accepter",
+                    style: TextStyle(color: Colors.white, fontSize: 20),
+                  ),
+                ),
+              ] else ...[
+                Expanded(
+
+  child: DropdownButtonFormField<String>(
+    value: selectedStatus,
+    decoration: InputDecoration(
+      labelText: "Changer le statut",
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(15.0)), // Optional for styling
+      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+    ),
+    isExpanded: true, // Makes the dropdown menu items take full width
+    items: ["Terminer", "Annuler"].map((String status) {
+      return DropdownMenuItem<String>(
+        value: status,
+        
+        child: Align(
+          alignment: Alignment.centerLeft, // Aligns text to the left
+          child: Text(status),
+        ),
+      );
+    }).toList(),
+    onChanged: (String? newValue) {
+      if (newValue != null) {
+        _confirmStatusChange(newValue); // Confirm before changing status
+      }
+    },
+  ),
+)
+
+              ],
+            ],
           ),
         ],
       ),
@@ -361,7 +337,7 @@ class HistoryCard extends StatelessWidget {
   }
 
   Widget buildInfoRow(String label, String value,
-      {bool isLink = false, Color? color, bool underline = false}) {
+      {bool isLink = false, Color? color, bool underline = false, Color? underlineColor}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -369,10 +345,7 @@ class HistoryCard extends StatelessWidget {
         children: [
           Text(
             label,
-            style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFF565656)),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Color(0xFF565656)),
           ),
           GestureDetector(
             onTap: isLink ? () {} : null,
@@ -381,9 +354,9 @@ class HistoryCard extends StatelessWidget {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
-                color: color ?? Color(0xFF565656),
-                decoration:
-                    underline ? TextDecoration.underline : TextDecoration.none,
+                color: color ?? const Color(0xFF565656),
+                decoration: underline ? TextDecoration.underline : TextDecoration.none,
+                decorationColor: underlineColor ?? const Color(0xFF0054A5),
               ),
             ),
           ),
@@ -393,91 +366,7 @@ class HistoryCard extends StatelessWidget {
   }
 }
 
-//
-//myReservationCard
-class myReservationCard extends StatelessWidget {
-  final Map<String, String> data;
-  myReservationCard({required this.data});
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 14),
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            blurRadius: 5,
-            spreadRadius: 1,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ListTile(
-            leading: CircleAvatar(
-              backgroundImage: AssetImage('assets/profile.png'),
-            ),
-            title: Text(
-              data["name"]!,
-              style: TextStyle(
-                fontWeight: FontWeight.normal,
-                color: Color(0xFF565656),
-              ),
-            ),
-          ),
-          Divider(color: Colors.grey.shade400),
-          buildInfoRow("Date de Réservation", data["date"]!),
-          buildInfoRow("Heure", data["time"]!),
-          buildInfoRow("Ville", data["city"]!),
-          buildInfoRow(
-            "Téléphone",
-            data["phone"]!,
-            isLink: true,
-            color: Color(0xFF0054A5),
-            underline: true, // Souligner le numéro de téléphone
-            underlineColor: const Color.fromARGB(
-                255, 44, 64, 144), // Custom underline color
-          ),
-          buildInfoRow(
-            "Statut",
-            data["status"]!,
-            isLink: true,
-            color: Color(0xFF0054A5),
-            underline: data["status"] == "En attente",
-
-            underlineColor: Colors.blue, // Custom underline color HH
-          ),
-          SizedBox(height: 15),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  side: BorderSide(color: Color(0xFF0054A5), width: 1),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  padding: EdgeInsets.symmetric(vertical: 18, horizontal: 40),
-                ),
-                onPressed: () {},
-                child: Text(
-                  "Annuler",
-                  style: TextStyle(color: Color(0xFF0054A5), fontSize: 20),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget buildInfoRow(String label, String value,
       {bool isLink = false,
@@ -491,7 +380,7 @@ class myReservationCard extends StatelessWidget {
         children: [
           Text(
             label,
-            style: TextStyle(
+            style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
                 color: Color(0xFF565656)),
@@ -506,9 +395,7 @@ class myReservationCard extends StatelessWidget {
                 color: color ?? Color(0xFF565656),
                 decoration:
                     underline ? TextDecoration.underline : TextDecoration.none,
-                decorationColor: underlineColor ??
-                    const Color.fromARGB(
-                        160, 5, 67, 118), // Set the underline color here
+                decorationColor: underlineColor ?? Color(0xFF0054A5),
               ),
             ),
           ),
@@ -516,69 +403,4 @@ class myReservationCard extends StatelessWidget {
       ),
     );
   }
-}
-//
 
-class ReservationsTab extends StatelessWidget {
-  final List<Map<String, String>> reservations = [
-    {
-      "name": "Mohsin Korama",
-      "date": "18/04/2025",
-      "time": "09:00",
-      "city": "Agadir",
-      "phone": "0650431156",
-      "status": "En attente"
-    },
-    {
-      "name": "Khalid Ayaou",
-      "date": "20/04/2025",
-      "time": "14:30",
-      "city": "Marrakech",
-      "phone": "0623456789",
-      "status": "En attente"
-    },
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      padding: EdgeInsets.all(10),
-      itemCount: reservations.length,
-      itemBuilder: (context, index) {
-        return myReservationCard(data: reservations[index]);
-      },
-    );
-  }
-}
-
-class HistoryTab extends StatelessWidget {
-  final List<Map<String, String>> reservations = [
-    {
-      "name": "Mohsin Korama",
-      "date": "18/04/2025",
-      "time": "09:00",
-      "city": "Agadir",
-      "phone": "0650431156",
-      "status": "Terminer"
-    },
-    {
-      "name": "Khalid Ayaou",
-      "date": "20/04/2025",
-      "time": "14:30",
-      "city": "Marrakech",
-      "phone": "0623456789",
-      "status": "Terminer"
-    },
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      padding: EdgeInsets.all(10),
-      itemCount: reservations.length,
-      itemBuilder: (context, index) {
-        return HistoryCard(data: reservations[index]);
-      },
-    );
-  }
-}

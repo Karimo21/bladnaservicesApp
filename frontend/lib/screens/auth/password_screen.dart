@@ -96,26 +96,6 @@ class _CreatePasswordScreenState extends State<PasswordScreen> {
                 ),
                 SizedBox(height: 20),
                 TextFormField(
-                  controller: _ageController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.cake),
-                    hintText: "Âge",
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8)),
-                  ),
-                  validator: (value) {
-                    if (value!.isEmpty) return "L'âge est obligatoire";
-                    if (int.tryParse(value) == null ||
-                        int.parse(value) <= 0 ||
-                        int.parse(value) >= 110) {
-                      return "Âge invalide";
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 20),
-                TextFormField(
                   controller: _passwordController,
                   obscureText: !_passwordVisible,
                   decoration: InputDecoration(

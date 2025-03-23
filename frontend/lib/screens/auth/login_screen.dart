@@ -40,7 +40,13 @@ class _LoginScreenState extends State<LoginScreen> {
             data['user']['fname'] ?? '',
             data['user']['lname'] ?? '',
             data['user']['adresse'] ?? '',
-            data['user']['description'] ?? '');
+            data['user']['description'] ?? '',
+            data['user']['rate'] ?? '',
+            data['user']['city'] ?? '',
+            data['user']['totalreservations'] ?? '',
+            data['user']['service'] ?? '',
+            data['user']['availability'] ?? ''
+              );
       }
       
       print(data);

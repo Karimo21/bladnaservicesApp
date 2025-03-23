@@ -8,9 +8,16 @@ class User {
   static String ville="";
   static String description="";
   static String adresse="";
+  static String rate="";
+  static String service="";
+  static String city="";
+  static int availability=0;
+  static int totalreservations=0;
 
   // Function to set the user data
-  static void setUserData(int id, String userRole,String profilePicture,String fname1,String lname1,String adresse1,String description1 ) {
+  static void setUserData(int id, String userRole,String profilePicture,String fname1,String lname1,String adresse1,String description1,
+                          String rate1,String city1,int totalreservations1,String service1,int availability1
+  ) {
     userId = id;
     role = userRole;
     profile=profilePicture;
@@ -18,6 +25,11 @@ class User {
     lname=lname1;
     adresse=adresse1;
     description=description1;
+    availability=availability1;
+    rate=rate1;
+    city=city1;
+    totalreservations=totalreservations1;
+    service=service1;
   }
 
   // Function to get the userId
