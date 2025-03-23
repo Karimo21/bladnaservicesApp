@@ -14,7 +14,7 @@ exports.getProviderProfile = (req, res) => {
   });
 };
 exports.getMoreProviderDetails = (req, res) => {
-  const providerId = req.params.providerId; // Get provider ID from request parameters
+  const providerId = req.params.providerId; // Get provider ID from request parameterss
 
   User.getMoreProviderDetails(providerId, (err, providerDetails) => {
     if (err) return res.status(500).json({ message: "Database error", error: err });

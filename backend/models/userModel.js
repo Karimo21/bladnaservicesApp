@@ -41,7 +41,7 @@ getMoreProviderDetails(providerId, callback) {
       WHERE r.provider_id = ?;
   `;
 
-  // Execute the image query first
+  // Execute the image query firsts
   db.query(imagesQuery, [providerId], (err, images) => {
       if (err) return callback(err, null);
 

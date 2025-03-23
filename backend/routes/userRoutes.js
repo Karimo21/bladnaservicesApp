@@ -29,7 +29,7 @@ router.post('/', createUser);
 router.get('/api/provider-ratings/:providerId', getProviderRatings);
 router.get("/api/notifications/:userId", getUserNotifications);
 
-// Route to create a new rating
+// Route to create a new ratings
 router.post('/api/ratings', createRating);
 
 // Récupérer toutes les réservations

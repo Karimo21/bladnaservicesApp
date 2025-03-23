@@ -78,7 +78,7 @@ class _MoroccoMapState extends State<MoroccoMap> {
                         subdomains: ['a', 'b', 'c'],
                       ),
 
-                      // Marqueurs des prestataires avec design amélioré
+                      // Marqueurs des prestataires avec design améliorés
                       MarkerLayer(
                         markers: [
                           _buildMarker(30.5731, -4.5898,
