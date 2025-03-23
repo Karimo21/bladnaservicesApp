@@ -1,5 +1,5 @@
 const express = require('express');
-const { createClientUser,createProviderUser,getMoreProviderDetails, getProviderProfile, createUser, loginUser } = require('../controllers/userController');
+const { createClientUser,createProviderUser,getMoreProviderDetails, getProviderProfile, createUser, loginUser,updateProviderPosition,getAllProviders } = require('../controllers/userController');
 const { getProviderRatings,createRating, getRatingsBetweenUsers } = require('../controllers/reviewController');
 const { getUserNotifications, markNotificationAsRead } = require("../controllers/notificationController");
 const {uploadProfilePicture,uploadProviderImages,deleteProviderImage,getProviderWorkImages,updateProfileData } = require('../controllers/profileController');
@@ -31,5 +31,11 @@ router.post('/api/ratings', createRating);
 
 // Récupérer toutes les réservations
 router.get('/api/reservations', SuivieController.getReservations);
+
+// Update provider's latitude and longitude
+router.post('/api/providers/:providers_id/position', updateProviderPosition);
+
+// Route to get all providers postions
+router.get('/api/providers', getAllProviders);
 
 module.exports = router;

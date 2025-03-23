@@ -1,8 +1,49 @@
+const db = require('../config/db'); // Import the database connection
 const User = require('../models/userModel');
 const { uploadProviderDocuments } = require('../middlewares/uploadMiddleware'); // Import the middleware
 
 
 
+
+// Update provider's latitude and longitude
+exports.updateProviderPosition = (req, res) => {
+  const { providers_id } = req.params;
+  const { latitude, longitude } = req.body;
+
+  // Call the model function to update the provider's position
+  User.updateProviderPosition(providers_id, latitude, longitude, (err, results) => {
+    if (err) {
+      console.error('Error updating provider position:', err);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ message: 'Provider not found' });
+    }
+
+    res.status(200).json({ message: 'Provider position updated successfully' });
+  });
+};
+//
+// Get all providers  
+exports.getAllProviders = (req, res) => {
+  User.getAllProviders((err, providers) => {
+    if (err) {
+      console.error('Error fetching providers:', err);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+
+    // Format the data to match the structure of _prestataires
+    const formattedProviders = providers.map((provider) => ({
+      lat: parseFloat(provider.lat),
+      lng: parseFloat(provider.lng),
+      image: provider.image,
+      nom: provider.nom,
+    }));
+
+    res.status(200).json(formattedProviders);
+  });
+};
 exports.getProviderProfile = (req, res) => {
   User.getProviderDetails((err, data) => {
       if (err){
@@ -156,5 +197,33 @@ exports.createUser = (req, res) => {
   User.createUser(name, email, (err, results) => {
     if (err) return res.status(500).send(err);
     res.json({ message: "User created successfully", userId: results.insertId });
+  });
+};
+
+
+//MAP
+exports.updateProviderPosition = (req, res) => {
+  const { providers_id } = req.params;
+  const { latitude, longitude } = req.body;
+
+  // SQL query to update latitude and longitude
+  const query = `
+    UPDATE providers 
+    SET latitude = ?, longitude = ?, updated_at = NOW() 
+    WHERE providers_id = ?
+  `;
+
+  // Execute the query
+  db.query(query, [latitude, longitude, providers_id], (err, results) => {
+    if (err) {
+      console.error('Error updating provider position:', err);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ message: 'Provider not found' });
+    }
+
+    res.status(200).json({ message: 'Provider position updated successfully' });
   });
 };

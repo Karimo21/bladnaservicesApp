@@ -1,6 +1,30 @@
 const db = require('../config/db');
 
 const User = {
+    // Function to update provider's latitude and longitude
+  updateProviderPosition: (providers_id, latitude, longitude, callback) => {
+    const query = `
+      UPDATE providers 
+      SET latitude = ?, longitude = ?, updated_at = NOW() 
+      WHERE providers_id = ?
+    `;
+    db.query(query, [latitude, longitude, providers_id], callback);
+  },
+
+  // Function to get all provider POSITION
+  
+    getAllProviders: (callback) => {
+        const query = `
+          SELECT providers_id AS id, latitude AS lat, longitude AS lng, profile_picture AS image, CONCAT(firstname, ' ', lastname) AS nom
+          FROM providers
+          WHERE latitude IS NOT NULL AND longitude IS NOT NULL;
+        `;
+    
+        db.query(query, (err, results) => {
+          if (err) return callback(err, null);
+          callback(null, results);
+        });
+      },
 
 getProviderDetails: (callback) => {
     const query = `
@@ -143,5 +167,6 @@ async getClientProfile(userId){
 
 
 };
+
 
 module.exports = User;
