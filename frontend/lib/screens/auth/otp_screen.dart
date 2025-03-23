@@ -1,6 +1,8 @@
 import 'package:bladnaservices/screens/auth/PrestataireSignupScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:bladnaservices/screens/auth/password_screen.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class OTPVerification extends StatefulWidget {
   final List<Map<String, dynamic>> dataUser;
@@ -17,17 +19,13 @@ class _OTPVerificationScreenState extends State<OTPVerification> {
   final List<TextEditingController> _otpControllers =
       List.generate(6, (index) => TextEditingController());
 
-  void _verifyOTP() {
-    String otp = _otpControllers.map((controller) => controller.text).join();
+void _verifyOTP() async {
+  String otp = _otpControllers.map((controller) => controller.text).join();
+  print(widget.dataUser.last["phone"]);
 
-    if (otp.length == 6) {
-      FocusScope.of(context).unfocus();
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Code validé : $otp")),
-      );
-
-      if (widget.role == "client") {
+  if (otp.length == 6) {
+    FocusScope.of(context).unfocus();
+          if (widget.role == "client") {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -40,17 +38,57 @@ class _OTPVerificationScreenState extends State<OTPVerification> {
               builder: (context) =>
                   PrestataireSignupScreen(dataUser: widget.dataUser)),
         );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Rôle inconnu, veuillez réessayer.")),
-        );
       }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Entrez un code de 6 chiffres")),
-      );
-    }
-  }
+ 
+    // Send the OTP and phone number to the backend for verification
+  //   final response = await http.post(
+  //     Uri.parse('http://localhost:3000/verify'),
+  //     headers: <String, String>{
+  //       'Content-Type': 'application/json',
+  //     },
+  //     body: jsonEncode({
+  //       'phoneNumber': widget.dataUser.last["phone"], 
+  //       'code': otp,
+  //     }),
+  //   );
+
+  //   if (response.statusCode == 200) {
+  //     // OTP verified successfully, show success message
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(content: Text("Code validé : $otp")),
+  //     );
+
+  //     // Navigate to the next screen based on the role
+  //     if (widget.role == "client") {
+  //       Navigator.pushReplacement(
+  //         context,
+  //         MaterialPageRoute(
+  //             builder: (context) => PasswordScreen(dataUser: widget.dataUser)),
+  //       );
+  //     } else if (widget.role == "provider") {
+  //       Navigator.pushReplacement(
+  //         context,
+  //         MaterialPageRoute(
+  //             builder: (context) =>
+  //                 PrestataireSignupScreen(dataUser: widget.dataUser)),
+  //       );
+  //     } else {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         const SnackBar(content: Text("Rôle inconnu, veuillez réessayer.")),
+  //       );
+  //     }
+  //   } else {
+  //     // If OTP verification fails, show error message
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(content: Text("Code OTP invalide, veuillez réessayer.")),
+  //     );
+  //   }
+  // } else {
+  //   ScaffoldMessenger.of(context).showSnackBar(
+  //     const SnackBar(content: Text("Entrez un code de 6 chiffres")),
+  //   );
+   }
+}
 
   @override
   Widget build(BuildContext context) {

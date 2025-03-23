@@ -99,7 +99,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   itemBuilder: (context, index) {
                     final notif = notifications[index];
                     return _buildNotificationItem(
-                      image: "assets/user.png",
+                    
                       message: notif['message'],
                       date: notif['date'],
                       isRead: notif['is_read'] == 1,
@@ -111,7 +111,6 @@ class _NotificationScreenState extends State<NotificationScreen> {
   }
 
   Widget _buildNotificationItem({
-    required String image,
     required String message,
     required String date,
     required bool isRead,
@@ -129,10 +128,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
             children: [
 Row(
   children: [
-    CircleAvatar(
-      backgroundImage: AssetImage(image),
-      radius: 24,
-    ),
+  
     const SizedBox(width: 12), // Espacement entre l'image et le texte
     Expanded(
       child: Text(

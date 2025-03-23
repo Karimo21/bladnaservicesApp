@@ -3,11 +3,41 @@ import 'package:bladnaservices/screens/home/profile/addImage_screen.dart';
 import 'package:bladnaservices/screens/home/profile/editProfil_screen.dart';
 import 'package:bladnaservices/screens/home/profile/User.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 const Color primaryColor = Color(0xFF0054A5);
 const Color backgroundColor = Color(0xFFF9F9F9);
 
 class ProfileScreen extends StatelessWidget {
+
+ // Function to update the availability of the provider
+Future<void> updateProviderAvailability(int providerId, int value) async {
+  final url = Uri.parse('http://localhost:3000/update-provider-availiblity'); // Your API URL
+
+  // Create the data to be sent in the body of the request
+  final data = {
+    'providerId': providerId,
+    'value': value,
+  };
+
+  try {
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode(data),
+    );
+
+    if (response.statusCode == 200) {
+      print('Provider availability updated successfully');
+      User.availability=value;
+    } else {
+      print('Failed to update provider availability');
+    }
+  } catch (e) {
+    print('Error: $e');
+  }
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,7 +56,7 @@ class ProfileScreen extends StatelessWidget {
                   color: primaryColor,
                 ),
               ),
-              SizedBox(height: 15),
+              SizedBox(height: 15), 
               Row(
                 children: [
                   CircleAvatar(
@@ -44,13 +74,15 @@ class ProfileScreen extends StatelessWidget {
                             fontSize: 18, fontWeight: FontWeight.normal),
                       ),
                       if(User.role=="provider")
-                      Text('Médecin',
+                      Text(User.service,
                           style: TextStyle(color: Colors.grey, fontSize: 18)),
                       SizedBox(height: 5),
                       Row(
                         children: [
+                          if(User.role=="provider")
                           Icon(Icons.star, color: primaryColor, size: 18),
-                          Text(' 4.8',
+                          if(User.role=="provider")
+                          Text(User.rate,
                               style:
                                   TextStyle(color: primaryColor, fontSize: 18)),
                         ],
@@ -61,7 +93,7 @@ class ProfileScreen extends StatelessWidget {
                         children: [
                           Icon(Icons.emoji_events,
                               color: primaryColor, size: 18),
-                          Text(' 320 réservations',
+                          Text("Total des réservations: ${User.totalreservations.toString()}",
                               style:
                                   TextStyle(color: primaryColor, fontSize: 18)),
                         ],
@@ -102,16 +134,15 @@ class ProfileScreen extends StatelessWidget {
                   style:
                       TextStyle(fontWeight: FontWeight.normal, fontSize: 16)),
               SizedBox(height: 8),
+              if(User.role=="provider")
               ProfileOption(
-                icon: Icons.notifications_outlined,
-                title: 'Notification',
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => NotificationScreen()),
-                  ); // Navigate to Notification Page (Create one if needed)
-                },
+                   icon: Icons.access_alarm,
+                    title: 'Disponibilité',
+                    showArrow: false,
+                    toggle: true,  // Show the toggle button
+                    onToggle: (value) {
+                      updateProviderAvailability(User.userId, value ? 1 : 0);
+                     },
               ),
               ProfileOption(
                 icon: Icons.logout,
@@ -211,12 +242,14 @@ class ProfileScreen extends StatelessWidget {
   }
 }
 
-class ProfileOption extends StatelessWidget {
+class ProfileOption extends StatefulWidget {
   final IconData icon;
   final String title;
   final bool isLast;
   final bool showArrow;
   final Function()? onTap;
+  final bool toggle; // New parameter for toggle button
+  final ValueChanged<bool>? onToggle; // Callback when toggle is changed
 
   ProfileOption({
     required this.icon,
@@ -224,13 +257,25 @@ class ProfileOption extends StatelessWidget {
     this.isLast = false,
     this.showArrow = true,
     this.onTap,
+    this.toggle = false, // Default to false
+    this.onToggle,
   });
+
+  @override
+  _ProfileOptionState createState() => _ProfileOptionState();
+}
+
+class _ProfileOptionState extends State<ProfileOption> {
+  bool _toggleValue = User.availability==0 ? false : true; // Maintain the toggle state
+
+
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap, // Handle navigation dynamically
+      onTap: widget.onTap, // Handle navigation dynamically
       child: Container(
-        margin: EdgeInsets.only(bottom: isLast ? 0 : 4),
+        margin: EdgeInsets.only(bottom: widget.isLast ? 0 : 4),
         padding: EdgeInsets.symmetric(vertical: 16, horizontal: 8),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -242,12 +287,28 @@ class ProfileOption extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(icon, color: primaryColor, size: 28),
+                Icon(widget.icon, color: primaryColor, size: 28),
                 SizedBox(width: 10),
-                Text(title, style: TextStyle(fontSize: 18)),
+                Text(widget.title, style: TextStyle(fontSize: 18)),
               ],
             ),
-            if (showArrow)
+            // If toggle is true, show the switch button
+            if (widget.toggle)
+              Switch(
+                value: _toggleValue,
+                onChanged: (value) {
+                  setState(() {
+                    _toggleValue = value;
+                  });
+                  if (widget.onToggle != null) {
+                    widget.onToggle!(value);
+                  }
+                },
+                activeColor: primaryColor,
+                inactiveTrackColor: Colors.grey,
+              ),
+            // Show arrow icon by default
+            if (widget.showArrow)
               Container(
                 width: 44,
                 height: 44,
@@ -265,6 +326,8 @@ class ProfileOption extends StatelessWidget {
     );
   }
 }
+
+
 
 class ProfileTextField extends StatelessWidget {
   final String label;

@@ -95,7 +95,7 @@ exports.getUser = (req, res) => {
 };
 exports.loginUser = async (req, res) => {
   const { phone, password } = req.body;
-  
+
   try {
     // Get user by phone using the async method
     const results = await User.getUserByPhone(phone);
@@ -107,31 +107,58 @@ exports.loginUser = async (req, res) => {
 
     // Check if the password matches (simple comparison for now)
     const user = results[0];
+    console.log(user);
     if (user.password !== password) {
+      
+      console.log(user.password,password);
       return res.status(401).json({ message: "Incorrect password" });
     }
     let profile="";
     if(user.role==="client"){
        profile =await User.getClientProfile(user.user_id);
+       res.json({
+        message: "Login successful",
+        user: {
+          userId: user.user_id,
+          fname:profile[0].firstname,
+          lname:profile[0].lastname,
+          phone: user.phone,
+          role: user.role,
+          adresse:profile[0].adresse,
+          description:profile[0].description,
+          profile:profile[0]['profile_picture'],
+          rate:"",
+          city:"",
+          availability:0,
+          service:"",
+          totalreservations:0
+        },
+      });
     }
     if(user.role==="provider"){
        profile =await User.getProviderProfile(user.user_id);
+       res.json({
+        message: "Login successful",
+        user: {
+          userId: user.user_id,
+          fname:profile[0].firstname,
+          lname:profile[0].lastname,
+          phone: user.phone,
+          role: user.role,
+          adresse:profile[0].adresse,
+          description:profile[0].description,
+          profile:profile[0]['profile_picture'],
+          rate:profile[0].rate,
+          city:profile[0].city_name,
+          service:profile[0].service,
+          availability:profile[0].availability,
+          totalreservations:profile[0].total_reservation
+        },
+      });
     }
     
-    // If everything matches, return the user data and role
-    res.json({
-      message: "Login successful",
-      user: {
-        userId: user.user_id,
-        fname:profile[0].firstname,
-        lname:profile[0].lastname,
-        phone: user.phone,
-        role: user.role,
-        adresse:profile[0].adresse,
-        description:profile[0].description,
-        profile:profile[0]['profile_picture'],
-      },
-    });
+
+    
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
@@ -149,6 +176,16 @@ exports.uploadProfilePictureController = (req, res) => {
   User.updateClientProfilePicture(userId, imageUrl, (err, results) => {
       if (err) return res.status(500).json({ message: "Database error", error: err });
       res.json({ message: "Profile picture uploaded successfully", imageUrl });
+  });
+};
+exports.updateProviderAvailiblity = (req, res) => {
+
+  const { providerId, value } = req.body;
+  
+  // Save image URL in database
+  User.updateProviderAvailiblity(providerId,value,(err, results) => {
+      if (err) return res.status(500).json({ message: "Database error", error: err });
+      res.json({ message: "Provider availiblity updated successfully" });
   });
 };
 exports.createUser = (req, res) => {

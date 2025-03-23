@@ -2,10 +2,18 @@ const db = require('../config/db');
 
 const Reservation ={
 
-createReservation: async (clientId, providerId, startDate, endDate, statutId) => {
+createReservation: async (role, clientId, providerId, startDate, endDate, statutId) => {
+   let query="";
     try {
+        console.log(role);
+        if(role=="client"){
+          query='INSERT INTO reservations (client_id, reserved_provider_id, start_date, end_date, statut_id) VALUES (?, ?, ?, ?, ?)';
+        }
+        if(role=="provider"){
+          query='INSERT INTO reservations (reserving_provider_id, reserved_provider_id, start_date, end_date, statut_id) VALUES (?, ?, ?, ?, ?)';
+        }
         const [result] = await db.promise().execute(
-            'INSERT INTO reservations (client_id, provider_id, start_date, end_date, statut_id) VALUES (?, ?, ?, ?, ?)',
+            query,
             [clientId, providerId, startDate, endDate, statutId]
         );
 

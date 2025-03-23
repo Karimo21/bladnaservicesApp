@@ -4,7 +4,7 @@ const User = {
 
 getProviderDetails: (callback) => {
     const query = `
-SELECT p.providers_id,
+      SELECT p.providers_id,
              CONCAT(p.firstname, ' ', p.lastname) AS provider_name,
              p.profile_picture,
              s.title,
@@ -14,8 +14,9 @@ SELECT p.providers_id,
              COUNT(DISTINCT rs.reservations_id) AS nbr_res
       FROM providers p
       JOIN services s USING(service_id)
-      LEFT JOIN reservations rs ON p.providers_id = rs.provider_id
+      LEFT JOIN reservations rs ON p.providers_id = rs.reserved_provider_id 
       JOIN ratings r ON p.providers_id = r.provider_id
+      where p.availability=1
       GROUP BY p.providers_id;
     `;
 
@@ -123,23 +124,60 @@ saveProviderDocuments: (providerId, frontImageUrl, backImageUrl, diplomatImageUr
 
 async getClientProfile(userId){
   try{
-   const [rows] = await db.promise().query("SELECT * FROM  clients c WHERE c.clients_id = ?", [userId]);
+   const [rows] = await db.promise().query("SELECT * FROM  clients c join city using(city_id) WHERE c.clients_id = ?", [userId]);
    return rows;
   }catch(error){
   throw error;
  }
 },
- async getProviderProfile(userId){
-  try{
-   const [rows] = await db.promise().query("SELECT * FROM  providers p  WHERE p.providers_id = ?", [userId]);
-   return rows;
-  }catch(error){
-  throw error;
- }
- },
+async getProviderProfile(userId) {
+    try {
+      // Query to get provider's profile along with total reservations
+      const query = `
+        SELECT 
+          firstname, 
+          lastname, 
+          adresse, 
+          description, 
+          profile_picture, 
+          city_name, 
+          availability,
+          title AS service, 
+          ROUND(AVG(rt.rating), 1) AS rate,
+          COALESCE(COUNT(reservations_id), 0) AS total_reservation
+        FROM 
+          services 
+        JOIN 
+          providers p USING(service_id) 
+        LEFT JOIN
+          ratings rt on rt.provider_id=p.providers_id
+        LEFT JOIN 
+          reservations r ON p.providers_id = r.reserved_provider_id 
+        JOIN 
+          city USING(city_id) 
+        WHERE 
+          p.providers_id = ?
+        AND (r.statut_id = 4 OR r.reservations_id IS NULL)
+        GROUP BY 
+          p.providers_id;
+      `;
+      
+      // Execute the query and pass the userId as a parameter to prevent SQL injection
+      const [rows] = await db.promise().query(query, [userId]);
+  
+      // Return the results (provider profile and reservation count)
+      return rows;
+    } catch (error) {
+      throw error;
+    }
+  },
+  
   updateClientProfilePicture: (userId, imageUrl, callback) => {
     db.query("UPDATE users u join clients c on u.user_id=c.clients_id SET profile_picture = ? WHERE user_id = ?", [imageUrl, userId], callback);
- }
+ },
+ updateProviderAvailiblity: (providerId, value, callback) => {
+    db.query("UPDATE providers SET availability = ? WHERE providers_id = ?", [value, providerId], callback);
+}
 
 
 };

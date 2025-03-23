@@ -1,6 +1,10 @@
+import 'package:bladnaservices/screens/home/chat/chat_screen.dart';
+import 'package:bladnaservices/screens/home/profile/User.dart';
+import 'package:bladnaservices/screens/home/reservation/rate_screen.dart';
 import 'package:bladnaservices/screens/home/reservation/reservation_prestataire_screen.dart';
 import 'package:bladnaservices/screens/home/review/review_screen.dart';
 import 'package:bladnaservices/screens/home/services/galerie_screen.dart';
+import 'package:bladnaservices/services/socket_service.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -15,6 +19,7 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   final List<Map<String, dynamic>> reviews = [];
+   SocketService socketService = SocketService();
 
   final List<String> galleryImages = [];
 
@@ -53,6 +58,34 @@ class _ProfilePageState extends State<ProfilePage> {
       print('Error fetching data: $e');
     }
   }
+
+  //create-contact 
+ Future<void> createContact(int senderId, int receiverId) async {
+  const String url = 'http://localhost:3000/add-contact';
+  print(senderId);
+  print(receiverId);
+
+  try {
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {
+        'Content-Type': 'application/json', // Specify JSON format
+      },
+      body: jsonEncode({
+        'senderId': senderId,
+        'receiverId': receiverId,
+      }),
+    );
+
+    if (response.statusCode == 201) {
+      print("Contact created successfully");
+    } else {
+      print("Failed to create contact: ${response.body}");
+    }
+  } catch (e) {
+    print("Error creating contact: $e");
+  }
+}
 
   @override
   void initState() {
@@ -164,12 +197,30 @@ class _ProfilePageState extends State<ProfilePage> {
                           const Spacer(),
                           IconButton(
                             icon: const Icon(Icons.chat, color: Color(0xFF0054A5)),
-                            onPressed: () {},
+                            onPressed: () async {
+
+                            await createContact(User.userId, widget.provider['provider_id']);
+
+                            socketService.markMessagesAsRead(User.userId, widget.provider['provider_id'] );
+                            
+                            Navigator.push(
+                             context,
+                            MaterialPageRoute(
+                                builder: (context) => ChatScreen(
+                                    userId: User.userId,
+                                    contactId: widget.provider['provider_id'] ,
+                                    contactRole: "provider",
+                                    profile_picture:widget.provider['image'],
+                                    name:widget.provider['name']),
+                                    ),        
+                          );
+
+                            },
                           ),
-                          IconButton(
-                            icon: const Icon(Icons.call, color: Color(0xFF0054A5)),
-                            onPressed: () {},
-                          ),
+                       //   IconButton(
+                       //     icon: const Icon(Icons.call, color: Color(0xFF0054A5)),
+                       //     onPressed: () {},
+                       //   ),
                         ],
                       ),
                       const SizedBox(height: 5),
@@ -363,10 +414,18 @@ class _ProfilePageState extends State<ProfilePage> {
               padding: EdgeInsets.all(10),
               child: Row(
                 children: [
+
+                  if(User.userId != widget.provider['provider_id'])
                   Expanded(
                     flex: 3, // 30% de l'espace
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        //  Navigator.push(
+                        //     context,
+                        //     MaterialPageRoute(
+                        //        builder: (context) => RateScreen(provider:widget.provider)),
+                         // );                         
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color(0xFFD3D3D3),
                         foregroundColor: Colors.white,
@@ -375,7 +434,9 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: Text('Évaluer'),
                     ),
                   ),
+                  if(User.userId != widget.provider['provider_id'])
                   SizedBox(width: 10),
+                  if(User.userId != widget.provider['provider_id'])
                   Expanded(
                     flex: 7, // 70% de l'espace
                     child: ElevatedButton(

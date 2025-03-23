@@ -1,6 +1,8 @@
 import 'package:bladnaservices/screens/auth/otp_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class PhoneScreen extends StatefulWidget {
   final String role; // Rôle sélectionné (Client ou Prestataire)
@@ -18,7 +20,7 @@ class _PhoneScreenState extends State<PhoneScreen> {
 
 
   
-  void _sendCode() {
+  void _sendCode() async  {
     String phoneNumber = _phoneController.text.trim();
 
     setState(() {
@@ -47,9 +49,7 @@ class _PhoneScreenState extends State<PhoneScreen> {
     // Ajouter le numéro à la liste dataUser
     List<Map<String, dynamic>> updatedDataUser = List.from(widget.dataUser);
     updatedDataUser.add({"phone": "+212$phoneNumber"});
-
-    // Aller à la page OTP avec le numéro et la liste mise à jour
-    Navigator.push(
+        Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => OTPVerification(
@@ -58,6 +58,34 @@ class _PhoneScreenState extends State<PhoneScreen> {
         ),
       ),
     );
+
+    // Make the API request to send OTP
+  // final response = await http.post(
+  //   Uri.parse('http://localhost:3000/send'),
+  //   headers: <String, String>{
+  //     'Content-Type': 'application/json',
+  //   },
+  //   body: jsonEncode({
+  //     'phoneNumber': "+212$phoneNumber",  // Pass the phone number in the request body
+  //   }),
+  // );
+
+  // // Check if the OTP was sent successfully
+  // if (response.statusCode == 200) {
+  //   // OTP sent successfully, navigate to OTP verification page
+  //   Navigator.push(
+  //     context,
+  //     MaterialPageRoute(
+  //       builder: (context) => OTPVerification(
+  //         role: widget.role,
+  //         dataUser: updatedDataUser,
+  //       ),
+  //     ),
+  //   );
+  // } else {
+  //   // If the OTP request failed, show the error
+  //   _showError("Erreur lors de l'envoi du code OTP.");
+  // }
   }
 
   // Fonction pour afficher un message d'erreur sous le TextField

@@ -44,7 +44,7 @@ class _ChatScreenState extends State<ChatScreen> {
           setState(() {
             messages.add({
               'text': data['message'],
-              'time': data['time'],
+              'time': data['formattedTime'],
               'isSent': data['sender_id'] == widget.userId,
             });
           });
@@ -138,6 +138,8 @@ class _ChatScreenState extends State<ChatScreen> {
             IconButton(
               icon: const Icon(Icons.arrow_back, color: Color(0xFF0054A5)),
               onPressed: () {
+                
+                socketService.markMessagesAsRead(widget.userId, widget.contactId);
                 Navigator.pop(context);
               },
               iconSize: 35,
