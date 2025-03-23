@@ -1,5 +1,5 @@
 const express = require('express');
-const { createClientUser,createProviderUser,getMoreProviderDetails, getProviderProfile, createUser, loginUser,updateProviderAvailiblity } = require('../controllers/userController');
+const {getAllClients,getAllValidatedProvider,getAllNonValidatedProviders,validerPrestataire,getDocumentsImage,getAllreservation, createClientUser,createProviderUser,getMoreProviderDetails, getProviderProfile, createUser, loginUser,updateProviderAvailiblity } = require('../controllers/userController');
 const { getProviderRatings,createRating, getRatingsBetweenUsers } = require('../controllers/reviewController');
 const { getUserNotifications, markNotificationAsRead } = require("../controllers/notificationController");
 const {uploadProfilePicture,uploadProviderImages,deleteProviderImage,getProviderWorkImages,updateProfileData } = require('../controllers/profileController');
