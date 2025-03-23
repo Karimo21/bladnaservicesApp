@@ -1,9 +1,13 @@
 const express = require('express');
 const { createReservation,getClientReservations,getReservationsDate } = require('../controllers/reservationController');
 const { getReservedProviderReservations, getReservingReservations, getReservationsHistory, updateReservationStatut } = require('../controllers/suivieController');
+const {getAllCities} = require('../controllers/cityController');
+const {getAllServices} = require('../controllers/serviceController');
 const router = express.Router();
 
 router.post("/create-reservation", createReservation);
+router.get("/cities",getAllCities);
+router.get("/services",getAllServices);
 
 router.get("/client-reservations/:clientId", getClientReservations);
 
