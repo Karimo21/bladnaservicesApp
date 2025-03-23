@@ -14,8 +14,11 @@ router.post("/create-provider", createProviderUser);
 
 
 router.get('/providers',getProviderProfile);
+
 router.get('/provider/:providerId',getMoreProviderDetails);
+
 router.post('/profile/picture',uploadProfilePicture);
+
 router.post('/profile-edit/:userId',updateProfileData);
 router.get('/providers-work-images/:providerId',getProviderWorkImages);
 router.post('/upload-provider-images/:providerId', uploadProviderImages);
@@ -27,8 +30,22 @@ router.post('/', createUser);
 router.get('/api/provider-ratings/:providerId', getProviderRatings);
 router.get("/api/notifications/:userId", getUserNotifications);
 
-// Route to create a new rating
+// Route to create a new ratings
 router.post('/api/ratings', createRating);
+
+
+
+router.get('/clients', getAllClients);
+router.get('/prestataires', getAllValidatedProvider);
+router.get('/prestatairesNoval', getAllNonValidatedProviders);
+
+router.post('/prestatairs/valider/:id', validerPrestataire);
+ 
+//router.delete('/prestatairs/suppremer/:id', suppremerPrestataire);
+
+router.get('/prestatairs/documents-image/:providerId',getDocumentsImage);
+
+router.get('/reservation', getAllreservation);
 
 
 module.exports = router;
