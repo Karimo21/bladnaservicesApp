@@ -117,6 +117,9 @@ exports.loginUser = async (req, res) => {
     if(user.role==="provider"){
        profile =await User.getProviderProfile(user.user_id);
     }
+    if(user.role==="admin"){
+      profile =await User.getAdminProfile(user.user_id);
+   }
     
     // If everything matches, return the user data and role
     res.json({
@@ -156,5 +159,133 @@ exports.createUser = (req, res) => {
   User.createUser(name, email, (err, results) => {
     if (err) return res.status(500).send(err);
     res.json({ message: "User created successfully", userId: results.insertId });
+  });
+};
+exports.getAllClients = (req, res) => {
+  User.getAllClients((err, results) => {
+    if (err) {
+      console.error("Erreur lors de la récupération des clients:", err);
+      return res.status(500).json({ message: "Erreur interne du serveur", error: err });
+    }
+    res.json(results);
+  });
+};
+exports.getAllValidatedProvider = (req, res) => {
+  User.getAllValidatedProvider((err, results) => {
+    if (err) {
+      console.error("Erreur lors de la récupération des prestataires:", err);
+      return res.status(500).json({ message: "Erreur interne du serveur", error: err });
+    }
+    res.json(results);
+  });
+}
+exports.getAllNonValidatedProviders = (req, res) => {
+  User.getAllNonValidatedProviders((err, results) => {
+    if (err) {
+      console.error("Erreur lors de la récupération des prestataires:", err);
+      return res.status(500).json({ message: "Erreur interne du serveur", error: err });
+    }
+    res.json(results);
+  });
+  
+  exports.validerPrestataire = (req, res) => {
+    const providerId = req.params.id;
+
+    User.validerPrestataire(providerId, (err, result) => {
+        if (err) {
+            console.error("Erreur lors de la validation du prestataire:", err);
+            return res.status(500).json({ message: "Erreur interne du serveur", error: err });
+        }
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: "Prestataire non trouvé" });
+        }
+
+        res.json({ message: "Prestataire validé avec succès" });
+    });
+};
+
+
+
+const suppremerPrestataire = (req, res) => {
+  const providerId = req.params.id;
+
+  // Vérifier si l'ID est valide
+  if (!providerId) {
+    return res.status(400).json({ message: "ID du prestataire requis" });
+  }
+
+  const sql = "DELETE FROM providers WHERE providers_id = ?";
+
+  db.query(sql, [providerId], (err, result) => {
+    if (err) {
+      console.error("Erreur lors de la suppression du prestataire:", err);
+      return res.status(500).json({ message: "Erreur interne du serveur", error: err });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Prestataire non trouvé" });
+    }
+
+    res.json({ message: "Prestataire supprimé avec succès" });
+  });
+};
+
+}
+exports.validerPrestataire = (req, res) => {
+  const providerId = req.params.id;
+
+  User.validerPrestataire(providerId, (err, result) => {
+      if (err) {
+          console.error("Erreur lors de la validation du prestataire:", err);
+          return res.status(500).json({ message: "Erreur interne du serveur", error: err });
+      }
+
+      if (result.affectedRows === 0) {
+          return res.status(404).json({ message: "Prestataire non trouvé" });
+      }
+
+      res.json({ message: "Prestataire validé avec succès" });
+  });
+  
+}
+exports.suppremerPrestataire = (req, res) => {
+  const providerId = req.params.id;
+
+  User.supprimerPrestataire(providerId, (err, result) => {
+      if (err) {
+          console.error("Erreur lors de la validation du prestataire:", err);
+          return res.status(500).json({ message: "Erreur interne du serveur", error: err });
+      }
+
+      if (result.affectedRows === 0) {
+          return res.status(404).json({ message: "Prestataire non trouvé" });
+      }
+
+      res.json({ message: "Prestataire validé avec succès" });
+  });
+  
+};
+
+exports.getDocumentsImage = (req, res) => {
+  const providerId = req.params.providerId;
+
+  User.getDocumentsImage(providerId, (err, results) => {
+      if (err) {
+          console.error("Erreur lors de la affichage du image :", err);
+          return res.status(500).json({ message: "Erreur interne du serveur", error: err });
+      }
+
+      res.json(results);
+  });
+  
+};
+exports.getAllreservation = (req, res) => {
+  User.getAllreservation((err, results) => {
+    if (err) {
+      console.error("Erreur lors de la récupération des reservation :", err);
+      return res.status(500).json({ message: "Erreur interne du serveur", error: err });
+    }
+    res.json(results);
   });
 };

@@ -1,5 +1,6 @@
 const db = require('../config/db');
 
+
 const User = {
 
 getProviderDetails: (callback) => {
@@ -55,7 +56,7 @@ getMoreProviderDetails(providerId, callback) {
           });
       });
   });
-},
+}, 
 
 createClientUser: (fname, lname, phone, password, role, callback) => {
     db.query(
@@ -139,9 +140,108 @@ async getClientProfile(userId){
  },
   updateClientProfilePicture: (userId, imageUrl, callback) => {
     db.query("UPDATE users u join clients c on u.user_id=c.clients_id SET profile_picture = ? WHERE user_id = ?", [imageUrl, userId], callback);
+ },
+
+ getAllClients: (callback) => {
+  const query = `
+    SELECT c.clients_id, c.firstname, c.lastname, c.adresse, u.phone
+    FROM clients c
+    JOIN users u ON c.clients_id = u.user_id;
+  `;
+  db.query(query, callback);
+},
+getAllValidatedProvider: (callback) => {
+  const query = `
+  SELECT 
+    p.providers_id, 
+    p.firstname, 
+    p.lastname, 
+    p.adresse, 
+    s.title,
+    p.description, 
+    u.phone 
+    
+FROM providers p
+JOIN users u ON p.providers_id = u.user_id
+JOIN services s ON p.service_id = s.service_id
+WHERE p.is_validated = 1;
+
+  `;
+  db.query(query, callback);
+},
+
+getAllNonValidatedProviders: (callback) => {
+  const query = `
+  SELECT 
+    p.providers_id, 
+    p.firstname, 
+    p.lastname, 
+    p.adresse, 
+    s.title,
+    p.description, 
+    u.phone 
+    
+FROM providers p
+JOIN users u ON p.providers_id = u.user_id
+JOIN services s ON p.service_id = s.service_id
+WHERE p.is_validated = 0;
+
+  `;
+  db.query(query, callback);
+},
+validerPrestataire: (providerId, callback) => {  
+  const sql = 'UPDATE providers SET is_validated = 1 WHERE providers_id = ?';
+  db.query(sql, [providerId], (err, result) => {
+    if (err) {
+      return callback(err, null);
+    }
+    return callback(null, result);
+  });
+},
+
+supprimerPrestataire : (providerId, callback) => {
+  const sql = "DELETE FROM providers WHERE providers_id = ?";
+  db.query(sql, [providerId], (err, result) => {
+    if (err) {
+      return callback(err, null);
+    }
+    return callback(null, result);
+  });
+},
+
+getDocumentsImage :  (providerId , callback) => {
+  const query = ` select back_card_image , diplomat_image ,front_card_image from provider_documents where provider_id =?`;
+  db.query(query, [providerId], callback);;
+},
+async getAdminProfile(userId){
+  try{
+   const [rows] = await db.promise().query("SELECT * FROM  users u  WHERE u.user_id = ?", [userId]);
+   return rows;
+  }catch(error){
+  throw error;
  }
+ },
+ getAllreservation: (callback) => { 
+  const query = `
+    SELECT 
+    c.firstname AS nom_client, 
+    c.lastname AS prenom_client, 
+    p.firstname AS nom_prestataire, 
+    p.lastname AS prenom_prestataire, 
+    s.start_date, 
+    s.end_date, 
+    st.name AS statut
+FROM reservations s
+JOIN clients c ON s.client_id = c.clients_id
+JOIN providers p ON s.reserved_provider_id = p.providers_id 
+JOIN statut st ON s.statut_id = st.statut_id;
 
 
+  `;
+  db.query(query, (err, result) => {
+      if (err) return callback(err, null);
+      callback(null, result);
+  });
+}
 };
-
 module.exports = User;

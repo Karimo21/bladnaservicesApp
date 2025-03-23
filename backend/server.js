@@ -27,11 +27,12 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 //routes
 const userRoutes = require('./routes/userRoutes');
+const chartRoutes = require('./routes/chartRoutes'); 
 const chatRoutes = require('./routes/chatRoutes'); 
 const reservationRoutes = require('./routes/reservationRoutes'); 
 
 //use the user routes
-app.use(userRoutes,reservationRoutes,chatRoutes);
+app.use(userRoutes,reservationRoutes,chatRoutes,chartRoutes);
 
 io.on('connection', (socket) => {
     console.log('A user connected');

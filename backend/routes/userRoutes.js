@@ -1,5 +1,5 @@
 const express = require('express');
-const { createClientUser,createProviderUser,getMoreProviderDetails, getProviderProfile, createUser, loginUser } = require('../controllers/userController');
+const { createClientUser,createProviderUser,getMoreProviderDetails, getProviderProfile, createUser, loginUser , getAllClients ,getAllValidatedProvider,getAllNonValidatedProviders,validerPrestataire,suppremerPrestataire,getDocumentsImage,getAllreservation} = require('../controllers/userController');
 const { getProviderRatings,createRating, getRatingsBetweenUsers } = require('../controllers/reviewController');
 const { getUserNotifications, markNotificationAsRead } = require("../controllers/notificationController");
 const {uploadProfilePicture,uploadProviderImages,deleteProviderImage,getProviderWorkImages,updateProfileData } = require('../controllers/profileController');
@@ -14,8 +14,11 @@ router.post("/create-provider", createProviderUser);
 
 
 router.get('/providers',getProviderProfile);
+
 router.get('/provider/:providerId',getMoreProviderDetails);
+
 router.post('/profile/picture',uploadProfilePicture);
+
 router.post('/profile-edit/:userId',updateProfileData);
 router.get('/providers-work-images/:providerId',getProviderWorkImages);
 router.post('/upload-provider-images/:providerId', uploadProviderImages);
@@ -30,6 +33,21 @@ router.get("/api/notifications/:userId", getUserNotifications);
 router.post('/api/ratings', createRating);
 
 // Récupérer toutes les réservations
+
 router.get('/api/reservations', SuivieController.getReservations);
+
+
+router.get('/clients', getAllClients);
+router.get('/prestataires', getAllValidatedProvider);
+router.get('/prestatairesNoval', getAllNonValidatedProviders);
+
+router.post('/prestatairs/valider/:id', validerPrestataire);
+ 
+//router.delete('/prestatairs/suppremer/:id', suppremerPrestataire);
+
+router.get('/prestatairs/documents-image/:providerId',getDocumentsImage);
+
+router.get('/reservation', getAllreservation);
+
 
 module.exports = router;
