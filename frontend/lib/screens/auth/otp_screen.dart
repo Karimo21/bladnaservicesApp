@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:bladnaservices/screens/auth/password_screen.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter/services.dart';
+
 
 class OTPVerification extends StatefulWidget {
   final List<Map<String, dynamic>> dataUser;
@@ -123,36 +125,38 @@ void _verifyOTP() async {
 
               /// Champs OTP avec `Wrap` pour éviter le dépassement
               Wrap(
-                alignment: WrapAlignment.center,
-                spacing: 8,
-                runSpacing: 8,
-                children: List.generate(
-                  6,
-                  (index) => SizedBox(
-                    width: 50,
-                    height: 50,
-                    child: TextField(
-                      controller: _otpControllers[index],
-                      keyboardType: TextInputType.number,
-                      maxLength: 1,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                          fontSize: 22, fontWeight: FontWeight.bold),
-                      decoration: const InputDecoration(
-                        counterText: "",
-                        border: OutlineInputBorder(),
-                      ),
-                      onChanged: (value) {
-                        if (value.isNotEmpty && index < 5) {
-                          FocusScope.of(context).nextFocus();
-                        } else if (value.isEmpty && index > 0) {
-                          FocusScope.of(context).previousFocus();
-                        }
-                      },
-                    ),
-                  ),
-                ),
-              ),
+  alignment: WrapAlignment.center,
+  spacing: 8,
+  runSpacing: 8,
+  children: List.generate(
+    6,
+    (index) => SizedBox(
+      width: 50,
+      height: 50,
+      child: TextField(
+        controller: _otpControllers[index],
+        keyboardType: TextInputType.number,
+        maxLength: 1,
+        textAlign: TextAlign.center,
+        style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+        inputFormatters: [
+          FilteringTextInputFormatter.digitsOnly, // Cela n'accepte que les chiffres
+        ],
+        decoration: const InputDecoration(
+          counterText: "",
+          border: OutlineInputBorder(),
+        ),
+        onChanged: (value) {
+          if (value.isNotEmpty && index < 5) {
+            FocusScope.of(context).nextFocus();
+          } else if (value.isEmpty && index > 0) {
+            FocusScope.of(context).previousFocus();
+          }
+        },
+      ),
+    ),
+  ),
+),
 
               const SizedBox(height: 50),
 

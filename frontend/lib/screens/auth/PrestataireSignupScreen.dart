@@ -1,5 +1,7 @@
-import 'package:bladnaservices/screens/auth/DocumentUploadScreen.dart';
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:bladnaservices/screens/auth/DocumentUploadScreen.dart';
 
 class PrestataireSignupScreen extends StatefulWidget {
   final List<Map<String, dynamic>> dataUser;
@@ -19,6 +21,48 @@ class _PrestataireSignupScreenState extends State<PrestataireSignupScreen> {
   TextEditingController descriptionController = TextEditingController();
   bool hasError = false;
 
+  List<Map<String, dynamic>> cities = [];
+  List<Map<String, dynamic>> services = [];
+
+  // Fetch data from the APIs
+  @override
+  void initState() {
+    super.initState();
+    fetchCities();
+    fetchServices();
+  }
+
+  // Fetch cities from the API
+  Future<void> fetchCities() async {
+    final response = await http.get(Uri.parse('http://localhost:3000/cities'));
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      setState(() {
+        cities = List<Map<String, dynamic>>.from(data['cities']);
+      });
+    } else {
+      setState(() {
+        hasError = true;
+      });
+    }
+  }
+
+  // Fetch services from the API
+  Future<void> fetchServices() async {
+    final response = await http.get(Uri.parse('http://localhost:3000/services'));
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      setState(() {
+        services = List<Map<String, dynamic>>.from(data['services']);
+      });
+    } else {
+      setState(() {
+        hasError = true;
+      });
+    }
+  }
+
+  // Submit form data
   void _onSubmit() {
     try {
       if (_formKey.currentState!.validate()) {
@@ -77,9 +121,10 @@ class _PrestataireSignupScreenState extends State<PrestataireSignupScreen> {
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () =>{ 
-          widget.dataUser.clear(),
-          Navigator.pop(context),}
+          onPressed: () {
+            widget.dataUser.clear();
+            Navigator.pop(context);
+          },
         ),
         centerTitle: true,
       ),
@@ -96,19 +141,21 @@ class _PrestataireSignupScreenState extends State<PrestataireSignupScreen> {
               ),
               const SizedBox(height: 24),
 
+              // Dropdown for services
               _buildDropdown(
                 "Sélectionnez votre service",
                 selectedService,
-                ["Plomberie", "Électricité", "Ménage", "Jardinage"],
+                services.map((service) => service['title'] as String).toList(),
                 (value) => setState(() => selectedService = value),
               ),
 
               const SizedBox(height: 20),
 
+              // Dropdown for cities
               _buildDropdown(
                 "Sélectionnez votre ville",
                 selectedCity,
-                ["Agadir", "Casablanca", "Marrakech", "Rabat"],
+                cities.map((city) => city['city_name'] as String).toList(),
                 (value) => setState(() => selectedCity = value),
               ),
 
@@ -143,6 +190,7 @@ class _PrestataireSignupScreenState extends State<PrestataireSignupScreen> {
     );
   }
 
+  // Build dropdown widget
   Widget _buildDropdown(String label, String? value, List<String> items, Function(String?) onChanged) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 8),
@@ -160,6 +208,7 @@ class _PrestataireSignupScreenState extends State<PrestataireSignupScreen> {
     );
   }
 
+  // Build text field widget
   Widget _buildTextField(TextEditingController controller, String label, {int maxLines = 1}) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 8),
@@ -176,6 +225,7 @@ class _PrestataireSignupScreenState extends State<PrestataireSignupScreen> {
     );
   }
 
+  // Build text label widget
   Widget _buildTextLabel(String text) {
     return Padding(
       padding: const EdgeInsets.only(left: 8, bottom: 8),
