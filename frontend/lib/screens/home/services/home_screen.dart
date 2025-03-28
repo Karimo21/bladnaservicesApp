@@ -1,5 +1,6 @@
 import 'package:bladnaservices/screens/home/notification/notification_screen.dart';
 import 'package:bladnaservices/screens/home/services/profile_screen.dart';
+import 'package:bladnaservices/screens/home/services/search_screen.dart';
 import 'package:bladnaservices/screens/home/services/service_list_screen.dart';
 import 'package:bladnaservices/screens/home/services_screen.dart';
 import 'package:http/http.dart' as http;
@@ -13,8 +14,8 @@ class Homescreen extends StatefulWidget {
 
 class _HomescreenState extends State<Homescreen> {
   final List<Map<String, dynamic>> services = [
-    {"name": "Coiffeur", "emoji": "✂️"},
-    {"name": "Peintre", "emoji": "🖌️"},
+    {"name": "Coiffeur", "emoji": "✂"},
+    {"name": "Peintre", "emoji": "🖌"},
     {"name": "Cuisinier", "emoji": "👨‍🍳"},
     {"name": "plombier", "emoji": "🔧"},
     {"name": "Électricien", "emoji": "💡"},
@@ -26,7 +27,7 @@ class _HomescreenState extends State<Homescreen> {
     {"name": "Photographe", "emoji": "📷"},
     {"name": "Chauffeur", "emoji": "🚕"},
     {"name": "Professeur", "emoji": "📚"},
-    {"name": "Agent de sécurité", "emoji": "🛡️"},
+    {"name": "Agent de sécurité", "emoji": "🛡"},
   ];
 
   final List<Map<String, dynamic>> providers = [];
@@ -154,63 +155,67 @@ void initState() {
               ),
 
               SizedBox(height: 0), // Espacement ajusté
-              Container(
-                decoration: BoxDecoration(
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black
-                          .withOpacity(0.2), // Ombre légère et réaliste
-                      blurRadius: 8,
-                      spreadRadius: 2,
-                      offset: Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: TextField(
-                  style: TextStyle(fontSize: 16),
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Colors.white,
-                    hintText: "Recherche ici...",
-                    hintStyle: TextStyle(fontSize: 16, color: Colors.grey),
-                    prefixIcon:
-                        Icon(Icons.search, color: Colors.grey, size: 26),
-                    suffixIcon: Icon(Icons.tune,
-                        color: Colors.grey, size: 24), // Icône filtre
-                    contentPadding:
-                        EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(0), // Pas d'arrondi en haut
-                        topRight: Radius.circular(0), // Pas d'arrondi en haut
-                        bottomLeft: Radius.circular(10), // Arrondi en bas
-                        bottomRight: Radius.circular(10), // Arrondi en bas
-                      ),
-                      borderSide: BorderSide.none,
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(0),
-                        topRight: Radius.circular(0),
-                        bottomLeft: Radius.circular(10),
-                        bottomRight: Radius.circular(10),
-                      ),
-                      borderSide:
-                          BorderSide(color: Colors.grey.shade300, width: 1),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(0),
-                        topRight: Radius.circular(0),
-                        bottomLeft: Radius.circular(10),
-                        bottomRight: Radius.circular(10),
-                      ),
-                      borderSide:
-                          BorderSide(color: Color(0xFF0054A5), width: 1),
-                    ),
-                  ),
-                ),
-              ),
+           Container(
+  decoration: BoxDecoration(
+    boxShadow: [
+      BoxShadow(
+        color: Colors.black.withOpacity(0.2),
+        blurRadius: 8,
+        spreadRadius: 2,
+        offset: Offset(0, 4),
+      ),
+    ],
+  ),
+  child: InkWell(
+    onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => SearchScreen(  providers: providers)),
+      );
+    },
+    child: AbsorbPointer(
+      child: TextField(
+        style: TextStyle(fontSize: 16),
+        decoration: InputDecoration(
+          filled: true,
+          fillColor: Colors.white,
+          hintText: "Recherche ici...",
+          hintStyle: TextStyle(fontSize: 16, color: Colors.grey),
+          prefixIcon: Icon(Icons.search, color: Colors.grey, size: 26),
+        
+          contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(0),
+              topRight: Radius.circular(0),
+              bottomLeft: Radius.circular(10),
+              bottomRight: Radius.circular(10),
+            ),
+            borderSide: BorderSide.none,
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(0),
+              topRight: Radius.circular(0),
+              bottomLeft: Radius.circular(10),
+              bottomRight: Radius.circular(10),
+            ),
+            borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(0),
+              topRight: Radius.circular(0),
+              bottomLeft: Radius.circular(10),
+              bottomRight: Radius.circular(10),
+            ),
+            borderSide: BorderSide(color: Color(0xFF0054A5), width: 1),
+          ),
+        ),
+      ),
+    ),
+  ),
+),
 
               const SizedBox(height: 20),
 
@@ -374,10 +379,10 @@ void initState() {
                                     ElevatedButton(
                                       onPressed: () {
                                         Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => ProfilePage(
-                                                provider: providers[index]),
+                                         context,
+                                           MaterialPageRoute(
+                                           builder: (context) => ProfilePage(
+                                                 provider: providers[index]),
                                           ),
                                         );
                                       },
@@ -411,7 +416,7 @@ void initState() {
             ],
           ),
         ),
-      ),
-    );
-  }
+     ),
+);
+}
 }
