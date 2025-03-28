@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:bladnaservices/screens/home/main_screen.dart';
-import 'package:bladnaservices/screens/home/profile/profil_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -9,7 +8,6 @@ import 'package:http/http.dart' as http;
 import 'package:bladnaservices/screens/home/profile/User.dart';
 import 'package:http_parser/http_parser.dart';
 import 'dart:io';
-import 'dart:typed_data';
 
 const Color primaryColor = Color(0xFF0054A5);
 const Color backgroundColor = Color(0xFFF9F9F9);
@@ -22,14 +20,16 @@ class EditProfileScreen extends StatefulWidget {
 class _EditProfileScreenState extends State<EditProfileScreen> {
   File? _selectedImage;
   Uint8List? _webImage; // Variable pour stocker l'image sur Web
+  List<Map<String, dynamic>> cities = [];
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String firstname = User.fname;
   String lastname = User.lname;
   String address = User.adresse;
-  String city = "agadir"; //User.ville;
+  String city = User.city.toString(); 
   String description = User.description;
   bool isSubmitted = false;
+
 
   TextEditingController firstnameController = TextEditingController();
   TextEditingController lastnameController = TextEditingController();
@@ -113,7 +113,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     // For web: Add the image as bytes (base64 or raw bytes)
     if (_webImage != null) {
-      final mediaType = 'image/jpeg'; // Default MIME type for web images
+      const mediaType = 'image/jpeg'; // Default MIME type for web images
       request.files.add(
         http.MultipartFile.fromBytes(
           'profile_image',
@@ -191,10 +191,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       'description': description,
       'role': User.role,
     };
-    print("test43");
     try {
       // Send the POST request with the JSON-encoded body
-      print("43432"); //why it doesnt reach here ?
       var response = await http.post(
         url,
         headers: {
@@ -203,33 +201,44 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         },
         body: jsonEncode(requestData),
       );
-      print("insideTest");
       // Check if the request was successful
       if (response.statusCode == 200) {
-        print("Profile updated successfully!");
         User.fname = firstname;
         User.lname = lastname;
         User.adresse = address;
         User.description = description;
+        User.city=int.parse(city);
    Navigator.pushAndRemoveUntil(
   context,
-  MaterialPageRoute(builder: (context) => MainScreen()),
+  MaterialPageRoute(builder: (context) => const MainScreen()),
   (route) => false, // This removes all previous routes from the stack
 );
         // Optionally, parse the response body
         var jsonResponse = jsonDecode(response.body);
-        print("Server Response: $jsonResponse");
       } else {
-        print("Failed to update profile: ${response.statusCode}");
+  
       }
     } catch (e) {
       print("Error while updating profile: $e");
     }
   }
 
+   // Fetch cities from the API
+  Future<void> fetchCities() async {
+    final response = await http.get(Uri.parse('http://localhost:3000/cities'));
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+
+      setState(() {
+        cities = List<Map<String, dynamic>>.from(data['cities']);
+      });
+    } else {
+    }
+  }
   @override
   void initState() {
     super.initState();
+    fetchCities();
   }
 
   @override
@@ -245,7 +254,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(height: 30),
+                  const SizedBox(height: 30),
                   Row(
                     children: [
                       IconButton(
@@ -255,8 +264,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         },
                         iconSize: 30,
                       ),
-                      SizedBox(width: 10),
-                      Text(
+                      const SizedBox(width: 10),
+                      const Text(
                         "Éditer le profil",
                         style: TextStyle(
                           fontSize: 18,
@@ -266,7 +275,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 26),
+                  const SizedBox(height: 26),
                   Center(
                     child: Stack(
                       children: [
@@ -274,7 +283,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           radius: 50,
                           backgroundColor: Colors.grey[300],
                           backgroundImage: NetworkImage(
-                              "http://localhost:3000" + User.profile),
+                              "http://localhost:3000${User.profile}"),
                         ),
                         Positioned(
                           bottom: 0,
@@ -282,12 +291,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           child: GestureDetector(
                             onTap: _pickImage, // Ouvre la galerie au clic
                             child: Container(
-                              padding: EdgeInsets.all(6),
-                              decoration: BoxDecoration(
+                              padding: const EdgeInsets.all(6),
+                              decoration: const BoxDecoration(
                                 color: primaryColor,
                                 shape: BoxShape.circle,
                               ),
-                              child: Icon(
+                              child: const Icon(
                                 Icons.edit,
                                 color: Colors.white,
                                 size: 20,
@@ -298,7 +307,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ],
                     ),
                   ),
-                  SizedBox(height: 24),
+                  const SizedBox(height: 24),
                   ProfileTextField(
                     label: "Prénom",
                     hintText: firstname,
@@ -327,16 +336,27 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     errorText:
                         addressError ? "Veuillez entrer une adresse" : null,
                   ),
-                  ProfileDropdown(
-                    label: "Ville",
-                    items: ["Agadir", "Casablanca", "Rabat"],
-                    onChanged: (value) {
-                      setState(() {
-                        city = value!;
-                        cityError = city.isEmpty;
-                      });
-                    },
-                  ),
+            
+  DropdownButtonFormField<String>(
+  value: city, // Valeur sélectionnée par défaut
+  decoration: const InputDecoration(
+    labelText: "Ville",
+    border: OutlineInputBorder(),
+  ),
+  items: cities.map<DropdownMenuItem<String>>((cityData) {
+    print(cityData);
+    return DropdownMenuItem<String>(
+      value: cityData["city_id"].toString(),
+      child: Text(cityData['city_name']),
+    );
+  }).toList(),
+  onChanged: (newValue) {
+    setState(() {
+      city = newValue!;
+    });
+  },
+),
+
                   if (User.role == "provider")
                     ProfileDescription(
                       label: "description",
@@ -348,7 +368,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           ? "Veuillez entrer une description"
                           : null,
                     ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   Center(
                     child: SizedBox(
                       width: double.infinity,
@@ -361,7 +381,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           ),
                         ),
                         onPressed: _validateAndSave,
-                        child: Text(
+                        child: const Text(
                           "Enregistrer",
                           style: TextStyle(fontSize: 18, color: Colors.white),
                         ),
@@ -386,7 +406,7 @@ class ProfileTextField extends StatelessWidget {
   final Function(String) onChanged;
   final String? errorText;
 
-  ProfileTextField({
+  const ProfileTextField({
     required this.label,
     required this.hintText,
     required this.controller,
@@ -400,8 +420,8 @@ class ProfileTextField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: TextStyle(fontSize: 16)),
-        SizedBox(height: 8),
+        Text(label, style: const TextStyle(fontSize: 16)),
+        const SizedBox(height: 8),
         TextField(
           controller: controller,
           focusNode: focusNode,
@@ -412,7 +432,7 @@ class ProfileTextField extends StatelessWidget {
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(6)),
           ),
         ),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
       ],
     );
   }
@@ -423,7 +443,7 @@ class ProfileDropdown extends StatelessWidget {
   final List<String> items;
   final Function(String?) onChanged;
 
-  ProfileDropdown(
+  const ProfileDropdown(
       {required this.label, required this.items, required this.onChanged});
 
   @override
@@ -433,11 +453,11 @@ class ProfileDropdown extends StatelessWidget {
       children: [
         Text(
           label,
-          style: TextStyle(fontSize: 16),
+          style: const TextStyle(fontSize: 16),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(6),
             border: Border.all(
@@ -448,8 +468,8 @@ class ProfileDropdown extends StatelessWidget {
           child: DropdownButton<String>(
             isExpanded: true,
             onChanged: onChanged,
-            hint: Text("Sélectionner une ville"),
-            underline: SizedBox(),
+            hint: const Text("Sélectionner une ville"),
+            underline: const SizedBox(),
             items: items.map((item) {
               return DropdownMenuItem<String>(
                 value: item,
@@ -458,7 +478,7 @@ class ProfileDropdown extends StatelessWidget {
             }).toList(),
           ),
         ),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
       ],
     );
   }
@@ -471,7 +491,7 @@ class ProfileDescription extends StatelessWidget {
   final Function(String) onChanged;
   final String? errorText;
 
-  ProfileDescription({
+  const ProfileDescription({
     required this.label,
     required this.controller,
     required this.focusNode,
@@ -484,8 +504,8 @@ class ProfileDescription extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: TextStyle(fontSize: 16)),
-        SizedBox(height: 8),
+        Text(label, style: const TextStyle(fontSize: 16)),
+        const SizedBox(height: 8),
         TextField(
           controller: controller,
           focusNode: focusNode,
@@ -497,7 +517,7 @@ class ProfileDescription extends StatelessWidget {
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(6)),
           ),
         ),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
       ],
     );
   }

@@ -6,18 +6,18 @@ class BottomNavigation extends StatelessWidget {
   final Function(int) onItemTapped;
 
   const BottomNavigation({
-    Key? key,
+    super.key,
     required this.selectedIndex,
     required this.onItemTapped,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
       currentIndex: selectedIndex,
       onTap: onItemTapped,
-      selectedItemColor: Color(0xFF0054A5), // Active icon color
-      unselectedItemColor: Color(0xFF565656), // Inactive icon color
+      selectedItemColor: const Color(0xFF0054A5), // Active icon color
+      unselectedItemColor: const Color(0xFF565656), // Inactive icon color
       backgroundColor: Colors.white,
       type: BottomNavigationBarType.fixed, // To keep all labels visible
       items:  [
@@ -51,7 +51,7 @@ class BottomNavigation extends StatelessWidget {
       width: 24,
       height: 24,
       colorFilter: ColorFilter.mode(
-        selectedIndex == index ? Color(0xFF0054A5) : Color(0xFFD4D6DD),
+        selectedIndex == index ? const Color(0xFF0054A5) : const Color(0xFFD4D6DD),
         BlendMode.srcIn,
       ),
     );

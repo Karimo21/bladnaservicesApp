@@ -7,19 +7,23 @@ const SuivieModel = {
     try {
       const query = `
         SELECT r.reservations_id,
-               DATE_FORMAT(r.start_date, '%M %d, %Y') AS start_date, 
-               DATE_FORMAT(r.end_date, '%M %d, %Y') AS end_date, 
+               DATE_FORMAT(r.start_date, '%Y-%m-%d') AS start_date, 
+               DATE_FORMAT(r.end_date, '%Y-%m-%d') AS end_date, 
                s.name AS status, 
                u.phone, 
+               r.address,
+               r.hour,
+               ct.city_name,
                CONCAT(cl.firstname, ' ', cl.lastname) AS client_name,
                cl.clients_id as client_id,
                cl.profile_picture,
                'client' AS role
         FROM reservations r
         JOIN clients cl ON r.client_id = cl.clients_id
+        join city ct on cl.city_id=ct.city_id
         JOIN users u ON cl.clients_id = u.user_id
         JOIN statut s ON r.statut_id = s.statut_id
-        WHERE r.reserved_provider_id = ? AND r.statut_id != 3 AND r.statut_id != 4;  
+        WHERE r.reserved_provider_id = ? AND r.statut_id != 3 AND r.statut_id != 4 AND r.statut_id !=5;  
       `;
       const [rows] = await db.promise().query(query, [providerId]);
       return rows;
@@ -32,20 +36,24 @@ const SuivieModel = {
       const query = `
         SELECT 
             r.reservations_id,
-            DATE_FORMAT(r.start_date, '%M %d, %Y') AS start_date,
-            DATE_FORMAT(r.end_date, '%M %d, %Y') AS end_date,
+            DATE_FORMAT(r.start_date, '%Y-%m-%d') AS start_date,
+            DATE_FORMAT(r.end_date, '%Y-%m-%d') AS end_date,
             s.name AS status,
             u.phone,
+            r.address,
+            r.hour,
+            ct.city_name,
             CONCAT(pr.firstname, ' ', pr.lastname) AS client_name,
             pr.providers_id as client_id,
             pr.profile_picture,
             'provider' AS role
         FROM reservations r
-        JOIN providers pr ON r.reserved_provider_id = pr.providers_id
+        JOIN providers pr ON r.reserving_provider_id = pr.providers_id
         JOIN users u ON pr.providers_id = u.user_id
+        join city ct on pr.city_id=ct.city_id
         JOIN statut s ON r.statut_id = s.statut_id
         WHERE r.reserved_provider_id = ? and r.client_id is null
-          AND r.statut_id != 3 AND r.statut_id != 4;  -- Assuming status 3 and 4 are 'cancelled' or 'completed'
+          AND r.statut_id != 3 AND r.statut_id != 4 AND r.statut_id !=5;
       `;
       const [rows] = await db.promise().query(query, [providerId]);
       return rows;
@@ -59,15 +67,26 @@ const SuivieModel = {
       const query = `
          update reservations set statut_id=? where reservations_id=?;
       `;
-      const providerNameQuery = `SELECT CONCAT(firstname, ' ', lastname) AS provider_name FROM providers WHERE providers_id = ?`;
-      const [providerRows] = await db.promise().query(providerNameQuery, [providerId]);
-      const providerName = providerRows.length > 0 ? providerRows[0].provider_name : "Unknown provider";  // Handle case if provider is not found
-      const notificationQuery = `INSERT INTO notifications (user_id, message, created_at)
-                               VALUES (?, ?, NOW())`;
+      if(statutId==2){
+       const providerNameQuery = `SELECT CONCAT(firstname, ' ', lastname) AS provider_name FROM providers WHERE providers_id = ?`;
+       const [providerRows] = await db.promise().query(providerNameQuery, [providerId]);
+       const providerName = providerRows.length > 0 ? providerRows[0].provider_name : "un prestataire";  // Handle case if provider is not found
+       const notificationQuery = `INSERT INTO notifications (user_id, message, created_at) VALUES (?, ?, NOW())`;
+       const [notificationResult] = await db.promise().query(notificationQuery, [userId, `Votre demande a été acceptée par ${providerName}`]);
+      }
+      if(statutId==5){
+        const providerNameQuery = `SELECT CONCAT(firstname, ' ', lastname) AS provider_name FROM providers WHERE providers_id = ?`;
+        const [providerRows] = await db.promise().query(providerNameQuery, [providerId]);
+        const providerName = providerRows.length > 0 ? providerRows[0].provider_name : "un prestataire";  // Handle case if provider is not found
+        const notificationQuery = `INSERT INTO notifications (user_id, message, created_at) VALUES (?, ?, NOW())`;
+        const [notificationResult] = await db.promise().query(notificationQuery, [userId, `Votre demande a été refusée par ${providerName}`]);
+       }
+      const statutName = `select name from statut where statut_id= ? `;
       // Insert the notification
-      const [notificationResult] = await db.promise().query(notificationQuery, [userId, `Votre demande a été acceptée par ${providerName}`]);
+      
       const [rows] = await db.promise().query(query, [statutId,reservationId]);
-      return rows;
+      const [name] = await db.promise().query(statutName, [statutId]);
+      return name;
     } catch (error) {
       throw error;
     }
@@ -83,16 +102,20 @@ const SuivieModel = {
         query = `
           SELECT 
               r.reservations_id,
-              DATE_FORMAT(r.start_date, '%M %d, %Y') AS start_date,
-              DATE_FORMAT(r.end_date, '%M %d, %Y') AS end_date,
+              DATE_FORMAT(r.start_date, '%Y-%m-%d') AS start_date,
+              DATE_FORMAT(r.end_date, '%Y-%m-%d') AS end_date,
               s.name AS status,
               u.phone,
               CONCAT(p.firstname, ' ', p.lastname) AS provider_name,
-              p.profile_picture
+              p.profile_picture,
+              r.hour,
+              ct.city_name,
+              r.address
           FROM reservations r
           JOIN providers p ON r.reserved_provider_id = p.providers_id
           JOIN users u ON p.providers_id = u.user_id
           JOIN statut s ON r.statut_id = s.statut_id
+          Join city ct on ct.city_id=p.providers_id
           WHERE r.reserving_provider_id = ?
           AND r.statut_id IN (1, 2);
         `;
@@ -101,15 +124,19 @@ const SuivieModel = {
         query = `
           SELECT
               r.reservations_id,
-              DATE_FORMAT(r.start_date, '%M %d, %Y') AS start_date,
-              DATE_FORMAT(r.end_date, '%M %d, %Y') AS end_date,
+              DATE_FORMAT(r.start_date, '%Y-%m-%d') AS start_date,
+              DATE_FORMAT(r.end_date, '%Y-%m-%d') AS end_date,
               s.name AS status,
               u.phone,
+              ct.city_name,
               CONCAT(p.firstname, ' ', p.lastname) AS provider_name,
-              p.profile_picture
+              p.profile_picture,
+              r.hour,
+              r.address
           FROM reservations r
           JOIN providers p ON r.reserved_provider_id = p.providers_id
           JOIN users u ON p.providers_id = u.user_id
+          Join city ct on ct.city_id=p.providers_id
           JOIN statut s ON r.statut_id = s.statut_id
           WHERE r.client_id = ?
           AND r.statut_id IN (1, 2);
@@ -168,7 +195,7 @@ async getProviderReservationHistory(providerId) {
     LEFT JOIN clients cl ON r.client_id = cl.clients_id
     LEFT JOIN users u_client ON cl.clients_id = u_client.user_id  -- Join clients with users to get phone number
     WHERE (r.reserved_provider_id = ? OR r.reserving_provider_id = ?) 
-    AND r.statut_id IN (3, 4);
+    AND r.statut_id IN (3, 4, 5);
     `;
 
     const [rows] = await db.promise().query(query, [providerId, providerId, providerId, providerId, providerId, providerId, providerId, providerId, providerId, providerId]);

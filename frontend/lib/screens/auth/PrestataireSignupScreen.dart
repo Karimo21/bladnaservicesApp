@@ -6,7 +6,7 @@ import 'package:bladnaservices/screens/auth/DocumentUploadScreen.dart';
 class PrestataireSignupScreen extends StatefulWidget {
   final List<Map<String, dynamic>> dataUser;
 
-  PrestataireSignupScreen({Key? key, required this.dataUser}) : super(key: key);
+  const PrestataireSignupScreen({super.key, required this.dataUser});
 
   @override
   _PrestataireSignupScreenState createState() => _PrestataireSignupScreenState();
@@ -15,8 +15,8 @@ class PrestataireSignupScreen extends StatefulWidget {
 class _PrestataireSignupScreenState extends State<PrestataireSignupScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  String? selectedService;
-  String? selectedCity;
+  String? selectedServiceId;
+  String? selectedCityId;
   TextEditingController addressController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
   bool hasError = false;
@@ -67,14 +67,12 @@ class _PrestataireSignupScreenState extends State<PrestataireSignupScreen> {
     try {
       if (_formKey.currentState!.validate()) {
         widget.dataUser.add({
-          "service": selectedService,
-          "ville": selectedCity,
+          "service": selectedServiceId,
+          "ville": selectedCityId,
           "adresse": addressController.text,
           "description": descriptionController.text,
         });
-
-        print(widget.dataUser);
-
+        
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -93,20 +91,20 @@ class _PrestataireSignupScreenState extends State<PrestataireSignupScreen> {
   Widget build(BuildContext context) {
     if (hasError) {
       return Scaffold(
-        appBar: AppBar(title: Text("Erreur")),
+        appBar: AppBar(title: const Text("Erreur")),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text("Une erreur est survenue", style: TextStyle(color: Colors.red, fontSize: 18)),
-              SizedBox(height: 20),
+              const Text("Une erreur est survenue", style: TextStyle(color: Colors.red, fontSize: 18)),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
                   setState(() {
                     hasError = false;
                   });
                 },
-                child: Text("Revenir"),
+                child: const Text("Revenir"),
               ),
             ],
           ),
@@ -120,7 +118,7 @@ class _PrestataireSignupScreenState extends State<PrestataireSignupScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
             widget.dataUser.clear();
             Navigator.pop(context);
@@ -129,7 +127,7 @@ class _PrestataireSignupScreenState extends State<PrestataireSignupScreen> {
         centerTitle: true,
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         child: Form(
           key: _formKey,
           child: Column(
@@ -144,9 +142,11 @@ class _PrestataireSignupScreenState extends State<PrestataireSignupScreen> {
               // Dropdown for services
               _buildDropdown(
                 "Sélectionnez votre service",
-                selectedService,
-                services.map((service) => service['title'] as String).toList(),
-                (value) => setState(() => selectedService = value),
+                selectedServiceId,
+                services,
+                'service_id',
+                'title',
+                (value) => setState(() => selectedServiceId = value),
               ),
 
               const SizedBox(height: 20),
@@ -154,9 +154,11 @@ class _PrestataireSignupScreenState extends State<PrestataireSignupScreen> {
               // Dropdown for cities
               _buildDropdown(
                 "Sélectionnez votre ville",
-                selectedCity,
-                cities.map((city) => city['city_name'] as String).toList(),
-                (value) => setState(() => selectedCity = value),
+                selectedCityId,
+                cities,
+                'city_id',
+                'city_name',
+                (value) => setState(() => selectedCityId  = value),
               ),
 
               const SizedBox(height: 20),
@@ -172,12 +174,12 @@ class _PrestataireSignupScreenState extends State<PrestataireSignupScreen> {
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF0054A5),
-                    padding: EdgeInsets.symmetric(vertical: 16),
+                    backgroundColor: const Color(0xFF0054A5),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   ),
                   onPressed: _onSubmit,
-                  child: Text(
+                  child: const Text(
                     "Suivant",
                     style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold),
                   ),
@@ -191,34 +193,39 @@ class _PrestataireSignupScreenState extends State<PrestataireSignupScreen> {
   }
 
   // Build dropdown widget
-  Widget _buildDropdown(String label, String? value, List<String> items, Function(String?) onChanged) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8),
-      child: DropdownButtonFormField<String>(
-        decoration: InputDecoration(
-          border: OutlineInputBorder(),
-          labelText: label,
-          contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-        ),
-        value: value,
-        items: items.map((item) => DropdownMenuItem(value: item, child: Text(item))).toList(),
-        onChanged: onChanged,
-        validator: (value) => value == null ? "Veuillez sélectionner une option" : null,
+Widget _buildDropdown(String label, String? selectedId, List<Map<String, dynamic>> items, String valueKey, String displayKey, Function(String?) onChanged) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 8),
+    child: DropdownButtonFormField<String>(
+      decoration: InputDecoration(
+        border: const OutlineInputBorder(),
+        labelText: label,
+        contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       ),
-    );
-  }
+      value: selectedId,
+      items: items.map((item) {
+        return DropdownMenuItem(
+          value: item[valueKey].toString(), // Use ID as value
+          child: Text(item[displayKey]),    // Display name
+        );
+      }).toList(),
+      onChanged: onChanged,
+      validator: (value) => value == null ? "Veuillez sélectionner une option" : null,
+    ),
+  );
+}
 
   // Build text field widget
   Widget _buildTextField(TextEditingController controller, String label, {int maxLines = 1}) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 8),
       child: TextFormField(
         controller: controller,
         maxLines: maxLines,
         decoration: InputDecoration(
-          border: OutlineInputBorder(),
+          border: const OutlineInputBorder(),
           labelText: label,
-          contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+          contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
         ),
         validator: (value) => value!.isEmpty ? "Ce champ ne peut pas être vide" : null,
       ),
@@ -229,7 +236,7 @@ class _PrestataireSignupScreenState extends State<PrestataireSignupScreen> {
   Widget _buildTextLabel(String text) {
     return Padding(
       padding: const EdgeInsets.only(left: 8, bottom: 8),
-      child: Text(text, style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF565656))),
+      child: Text(text, style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF565656))),
     );
   }
 }

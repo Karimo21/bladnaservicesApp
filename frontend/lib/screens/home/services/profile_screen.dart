@@ -1,6 +1,5 @@
 import 'package:bladnaservices/screens/home/chat/chat_screen.dart';
 import 'package:bladnaservices/screens/home/profile/User.dart';
-import 'package:bladnaservices/screens/home/reservation/rate_screen.dart';
 import 'package:bladnaservices/screens/home/reservation/reservation_prestataire_screen.dart';
 import 'package:bladnaservices/screens/home/review/review_screen.dart';
 import 'package:bladnaservices/screens/home/services/galerie_screen.dart';
@@ -11,7 +10,7 @@ import 'dart:convert';
 
 class ProfilePage extends StatefulWidget {
   final Map<String, dynamic> provider;
-  ProfilePage({Key? key, required this.provider}) : super(key: key);
+  const ProfilePage({super.key, required this.provider});
 
   @override
   _ProfilePageState createState() => _ProfilePageState();
@@ -91,6 +90,7 @@ class _ProfilePageState extends State<ProfilePage> {
   void initState() {
     super.initState();
     fetchData(); // Call the fetch data method when the page loads
+    print(widget.provider);
   }
 
   @override
@@ -109,7 +109,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       height: 400,
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.only(
+                        borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(0),
                           topRight: Radius.circular(0),
                           bottomLeft: Radius.circular(22),
@@ -127,7 +127,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       top: 1,
                       left: 1,
                       child: IconButton(
-                          icon: Icon(Icons.arrow_back,
+                          icon: const Icon(Icons.arrow_back,
                               color: Colors.black, size: 30),
                           onPressed: () => {
                                 Navigator.pop(context),
@@ -138,19 +138,19 @@ class _ProfilePageState extends State<ProfilePage> {
                       right: 10,
                       child: Container(
                         padding:
-                            EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.6),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Row(
                           children: [
-                            Icon(Icons.star,
+                            const Icon(Icons.star,
                                 color: Color(0xFF0054A5), size: 18),
-                            SizedBox(width: 4),
+                            const SizedBox(width: 4),
                             Text(
                               "${widget.provider['rating']}",
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: Color(0xFF0054A5),
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -163,7 +163,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ],
                 ),
                 Padding(
-                  padding: EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -174,21 +174,21 @@ class _ProfilePageState extends State<ProfilePage> {
                             children: [
                               Row(
                                 children: [
-                                  Icon(Icons.person, color: Colors.grey),
-                                  SizedBox(width: 5),
+                                  const Icon(Icons.person, color: Colors.grey),
+                                  const SizedBox(width: 5),
                                   Text(
                                     widget.provider['name'],
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                         fontSize: 22,
                                         fontWeight: FontWeight.bold),
                                   ),
                                 ],
                               ),
-                              SizedBox(height: 3),
+                              const SizedBox(height: 3),
                               Row(
                                 children: [
-                                  Icon(Icons.work, color: Colors.grey),
-                                  SizedBox(width: 5),
+                                  const Icon(Icons.work, color: Colors.grey),
+                                  const SizedBox(width: 5),
                                   Text(widget.provider['profession']),
                                 ],
                               ),
@@ -226,8 +226,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       const SizedBox(height: 5),
                       Row(
                         children: [
-                          Icon(Icons.bookmark, color: Colors.grey),
-                          SizedBox(width: 5),
+                          const Icon(Icons.bookmark, color: Colors.grey),
+                          const SizedBox(width: 5),
                           Text(
                               "${widget.provider['reservations']} Réservations"),
                         ],
@@ -255,7 +255,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
+                          const Text(
                             'Galerie',
                             style: TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.bold),
@@ -271,7 +271,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
                               // Action pour afficher plus d'images
                             },
-                            child: Text(
+                            child: const Text(
                               "Voire tout",
                               style: TextStyle(
                                   color: Color(0xFF0054A5), fontSize: 16),
@@ -280,12 +280,12 @@ class _ProfilePageState extends State<ProfilePage> {
                         ],
                       ),
 
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
 
                       // Largeur de l'image
 
                       Container(
-                        constraints: BoxConstraints(
+                        constraints: const BoxConstraints(
                           maxHeight: 120, // Hauteur maximale
                           maxWidth: double
                               .infinity, // Largeur infinie pour que ListView s'affiche correctement
@@ -311,7 +311,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ),
 
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -339,18 +339,18 @@ class _ProfilePageState extends State<ProfilePage> {
                         ],
                       ),
 
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       ListView.builder(
                         shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
+                        physics: const NeverScrollableScrollPhysics(),
                         itemCount: reviews.length,
                         itemBuilder: (context, index) {
                           final review = reviews[index];
                           return Card(
                             color: const Color.fromARGB(255, 255, 255, 255),
-                            margin: EdgeInsets.symmetric(vertical: 4),
+                            margin: const EdgeInsets.symmetric(vertical: 4),
                             child: Padding(
-                              padding: EdgeInsets.all(10),
+                              padding: const EdgeInsets.all(10),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -366,32 +366,32 @@ class _ProfilePageState extends State<ProfilePage> {
                                                 review['profileImage']!),
                                             radius: 20,
                                           ),
-                                          SizedBox(width: 10),
+                                          const SizedBox(width: 10),
                                           Text(
                                             review['name']!,
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                                 fontWeight: FontWeight.bold),
                                           ),
                                         ],
                                       ),
                                       Text(
                                         review['date']!,
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                             color: Colors.grey, fontSize: 12),
                                       ),
                                     ],
                                   ),
-                                  SizedBox(height: 5),
+                                  const SizedBox(height: 5),
                                   // Affichage des étoiles
                                   Row(
                                     children: List.generate(
                                       review['rating'],
-                                      (i) => Icon(Icons.star,
+                                      (i) => const Icon(Icons.star,
                                           color: Color(0xFF0054A5), size: 18),
                                     ),
                                   ),
 
-                                  SizedBox(height: 5),
+                                  const SizedBox(height: 5),
                                   // Commentaire
                                   Text(review['comment']!),
                                 ],
@@ -411,7 +411,7 @@ class _ProfilePageState extends State<ProfilePage> {
             left: 0,
             right: 0,
             child: Container(
-              padding: EdgeInsets.all(10),
+              padding: const EdgeInsets.all(10),
               child: Row(
                 children: [
 
@@ -427,15 +427,15 @@ class _ProfilePageState extends State<ProfilePage> {
                          // );                         
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFFD3D3D3),
+                        backgroundColor: const Color(0xFFD3D3D3),
                         foregroundColor: Colors.white,
-                        minimumSize: Size(double.infinity, 50),
+                        minimumSize: const Size(double.infinity, 50),
                       ),
-                      child: Text('Évaluer'),
+                      child: const Text('Évaluer'),
                     ),
                   ),
                   if(User.userId != widget.provider['provider_id'])
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   if(User.userId != widget.provider['provider_id'])
                   Expanded(
                     flex: 7, // 70% de l'espace
@@ -448,11 +448,11 @@ class _ProfilePageState extends State<ProfilePage> {
                               );     
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF0054A5),
+                        backgroundColor: const Color(0xFF0054A5),
                         foregroundColor: Colors.white,
-                        minimumSize: Size(double.infinity, 50),
+                        minimumSize: const Size(double.infinity, 50),
                       ),
-                      child: Text('Réserver'),
+                      child: const Text('Réserver'),
                     ),
                   ),
                 ],

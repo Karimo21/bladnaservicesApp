@@ -20,6 +20,31 @@ const Notification = {
       throw error;
     }
   },
+  async getUnreadNotifications(userId) { 
+    try {
+      const [rows] = await db.promise().query(
+        `SELECT 
+            count(n.notifications_id) as count
+         FROM notifications n
+         WHERE n.user_id = ? AND is_read=0`,
+        [userId]
+      );
+      return rows;
+    } catch (error) {
+      throw error;
+    }
+  },
+  async markNotificationAsRead(userId) { 
+    try {
+      const [rows] = await db.promise().query(
+        ` update notifications set is_read=1 where user_id=?;`,
+        [userId]
+      );
+      return rows;
+    } catch (error) {
+      throw error;
+    }
+  },
 
   // Marquer une notification comme lue
   async markAsRead(notificationId) {

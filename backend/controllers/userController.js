@@ -67,15 +67,17 @@ exports.getMoreProviderDetails = (req, res) => {
 exports.createClientUser = (req, res) => {
 
   uploadProviderDocuments(req, res, (err) => {
-
-     const { fname, lname, phone, password, role } = req.body;
-     console.log(fname, lname, phone, password, role);
-     User.createClientUser(fname, lname, phone, password, role, (err, result) => {
+   
+     
+     const { fname, lname, phone, password, role,ville_id2 } = req.body;
+     
+     User.createClientUser(fname, lname, phone, password, role,ville_id2, (err, result) => {
        if (err) return res.status(500).json({ message: "Database error", error: err });
      res.json({ message: "Client user created successfully", result });
     });
   });
 };
+
 exports.createProviderUser = (req, res) => {
 
   // Handle image upload
@@ -84,23 +86,21 @@ exports.createProviderUser = (req, res) => {
           //console.log('Error uploading files:', err.message);
           return res.status(400).json({ message: "Image upload failed", error: err.message });
       }
-      const { fname, lname, phone, password, role } = req.body;
-      
+      const { fname, lname, phone, password, role,service_id,ville_id,description,adresse } = req.body;
+    
 
       // Create provider user
-      User.createProviderUser(fname, lname, phone, password, role, (err, result) => {
+      User.createProviderUser(fname, lname, phone, password, role,service_id,ville_id,description,adresse, (err, result) => {
           if (err) return res.status(500).json({ message: "Database error", error: err });
 
           const providerId = result.userId; // Get the provider ID
-          console.log(providerId);
-          console.log("outside");
+
           // Check if all images are provided
           if (req.files && req.files['front_image'] && req.files['back_image'] && req.files['diploma_image']) {
               const frontImageUrl = `/uploads/provider_documents/${req.files['front_image'][0].filename}`;
               const backImageUrl = `/uploads/provider_documents/${req.files['back_image'][0].filename}`;
-              const diplomatImageUrl = `/uploads/provider_documents/${req.files['diploma_image'][0].filename}`;
-              console.log("inside");
-              console.log(frontImageUrl);
+              const diplomatImageUrl = `/uploads/provider_documents/${req.files['diploma_image'][0].filename}`; 
+
               // Save image paths in the database
               User.saveProviderDocuments(providerId, frontImageUrl, backImageUrl, diplomatImageUrl, (err, imageResult) => {
                   if (err) return res.status(500).json({ message: "Error saving document URLs", error: err },
@@ -169,7 +169,7 @@ exports.loginUser = async (req, res) => {
           description:profile[0].description,
           profile:profile[0]['profile_picture'],
           rate:"",
-          city:"",
+          city:profile[0].city_id,
           availability:0,
           service:"",
           totalreservations:0
@@ -178,6 +178,7 @@ exports.loginUser = async (req, res) => {
     }
     if(user.role==="provider"){
        profile =await User.getProviderProfile(user.user_id);
+       console.log("profile: "+profile);
        res.json({
         message: "Login successful",
         user: {
@@ -190,24 +191,37 @@ exports.loginUser = async (req, res) => {
           description:profile[0].description,
           profile:profile[0]['profile_picture'],
           rate:profile[0].rate,
-          city:profile[0].city_name,
+          city:profile[0].city_id,
           service:profile[0].service,
           availability:profile[0].availability,
           totalreservations:profile[0].total_reservation
         },
       });
     }
-    if(user.role==="admin"){
-      profile =await User.getAdminProfile(user.user_id);
-   }
-    
+    if (user.role === "admin") {
+      profile = await User.getAdminProfile(user.user_id);
+      if (!profile || profile.length === 0) {
+        return res.status(404).json({ message: "Admin profile not found" });
+      }
 
-    
+      return res.json({
+        message: "Login successful",
+        user: {
+          userId: user.user_id,
+          fname: profile[0].firstname || "",
+          lname: profile[0].lastname || "",
+          phone: user.phone,
+          role: user.role,
+        },
+      });
+    }
+  
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
 exports.uploadProfilePictureController = (req, res) => {
   if (!req.file) {
       return res.status(400).json({ message: "No file uploaded" });
@@ -239,8 +253,6 @@ exports.createUser = (req, res) => {
     res.json({ message: "User created successfully", userId: results.insertId });
   });
 };
-<<<<<<< HEAD
-
 
 //MAP
 exports.updateProviderPosition = (req, res) => {
@@ -268,7 +280,6 @@ exports.updateProviderPosition = (req, res) => {
     res.status(200).json({ message: 'Provider position updated successfully' });
   });
 };
-=======
 exports.getAllClients = (req, res) => {
   User.getAllClients((err, results) => {
     if (err) {
@@ -374,7 +385,6 @@ exports.suppremerPrestataire = (req, res) => {
   });
   
 };
-
 exports.getDocumentsImage = (req, res) => {
   const providerId = req.params.providerId;
 
@@ -397,4 +407,3 @@ exports.getAllreservation = (req, res) => {
     res.json(results);
   });
 };
->>>>>>> 064cefb0f146674925f053eb5636e7fc5145044e

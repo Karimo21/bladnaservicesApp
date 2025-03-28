@@ -35,9 +35,9 @@ class _ReservationsPageState extends State<ReservationsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF9F9F9),
+      backgroundColor: const Color(0xFFF9F9F9),
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           "Réservations",
           style: TextStyle(
             color: Color(0xFF0054A5),
@@ -45,19 +45,19 @@ class _ReservationsPageState extends State<ReservationsPage> {
             fontSize: 17,
           ),
         ),
-        backgroundColor: Color(0xFFF9F9F9),
+        backgroundColor: const Color(0xFFF9F9F9),
         elevation: 0,
-        iconTheme: IconThemeData(color: Color(0xFF0054A5)),
+        iconTheme: const IconThemeData(color: Color(0xFF0054A5)),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {},
         ),
       ),
       body: Column(
         children: [
           Container(
-            margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-            padding: EdgeInsets.all(5),
+            margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            padding: const EdgeInsets.all(5),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(8),
@@ -66,7 +66,7 @@ class _ReservationsPageState extends State<ReservationsPage> {
                   color: Colors.grey.withOpacity(0),
                   blurRadius: 5,
                   spreadRadius: 1,
-                  offset: Offset(0, 2),
+                  offset: const Offset(0, 2),
                 ),
               ],
             ),
@@ -99,18 +99,18 @@ class _ReservationsPageState extends State<ReservationsPage> {
     return GestureDetector(
       onTap: () => _onTabTapped(index),
       child: Container(
-        margin: EdgeInsets.symmetric(horizontal: 4),
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+        margin: const EdgeInsets.symmetric(horizontal: 4),
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
         decoration: BoxDecoration(
           color:
-              _selectedIndex == index ? Color(0xFF0054A5) : Colors.transparent,
+              _selectedIndex == index ? const Color(0xFF0054A5) : Colors.transparent,
           borderRadius: BorderRadius.circular(10),
         ),
         alignment: Alignment.center,
         child: Text(
           title,
           style: TextStyle(
-            color: _selectedIndex == index ? Colors.white : Color(0xFF565656),
+            color: _selectedIndex == index ? Colors.white : const Color(0xFF565656),
             fontWeight: FontWeight.normal,
           ),
         ),
@@ -128,10 +128,10 @@ class ReservationCard extends StatefulWidget {
   
 
  const ReservationCard({
-    Key? key,
+    super.key,
     required this.data,
     required this.onRemove,
-  }) : super(key: key);
+  });
 
   @override
   _ReservationCardState createState() => _ReservationCardState();
@@ -142,10 +142,9 @@ class _ReservationCardState extends State<ReservationCard> {
   String? selectedStatus; // Holds the selected status (Terminer/Annuler)
 
   Future<void> changeStatut(String reservationId, int statutId, int userId) async {
-  print("accessed the function");
+  
   final url = Uri.parse('http://localhost:3000/api/reservations/update_status');
   final loggedUser = User.userId;
-  print(reservationId);print(statutId);print(userId);print(loggedUser);
   final response = await http.post(
     url,
     headers: {"Content-Type": "application/json"},
@@ -153,7 +152,7 @@ class _ReservationCardState extends State<ReservationCard> {
   );
 
   if (response.statusCode == 200) {
-    print("Statut mis à jour avec succès");
+    
   } else {
     print("Erreur lors de la mise à jour du statut");
   }
@@ -173,7 +172,7 @@ class _ReservationCardState extends State<ReservationCard> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Confirmer l'action"),
+          title: const Text("Confirmer l'action"),
           content: Text(
               "Êtes-vous sûr de vouloir marquer cette réservation comme '$status'?"),
           actions: [
@@ -181,7 +180,7 @@ class _ReservationCardState extends State<ReservationCard> {
               onPressed: () {
                 Navigator.pop(context); // Close the dialog
               },
-              child: Text("Annuler"),
+              child: const Text("Annuler"),
             ),
             TextButton(
               onPressed: () async {
@@ -193,7 +192,7 @@ class _ReservationCardState extends State<ReservationCard> {
                 Navigator.pop(context);
                  widget.onRemove();
               },
-              child: Text("Confirmer"),
+              child: const Text("Confirmer"),
             ),
           ],
         );
@@ -204,8 +203,8 @@ class _ReservationCardState extends State<ReservationCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 14),
-      padding: EdgeInsets.all(16),
+      margin: const EdgeInsets.symmetric(vertical: 14),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -236,7 +235,9 @@ class _ReservationCardState extends State<ReservationCard> {
           Divider(color: Colors.grey.shade400),
           buildInfoRow("Date de début", widget.data["start_date"]!),
           buildInfoRow("Date de fin", widget.data["end_date"]!),
-          buildInfoRow("Ville", "Agadir"),
+          buildInfoRow("Ville", widget.data["city_name"]!),
+          buildInfoRow("Lieu de réservation",widget.data["address"]!),
+          buildInfoRow("Heure",widget.data["hour"]!),
           buildInfoRow(
             "Téléphone",
             widget.data["phone"]!,
@@ -266,8 +267,10 @@ class _ReservationCardState extends State<ReservationCard> {
                     ),
                     padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 40),
                   ),
-                  onPressed: () {
+                  onPressed: () async {
                     widget.onRemove(); // Remove the card from the list
+
+                    await changeStatut(widget.data["id"]!, 5,int.parse(widget.data["client_id"].toString()));
                   },
                   child: const Text(
                     "Refuser",
@@ -280,19 +283,17 @@ class _ReservationCardState extends State<ReservationCard> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(6),
                     ),
-                    padding: EdgeInsets.symmetric(vertical: 18, horizontal: 40),
+                    padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 40),
                   ),
                   onPressed: () async {
-                  print(widget.data);
-                  print(widget.data["client_id"]);
-                  print("Accepter button clicked!");
+  
                  await changeStatut(widget.data["id"]!, 2,int.parse(widget.data["client_id"].toString()));
-                  print("after the await call clicked!");
+                  
                   setState(() {
                    isAccepted = true; // Show dropdown to select status
                    widget.data["status"] = "En cours";
                   });
-                 print(widget.data["id"]);print(int.parse(widget.data["client_id"].toString()));
+                 
                   },
                   child: const Text(
                     "Accepter",
@@ -392,10 +393,10 @@ class _ReservationCardState extends State<ReservationCard> {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
-                color: color ?? Color(0xFF565656),
+                color: color ?? const Color(0xFF565656),
                 decoration:
                     underline ? TextDecoration.underline : TextDecoration.none,
-                decorationColor: underlineColor ?? Color(0xFF0054A5),
+                decorationColor: underlineColor ?? const Color(0xFF0054A5),
               ),
             ),
           ),

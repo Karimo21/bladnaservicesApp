@@ -5,12 +5,12 @@ const Profile = {
 updateProfileData: (userId, data, callback) => {
         const providerQuery = `
             UPDATE providers 
-            SET firstname = ?, lastname = ?, adresse = ?, description = ?, updated_at = ? 
+            SET firstname = ?, lastname = ?, adresse = ?, description = ?,city_id = ?, updated_at = ? 
             WHERE providers_id = ?
         `;
         const clientQuery = `
             UPDATE clients 
-            SET firstname = ?, lastname = ?, adresse = ?, updated_at = ? 
+            SET firstname = ?, lastname = ?, adresse = ?, city_id = ?, updated_at = ? 
             WHERE clients_id = ?
         `;
            const role=data.role;
@@ -19,16 +19,17 @@ updateProfileData: (userId, data, callback) => {
            const lastname= data.lastname;
            const adresse=data.address;
            const description= data.description;
+           const city_id=data.city;
            const date= new Date();
           
        if(role=="client"){
-        db.query(clientQuery, [firstname,lastname,adresse,date,userId], (err, result) => {
+        db.query(clientQuery, [firstname,lastname,adresse,city_id,date,userId], (err, result) => {
             if (err) return callback(err, null);
             callback(null, result);
         });
        }
        if(role=="provider"){
-        db.query(providerQuery, [firstname,lastname,adresse,description,date,userId], (err, result) => {
+        db.query(providerQuery, [firstname,lastname,adresse,description,city_id,date,userId], (err, result) => {
             if (err) return callback(err, null);
             callback(null, result);
         });

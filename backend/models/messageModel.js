@@ -7,7 +7,7 @@ const Message = {
   async findMessagesBetweenUsers(userId, contactId) {
     try {
       const [rows] = await db.promise().query(
-        `SELECT m.message, DATE_FORMAT(m.created_at, '%H:%i') AS message_time, m.sender_id, m.receiver_id
+        `SELECT m.message, DATE_FORMAT(m.created_at, '%c/%e/%y %H:%i')  AS message_time, m.sender_id, m.receiver_id,m.is_read
          FROM messages m
          WHERE (m.sender_id = ? AND m.receiver_id = ?) 
          OR (m.sender_id = ? AND m.receiver_id = ?)
@@ -49,7 +49,7 @@ const Message = {
            VALUES (?, ?)`,
           [senderId, receiverId]
         );
-        console.log('First Insert Result:', result1);
+        console.log('First Insert Result:', result1[0]);
   
         // Second insert: receiver -> sender
         const result2 = await db.promise().query(
@@ -57,7 +57,7 @@ const Message = {
            VALUES (?, ?)`,
           [receiverId, senderId]
         );
-        console.log('Second Insert Result:', result2);
+        console.log('Second Insert Result:', result2[0]);
   
         return {
           message: "Contact created successfully",
@@ -78,11 +78,11 @@ const Message = {
   markAllAsRead: async (userId, contactId) => {
     try {
       const query = `
-        UPDATE messages 
-        SET is_read = TRUE 
-        WHERE (sender_id = ? AND receiver_id = ?) 
-        OR (sender_id = ? AND receiver_id = ?)`;
-      await db.promise().query(query, [userId, contactId, contactId, userId]);
+        UPDATE messages
+        SET is_read = TRUE
+        WHERE sender_id = ? AND receiver_id = ?;
+      `;
+      await db.promise().query(query, [contactId, userId]);
     } catch (error) {
       throw error;
     }

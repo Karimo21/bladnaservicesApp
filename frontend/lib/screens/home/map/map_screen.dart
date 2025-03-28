@@ -131,7 +131,7 @@ class _MoroccoMapState extends State<MoroccoMap> {
               );
             },
             child: Container(
-              padding: EdgeInsets.all(5),
+              padding: const EdgeInsets.all(5),
               decoration: BoxDecoration(
                 shape: BoxShape.rectangle,
                 border: Border.all(
@@ -139,9 +139,9 @@ class _MoroccoMapState extends State<MoroccoMap> {
                   width: 2,
                 ),
                 borderRadius: BorderRadius.circular(10),
-                boxShadow: [
+                boxShadow: const [
                   BoxShadow(
-                    color: const Color.fromARGB(236, 248, 242, 242),
+                    color: Color.fromARGB(236, 248, 242, 242),
                     blurRadius: 2,
                     spreadRadius: 1,
                   )
@@ -159,13 +159,13 @@ class _MoroccoMapState extends State<MoroccoMap> {
               ),
             ),
           ),
-          SizedBox(height: 5),
+          const SizedBox(height: 5),
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
               color: const Color.fromARGB(255, 0, 68, 187),
               borderRadius: BorderRadius.circular(8),
-              boxShadow: [
+              boxShadow: const [
                 BoxShadow(
                   color: Colors.black26,
                   blurRadius: 4,
@@ -175,7 +175,7 @@ class _MoroccoMapState extends State<MoroccoMap> {
             ),
             child: Text(
               nom ?? 'Inconnu', // Nom par défaut si null
-              style: TextStyle(
+              style: const TextStyle(
                   color: Colors.white,
                   fontSize: 12,
                   fontWeight: FontWeight.bold),
@@ -204,18 +204,18 @@ class _MoroccoMapState extends State<MoroccoMap> {
                 child: TextField(
                   decoration: InputDecoration(
                     hintText: "Recherche...",
-                    prefixIcon: Icon(Icons.search),
+                    prefixIcon: const Icon(Icons.search),
                     suffixIcon: GestureDetector(
                       onTap:
                           _getCurrentLocation, // Fonction pour la localisation
-                      child: Icon(Icons.my_location, color: Color(0xFF0054A5)),
+                      child: const Icon(Icons.my_location, color: Color(0xFF0054A5)),
                     ),
                     border: InputBorder.none,
-                    contentPadding: EdgeInsets.all(10),
+                    contentPadding: const EdgeInsets.all(10),
                   ),
                 ),
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
 
               // Carte
               Expanded(
@@ -226,13 +226,13 @@ class _MoroccoMapState extends State<MoroccoMap> {
                       FlutterMap(
                         mapController: _mapController,
                         options: MapOptions(
-                          center: LatLng(31.7917, -7.0926),
+                          center: const LatLng(31.7917, -7.0926),
                           zoom: 6.0,
                           interactiveFlags:
                               InteractiveFlag.all & ~InteractiveFlag.rotate,
                           maxBounds: LatLngBounds(
-                            LatLng(21.0, -20.0), // Coin sud-ouest
-                            LatLng(37.5, 2.0), // Coin nord-est
+                            const LatLng(21.0, -20.0), // Coin sud-ouest
+                            const LatLng(37.5, 2.0), // Coin nord-est
                           ),
                         ),
                         children: [
@@ -240,10 +240,9 @@ class _MoroccoMapState extends State<MoroccoMap> {
                           TileLayer(
                             urlTemplate:
                                 "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                            subdomains: ['a', 'b', 'c'],
+                            subdomains: const ['a', 'b', 'c'],
                           ),
 
-<<<<<<< HEAD
                           // Marqueurs des prestataires
                           MarkerLayer(
                             markers: _prestataires
@@ -264,7 +263,7 @@ class _MoroccoMapState extends State<MoroccoMap> {
                                   point: _currentPosition!,
                                   width: 40,
                                   height: 40,
-                                  child: Icon(
+                                  child: const Icon(
                                     Icons.location_on,
                                     color: Colors.red,
                                     size: 40,
@@ -272,17 +271,6 @@ class _MoroccoMapState extends State<MoroccoMap> {
                                 ),
                               ],
                             ),
-=======
-                      // Marqueurs des prestataires avec design améliorés
-                      MarkerLayer(
-                        markers: [
-                          _buildMarker(30.5731, -4.5898,
-                              "assets/images/khalid.jpg", "Khalid"),
-                          _buildMarker(34.0209, -6.8416,
-                              "assets/images/khalid.jpg", "Omar"),
-                          _buildMarker(35.7595, -5.83395,
-                              "assets/images/khalid.jpg", "ahmed"),
->>>>>>> 064cefb0f146674925f053eb5636e7fc5145044e
                         ],
                       ),
 
@@ -302,9 +290,9 @@ class _MoroccoMapState extends State<MoroccoMap> {
                               },
                               mini: true,
                               backgroundColor: Colors.white,
-                              child: Icon(Icons.add, color: Colors.black),
+                              child: const Icon(Icons.add, color: Colors.black),
                             ),
-                            SizedBox(height: 5),
+                            const SizedBox(height: 5),
                             FloatingActionButton(
                               heroTag: "zoomOut",
                               onPressed: () {
@@ -315,7 +303,7 @@ class _MoroccoMapState extends State<MoroccoMap> {
                               },
                               mini: true,
                               backgroundColor: Colors.white,
-                              child: Icon(Icons.remove, color: Colors.black),
+                              child: const Icon(Icons.remove, color: Colors.black),
                             ),
                           ],
                         ),
@@ -325,22 +313,22 @@ class _MoroccoMapState extends State<MoroccoMap> {
                 ),
               ),
 
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
 
               // Bouton "Voir tout"
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF0054A5),
+                    backgroundColor: const Color(0xFF0054A5),
                     foregroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(vertical: 15),
+                    padding: const EdgeInsets.symmetric(vertical: 15),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
                   onPressed: () {},
-                  child: Text("Voir tout",
+                  child: const Text("Voir tout",
                       style:
                           TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 ),
@@ -375,10 +363,10 @@ class PrestataireDetails extends StatelessWidget {
               width: 100,
               height: 100,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Text(
               "Détails de ${nom ?? 'Inconnu'}", // Nom par défaut si null
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ],
         ),

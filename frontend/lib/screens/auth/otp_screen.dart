@@ -1,8 +1,6 @@
 import 'package:bladnaservices/screens/auth/PrestataireSignupScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:bladnaservices/screens/auth/password_screen.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:flutter/services.dart';
 
 
@@ -10,8 +8,7 @@ class OTPVerification extends StatefulWidget {
   final List<Map<String, dynamic>> dataUser;
   final String role; // "client" ou "prestataire"
 
-  OTPVerification({Key? key, required this.role, required this.dataUser})
-      : super(key: key);
+  const OTPVerification({super.key, required this.role, required this.dataUser});
 
   @override
   _OTPVerificationScreenState createState() => _OTPVerificationScreenState();

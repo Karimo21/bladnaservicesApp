@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
@@ -30,11 +32,17 @@ class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _messageController = TextEditingController();
   final SocketService socketService = SocketService();
   final ScrollController _scrollController = ScrollController();
+  Timer? _readStatusTimer;
+  final bool _isScreenActive = true;
 
   @override
   void initState() {
     super.initState();
+    socketService.markMessagesAsRead(widget.userId, widget.contactId);
+    _startReadStatusUpdates();
+    
     _fetchMessages();
+
     socketService.joinRoom(widget.userId);
 
     socketService.setOnMessageReceived((data) {
@@ -46,19 +54,57 @@ class _ChatScreenState extends State<ChatScreen> {
               'text': data['message'],
               'time': data['formattedTime'],
               'isSent': data['sender_id'] == widget.userId,
+              'isRead' : 0
             });
           });
           _scrollToBottom(); // Scroll to the bottom
         }
       }
     });
+        // Listen for when messages are marked as read
+    socketService.setOnMessagesMarkedAsRead((data) {
+       if (!mounted) return;
+
+      if (int.parse(data['contactId'].toString()) == widget.userId) {
+
+        setState(() {
+          // Update messages status to "read" (isRead = 1)
+          messages = messages.map((message) {
+            if (message['isRead'] == 0) {
+              return {...message, 'isRead': 1};
+            }
+            return message;
+          }).toList();
+        });
+  
+      }
+    });
+   
   }
 
   @override
   void dispose() {
     _messageController.dispose();
     _scrollController.dispose();
+    _readStatusTimer?.cancel();
     super.dispose();
+  }
+   
+  void _startReadStatusUpdates() {
+    // Initial immediate update
+    _markMessagesAsRead();
+    
+    // Set up periodic updates every 1 second
+    _readStatusTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_isScreenActive) {
+        _markMessagesAsRead();
+      }
+    });
+  }
+  void _markMessagesAsRead() {
+    if (mounted) {
+      socketService.markMessagesAsRead(widget.userId, widget.contactId);
+    }
   }
 
   // Fetch messages from the API
@@ -76,6 +122,7 @@ class _ChatScreenState extends State<ChatScreen> {
             return {
               'text': msg['message'],
               'time': msg['message_time'] ?? 'No time',
+              'isRead': msg['is_read'],
               'isSent': msg['sender_id'] == widget.userId,
             };
           }).toList();
@@ -108,9 +155,12 @@ class _ChatScreenState extends State<ChatScreen> {
       setState(() {
         messages.add({
           'text': messageText,
-          'time': DateFormat('HH:mm').format(now),
+          'time': DateFormat('M/d HH:mm').format(now),
           'isSent': true,
+          'isRead':0
         });
+       
+        
       });
       _scrollToBottom(); // Scroll after adding the message
     }
@@ -118,11 +168,13 @@ class _ChatScreenState extends State<ChatScreen> {
     _messageController.clear();
 
     socketService.sendMessage(widget.userId, widget.contactId, messageText, formattedTime);
-
+    
+    
     socketService.socket.emit('updateContacts', {
       'contactId': widget.contactId,
       'role': widget.contactRole,
     });
+
   }
 
   @override
@@ -139,7 +191,7 @@ class _ChatScreenState extends State<ChatScreen> {
               icon: const Icon(Icons.arrow_back, color: Color(0xFF0054A5)),
               onPressed: () {
                 
-                socketService.markMessagesAsRead(widget.userId, widget.contactId);
+                //socketService.markMessagesAsRead(widget.userId, widget.contactId);
                 Navigator.pop(context);
               },
               iconSize: 35,
@@ -177,6 +229,7 @@ class _ChatScreenState extends State<ChatScreen> {
               itemBuilder: (context, index) {
                 final message = messages[index];
                 bool isSent = message['isSent'];
+                int isRead = message['isRead'];
                 return Align(
                   alignment: isSent ? Alignment.centerRight : Alignment.centerLeft,
                   child: Padding(
@@ -208,15 +261,15 @@ class _ChatScreenState extends State<ChatScreen> {
                               style: const TextStyle(
                                 fontFamily: "Poppins",
                                 fontSize: 12,
-                                color: Colors.grey,
+                                color:  Colors.grey,
                               ),
                             ),
                             if (isSent) ...[
                               const SizedBox(width: 4),
-                              const Icon(
+                                 Icon(
                                 Icons.done_all,
                                 size: 16,
-                                color: Colors.blue,
+                                color: isRead==1 ? const Color.fromARGB(255, 40, 131, 217): Colors.grey[400]!,
                               ),
                             ],
                           ],
@@ -233,10 +286,6 @@ class _ChatScreenState extends State<ChatScreen> {
             color: Colors.white,
             child: Row(
               children: [
-                IconButton(
-                  icon: const Icon(Icons.add, color: Colors.grey),
-                  onPressed: () {},
-                ),
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
@@ -245,14 +294,14 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                     child: TextField(
                       controller: _messageController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         hintText: "Type a message",
-                        hintStyle: const TextStyle(
+                        hintStyle: TextStyle(
                           fontFamily: "Poppins",
                           color: Colors.grey,
                         ),
                         border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                        contentPadding: EdgeInsets.symmetric(horizontal: 16),
                       ),
                     ),
                   ),
@@ -260,6 +309,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 IconButton(
                   icon: const Icon(Icons.send, color: Colors.blue),
                   onPressed: () async {
+                    socketService.markMessagesAsRead(widget.userId, widget.contactId);
                     await _sendMessage();
                   },
                 ),

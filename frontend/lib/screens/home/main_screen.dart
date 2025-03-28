@@ -9,7 +9,7 @@ import 'package:bladnaservices/widgets/bottom_navigation.dart';
 
 class MainScreen extends StatefulWidget {
   static final GlobalKey<_MainScreenState> mainScreenKey = GlobalKey<_MainScreenState>();
-  const MainScreen({Key? key}) : super(key: key);
+  const MainScreen({super.key});
 
   @override
   State<MainScreen> createState() => _MainScreenState();

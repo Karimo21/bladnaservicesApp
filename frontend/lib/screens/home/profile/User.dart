@@ -10,13 +10,13 @@ class User {
   static String adresse="";
   static String rate="";
   static String service="";
-  static String city="";
+  static int city=1;
   static int availability=0;
   static int totalreservations=0;
 
   // Function to set the user data
   static void setUserData(int id, String userRole,String profilePicture,String fname1,String lname1,String adresse1,String description1,
-                          String rate1,String city1,int totalreservations1,String service1,int availability1
+                          String rate1,int city1,int totalreservations1,String service1,int availability1
   ) {
     userId = id;
     role = userRole;

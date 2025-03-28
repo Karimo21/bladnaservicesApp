@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class SearchScreen extends StatefulWidget {
   final List<Map<String, dynamic>> providers;
 
-  const SearchScreen({Key? key, required this.providers}) : super(key: key);
+  const SearchScreen({super.key, required this.providers});
 
   @override
   _SearchScreenState createState() => _SearchScreenState();

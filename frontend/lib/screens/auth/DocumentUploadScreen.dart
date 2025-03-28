@@ -20,6 +20,12 @@ class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
   String? _backError;
   String? _diplomaError;
 
+  // Fetch data from the APIs
+  @override
+  void initState() {
+    super.initState();
+    print(widget.dataUser);
+  }
   Future<void> _pickImage(ImageSource source, String type) async {
     try {
       final pickedFile = await ImagePicker().pickImage(source: source);

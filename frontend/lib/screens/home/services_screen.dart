@@ -29,10 +29,10 @@ class ServicesScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text("Services", style: TextStyle(color: Colors.black)),
+        title: const Text("Services", style: TextStyle(color: Colors.black)),
         backgroundColor: Colors.white,
         elevation: 0,
       ),
@@ -75,12 +75,12 @@ class ServicesScreen extends StatelessWidget {
                   children: [
                     Text(
                       services[index]["emoji"],
-                      style: TextStyle(fontSize: 40), // Taille des emojis
+                      style: const TextStyle(fontSize: 40), // Taille des emojis
                     ),
-                    SizedBox(height: 5),
+                    const SizedBox(height: 5),
                     Text(
                       services[index]["name"],
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
                         color: Colors.black, // ✅ Texte en noir pour la lisibilité

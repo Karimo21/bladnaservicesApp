@@ -21,10 +21,20 @@ class SocketService with WidgetsBindingObserver {
       print('Connected to Socket Server');
     });
 
+   
+
     socket.on('receiveMessage', (data) {
       if (onMessageReceived != null) {
         onMessageReceived!(data);
       }
+    });
+
+    socket.on('reservationCreated', (data) {
+          print("📩 Direct event received in Flutter: $data"); // 🔍 Vérification immédiate
+    });
+
+    socket.on('reservationStatutUpdated', (data) {
+          print("Statut updated for the reservation: $data"); // 🔍 Vérification immédiate
     });
 
     socket.onDisconnect((_) => print('Disconnected from Socket Server'));
@@ -64,20 +74,41 @@ class SocketService with WidgetsBindingObserver {
       "time": time,
     });
   }
+  
   void markMessagesAsRead(int userId, int contactId) {
-  socket.emit('markMessagesAsRead', {
+   socket.emit('markMessagesAsRead', {
     "userId": userId,
     "contactId": contactId
-  });
-}
+   });
+  }
+  void setOnMessagesMarkedAsRead(Function(dynamic) callback) {
+   socket.on('messagesMarkedAsRead', (data) {
+    print("Messages marked as read: $data"); // Debugging line
+    callback(data); // Send data to the UI
+   });
+  }
 
-  void joinRoom(int userId,) {
+  void joinRoom(int userId) {
     socket.emit('join', userId);
   }
 
-  void setOnMessageReceived(Function(dynamic) callback) {
+ void setOnMessageReceived(Function(dynamic) callback) {
     onMessageReceived = callback;
   }
+ void setOnNewReservation(Function(dynamic) callback) {
+  socket.on('reservationCreated', (data) {
+    print("📩 New reservation received in Flutter: $data"); // Debugging line
+    callback(data); // Send data to UI
+  });
+  
+ } 
+  void setOnReservationUpdate(Function(dynamic) callback) {
+  socket.on('reservationStatutUpdated', (data) {
+   // print("Statut of Reservation updated: $data"); // Debugging line
+    callback(data); // Send data to UI
+  });
+  
+ } 
 
 void setOnContactsUpdated(Function(List<dynamic>) callback) {
   socket.on('contactsUpdated', (data) {

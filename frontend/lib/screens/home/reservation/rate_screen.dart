@@ -27,15 +27,15 @@ class _RateScreenState extends State<RateScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF9F9F9),
+      backgroundColor: const Color(0xFFF9F9F9),
       appBar: AppBar(
-        backgroundColor: Color(0xFFF9F9F9),
+        backgroundColor: const Color(0xFFF9F9F9),
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Color(0xFF0054A5)),
+          icon: const Icon(Icons.arrow_back, color: Color(0xFF0054A5)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text(
+        title: const Text(
           "Évaluez votre expérience",
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
@@ -55,7 +55,7 @@ class _RateScreenState extends State<RateScreen> {
               child: Container(
                 height: 130,
                 color: Colors.white,
-                padding: EdgeInsets.all(12),
+                padding: const EdgeInsets.all(12),
                 child: Row(
                   children: [
                     ClipRRect(
@@ -64,11 +64,11 @@ class _RateScreenState extends State<RateScreen> {
                         width: 90,
                         height: 130,
                         color: Colors.grey[300],
-                        child: Icon(Icons.person, size: 40, color: Colors.grey),
+                        child: const Icon(Icons.person, size: 40, color: Colors.grey),
                       ),
                     ),
-                    SizedBox(width: 12),
-                    Expanded(
+                    const SizedBox(width: 12),
+                    const Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -91,20 +91,20 @@ class _RateScreenState extends State<RateScreen> {
               ),
             ),
 
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
             // Titre Évaluation
-            Text(
+            const Text(
               "Évaluer le dernier service",
               style: TextStyle(
                   fontWeight: FontWeight.bold, color: Color(0xFF565656)),
             ),
 
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
 
             // Star Rating System inside White Container
             Container(
-              padding: EdgeInsets.symmetric(vertical: 16), // Add padding
+              padding: const EdgeInsets.symmetric(vertical: 16), // Add padding
               decoration: BoxDecoration(
                 color: Colors.white, // White background
                 borderRadius: BorderRadius.circular(12), // Rounded corners
@@ -112,7 +112,7 @@ class _RateScreenState extends State<RateScreen> {
                   BoxShadow(
                     color: Colors.black.withOpacity(0.1),
                     blurRadius: 5,
-                    offset: Offset(0, 3),
+                    offset: const Offset(0, 3),
                   ),
                 ],
               ),
@@ -122,7 +122,7 @@ class _RateScreenState extends State<RateScreen> {
                   return IconButton(
                     icon: Icon(
                       index < selectedStars ? Icons.star : Icons.star_border,
-                      color: Color(0xFF0054A5), // Blue color for stars
+                      color: const Color(0xFF0054A5), // Blue color for stars
                       size: 36,
                     ),
                     onPressed: () {
@@ -135,15 +135,15 @@ class _RateScreenState extends State<RateScreen> {
               ),
             ),
 
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
             // Comment Input
-            Text(
+            const Text(
               "Laissez un commentaire (optionnel)",
               style: TextStyle(
                   fontWeight: FontWeight.bold, color: Color(0xFF565656)),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             TextField(
               controller: commentController,
               maxLines: 3,
@@ -151,24 +151,24 @@ class _RateScreenState extends State<RateScreen> {
                 hintText: "Saisissez votre commentaire ici",
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(color: Color(0xFFC5C6CC)), // Border color
+                  borderSide: const BorderSide(color: Color(0xFFC5C6CC)), // Border color
                   
                 ),
               ),
             ),
 
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
             // Warning Message
             if (showWarning)
               Container(
-                padding: EdgeInsets.all(12),
+                padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: Colors.red.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: Colors.red),
                 ),
-                child: Row(
+                child: const Row(
                   children: [
                     Icon(Icons.error, color: Colors.red),
                     SizedBox(width: 8),
@@ -182,7 +182,7 @@ class _RateScreenState extends State<RateScreen> {
                 ),
               ),
 
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
             // Submit Button (Bigger & Blue)
             SizedBox(
@@ -190,13 +190,13 @@ class _RateScreenState extends State<RateScreen> {
               child: ElevatedButton(
                 onPressed: submitReview,
                 style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 18), // Bigger height
-                  backgroundColor: Color(0xFF0054A5),
+                  padding: const EdgeInsets.symmetric(vertical: 18), // Bigger height
+                  backgroundColor: const Color(0xFF0054A5),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(6),
                   ),
                 ),
-                child: Text("Envoyer",
+                child: const Text("Envoyer",
                     style: TextStyle(fontSize: 18, color: Colors.white)),
               ),
             ),

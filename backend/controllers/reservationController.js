@@ -8,21 +8,32 @@ exports.setIo = (socketIo) => {
 // Send a message
 exports.createReservation = async (req,res) => {
     try {
-        const {role, clientId, providerId, startDate, endDate, statutId } = req.body;
-        console.log(role);
+        const {role, clientId, providerId, startDate, endDate, statutId,hour,address } = req.body;
+
         // Enregistrer le message dans la base de données
-        const result = await Reservation.createReservation(role,clientId, providerId, startDate, endDate,statutId);
+        const result = await Reservation.createReservation(role,clientId, providerId, startDate, endDate,statutId,hour,address);
         // Emit event to client for real-time updates
-        if (io) {
-          io.to(clientId).emit('newReservation', {
-              reservationId: result.insertId,
-              clientId,
-              providerId,
-              startDate,
-              endDate,
-              statutId
-          });
-      }
+        const clientInfo = await Reservation.getClientInfo(role,clientId);
+        
+             // Emit event to notify clients in real time
+             if (io) {
+                console.log('Emitting reservationCreated event to providerId:'+providerId);
+                io.to(providerId).emit('reservationCreated', {
+                    reservationId: result.insertId,  // Assuming result contains an ID
+                    clientId,
+                    providerId,
+                    startDate,
+                    endDate,
+                    client_name:clientInfo[0].client_name,
+                    city_name:clientInfo[0].city_name,
+                    profile_picture:clientInfo[0].profile_picture,
+                    phone:clientInfo[0].phone,
+                    statut:"En attente",
+                    hour,
+                    address
+                });
+            }
+  
           // Retourner le résultat si nécessaire
         res.json({
             message: "Reservation created successfully",

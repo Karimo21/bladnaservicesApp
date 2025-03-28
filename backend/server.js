@@ -5,6 +5,7 @@ const http = require('http'); // Import http module
 const bodyParser = require("body-parser");
 const chatController = require('./controllers/chatController'); // Importer le contrôleur
 const reservationController = require('./controllers/reservationController');
+const suivieController = require('./controllers/suivieController');
 const path = require('path');
 const UserContact = require('./models/userContactsModel');
 const app = express();
@@ -15,7 +16,8 @@ const io = require('socket.io')(server, {  // Initialize socket.io with the HTTP
     methods: ["GET", "POST"]
   }
 });
-reservationController.setIo(io); // Pass the socket instance
+reservationController.setIo(io); 
+suivieController.setIo(io);
 
 app.use(cors());
 app.use(express.json({limit: "50mb"}));
@@ -27,23 +29,31 @@ app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 // Serve static files from the 'uploads' directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+// Serve static files from the "public" directory
+app.use(express.static(path.join(__dirname, 'public')));
+// Route to serve the main dashboard page
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 //routes
 const userRoutes = require('./routes/userRoutes');
 const otpRoutes = require('./routes/otpRoutes');
 const chatRoutes = require('./routes/chatRoutes'); 
 const chartRoutes = require('./routes/chartRoutes'); 
 const reservationRoutes = require('./routes/reservationRoutes'); 
+const notificationRoutes = require('./routes/notificationRoutes');
 
 //use the user routes
-app.use(userRoutes,reservationRoutes,chatRoutes,chartRoutes,otpRoutes);
+app.use(userRoutes,reservationRoutes,chatRoutes,chartRoutes,otpRoutes,notificationRoutes);
 
 io.on('connection', (socket) => {
     console.log('A user connected');
 
-    socket.on('join', (data) => {
-        socket.join(data); // Join the user's room
-        const {userId,role} =data;
-        console.log(`User with ID `,userId,`joined the room`,role);
+    socket.on('join', (userId) => {
+        socket.join(userId); // Join the user's room
+        console.log(`User with ID `,userId,`joined the room`);
+        //console.log('Current rooms:', socket.rooms);
     });
     
     // Listen for sendMessage event
@@ -56,11 +66,7 @@ io.on('connection', (socket) => {
 
           const date = new Date(time);
           // Format time to show only HH:mm (24-hour format)
-          const formattedTime = date.toLocaleTimeString([], {
-             hour: '2-digit',
-             minute: '2-digit',
-             hour12: false,
-           }); 
+          const formattedTime = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear().toString().slice(-2)} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`; 
             console.log(formattedTime);         
             
             // Diffuser le message à l'utilisateur récepteur
@@ -109,12 +115,15 @@ io.on('connection', (socket) => {
             // Notifier l'expéditeur que ses messages ont été lus
             io.to(contactId).emit('messagesMarkedAsRead', { 
                 readerId: userId, 
-                contactId 
+                contactId:contactId
             });
     
         } catch (error) {
             console.error('Erreur lors du marquage des messages comme lus:', error);
         }
+    });
+    socket.on('reservationCreated', (data) => {
+        console.log('Reservation Created:', data);
     });
     
 

@@ -1,14 +1,12 @@
 import 'package:bladnaservices/screens/auth/otp_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 class PhoneScreen extends StatefulWidget {
   final String role; // Rôle sélectionné (Client ou Prestataire)
   final List<Map<String, dynamic>> dataUser;
 
-  const PhoneScreen({Key? key, required this.role, required this.dataUser}) : super(key: key);
+  const PhoneScreen({super.key, required this.role, required this.dataUser});
 
   @override
   _PhoneScreenState createState() => _PhoneScreenState();
@@ -119,9 +117,9 @@ class _PhoneScreenState extends State<PhoneScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.only(top: 40, bottom: 40),
-                child: const Text(
+              const Padding(
+                padding: EdgeInsets.only(top: 40, bottom: 40),
+                child: Text(
                   "Entrez votre numéro de téléphone ",
                   style: TextStyle(
                     fontSize: 22,

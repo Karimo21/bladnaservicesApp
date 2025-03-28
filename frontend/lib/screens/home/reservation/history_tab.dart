@@ -63,15 +63,15 @@ class _HistoryTabState extends State<HistoryTab> {
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return Center(child: CircularProgressIndicator());
+      return const Center(child: CircularProgressIndicator());
     }
 
     if (reservations.isEmpty) {
-      return Center(child: Text("No history available"));
+      return const Center(child: Text("No history available"));
     }
 
     return ListView.builder(
-      padding: EdgeInsets.all(10),
+      padding: const EdgeInsets.all(10),
       itemCount: reservations.length,
       itemBuilder: (context, index) {
         return HistoryCard(data: reservations[index]);
@@ -83,13 +83,13 @@ class _HistoryTabState extends State<HistoryTab> {
 class HistoryCard extends StatelessWidget {
   final Map<String, String> data;
 
-  HistoryCard({required this.data});
+  const HistoryCard({required this.data});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 14),
-      padding: EdgeInsets.all(16),
+      margin: const EdgeInsets.symmetric(vertical: 14),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -98,7 +98,7 @@ class HistoryCard extends StatelessWidget {
             color: Colors.grey.withOpacity(0.2),
             blurRadius: 5,
             spreadRadius: 1,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -111,7 +111,7 @@ class HistoryCard extends StatelessWidget {
             ),
             title: Text(
               data["name"]!,
-              style: TextStyle(
+              style: const TextStyle(
                 fontWeight: FontWeight.normal,
                 color: Color(0xFF565656),
               ),
@@ -125,7 +125,7 @@ class HistoryCard extends StatelessWidget {
             "Statut",
             data["status"]!,
             isLink: true,
-            color: Color(0xFF0054A5),
+            color: const Color(0xFF0054A5),
             underline: data["status"] == "Terminé",
             underlineColor: Colors.blue,
           ),
@@ -143,7 +143,7 @@ class HistoryCard extends StatelessWidget {
         children: [
           Text(
             label,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Color(0xFF565656)),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Color(0xFF565656)),
           ),
           GestureDetector(
             onTap: isLink ? () {} : null,
@@ -152,9 +152,9 @@ class HistoryCard extends StatelessWidget {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
-                color: color ?? Color(0xFF565656),
+                color: color ?? const Color(0xFF565656),
                 decoration: underline ? TextDecoration.underline : TextDecoration.none,
-                decorationColor: underlineColor ?? Color(0xFF0054A5),
+                decorationColor: underlineColor ?? const Color(0xFF0054A5),
               ),
             ),
           ),

@@ -90,9 +90,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
         ),
       ),
       body: isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : notifications.isEmpty
-              ? Center(child: Text("Aucune notification disponible."))
+              ? const Center(child: Text("Aucune notification disponible."))
               : ListView.builder(
                   padding: const EdgeInsets.all(.0),
                   itemCount: notifications.length,

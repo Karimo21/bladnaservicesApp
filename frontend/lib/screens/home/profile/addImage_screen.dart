@@ -5,9 +5,7 @@ import 'package:bladnaservices/screens/home/profile/User.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:flutter/foundation.dart'; // Detect if the app is running on Web
-import 'dart:ui' as ui;
 
 class ImageUploadPage extends StatefulWidget {
   @override
@@ -15,7 +13,7 @@ class ImageUploadPage extends StatefulWidget {
 }
 
 class _ImageUploadPageState extends State<ImageUploadPage> {
-  List<dynamic> _images = []; // List for images to upload (File or Uint8List)
+  final List<dynamic> _images = []; // List for images to upload (File or Uint8List)
   List<Map<String, dynamic>> _fetchedImages = []; // List for fetched image URLs
   bool _isUploading = false;
 
@@ -119,7 +117,7 @@ class _ImageUploadPageState extends State<ImageUploadPage> {
           ),
         );
       } else if (image is Uint8List) {
-        final mediaType = 'image/jpeg'; // Default for web images
+        const mediaType = 'image/jpeg'; // Default for web images
         print("Adding image from Uint8List with media type: $mediaType");
 
         request.files.add(
@@ -139,13 +137,13 @@ class _ImageUploadPageState extends State<ImageUploadPage> {
         print("Images uploaded successfully!");
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Image upload failed")),
+          const SnackBar(content: Text("Image upload failed")),
         );
       }
     } catch (e) {
       print("Error during upload: $e");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error uploading images")),
+        const SnackBar(content: Text("Error uploading images")),
       );
     } finally {
       setState(() {
@@ -171,17 +169,17 @@ class _ImageUploadPageState extends State<ImageUploadPage> {
         // Successfully deleted, now remove from the list
  
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Image deleted successfully')),
+          const SnackBar(content: Text('Image deleted successfully')),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to delete image')),
+          const SnackBar(content: Text('Failed to delete image')),
         );
       }
     } catch (e) {
       print('Error during delete: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error deleting image')),
+        const SnackBar(content: Text('Error deleting image')),
       );
     }
   }
@@ -198,7 +196,7 @@ void _removeFetchedImage(int id) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Ajouter les images',
           style: TextStyle(
               color: Color(0xFF0054A5),
@@ -206,7 +204,7 @@ void _removeFetchedImage(int id) {
               fontWeight: FontWeight.bold),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Color(0xFF0054A5), size: 22),
+          icon: const Icon(Icons.arrow_back, color: Color(0xFF0054A5), size: 22),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -228,7 +226,7 @@ void _removeFetchedImage(int id) {
                       children: [
                         Container(
                           height: 200,
-                          margin: EdgeInsets.only(bottom: 10),
+                          margin: const EdgeInsets.only(bottom: 10),
                           child: Image.network(image['image_url'],
                               fit: BoxFit.cover, width: double.infinity),
                         ),
@@ -238,19 +236,19 @@ void _removeFetchedImage(int id) {
                           child: GestureDetector(
                             onTap: () => _removeFetchedImage(image['id'],),
                             child: Container(
-                              decoration: BoxDecoration(
+                              decoration: const BoxDecoration(
                                 color: Colors.white,
                                 shape: BoxShape.circle,
                               ),
-                              padding: EdgeInsets.all(0),
-                              child: Icon(Icons.delete,
+                              padding: const EdgeInsets.all(0),
+                              child: const Icon(Icons.delete,
                                   color: Colors.red, size: 26),
                             ),
                           ),
                         ),
                       ],
                     );
-                  }).toList(),
+                  }),
                   // Display uploaded images with delete button
                   ..._images.asMap().entries.map((entry) {
                     int index = entry.key;
@@ -259,7 +257,7 @@ void _removeFetchedImage(int id) {
                       children: [
                         Container(
                           height: 200,
-                          margin: EdgeInsets.only(bottom: 10),
+                          margin: const EdgeInsets.only(bottom: 10),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(0),
                           ),
@@ -283,19 +281,19 @@ void _removeFetchedImage(int id) {
                           child: GestureDetector(
                             onTap: () => _removeImage(index),
                             child: Container(
-                              decoration: BoxDecoration(
+                              decoration: const BoxDecoration(
                                 color: Colors.white,
                                 shape: BoxShape.circle,
                               ),
-                              padding: EdgeInsets.all(0),
-                              child: Icon(Icons.delete,
+                              padding: const EdgeInsets.all(0),
+                              child: const Icon(Icons.delete,
                                   color: Colors.red, size: 26),
                             ),
                           ),
                         ),
                       ],
                     );
-                  }).toList(),
+                  }),
                   // Add new image button
                   GestureDetector(
                     onTap: () => _pickImage(ImageSource.gallery),
@@ -316,9 +314,9 @@ void _removeFetchedImage(int id) {
                               width: 2,
                             ),
                           ),
-                          child: Center(
+                          child: const Center(
                             child: Icon(Icons.add,
-                                color: const Color.fromARGB(255, 4, 73, 130),
+                                color: Color.fromARGB(255, 4, 73, 130),
                                 size: 30),
                           ),
                         ),

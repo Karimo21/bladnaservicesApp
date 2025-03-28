@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class GaleriePage extends StatelessWidget {
   final List<String> galleryImages;
 
-  const GaleriePage({Key? key, required this.galleryImages}) : super(key: key);
+  const GaleriePage({super.key, required this.galleryImages});
 
   @override
   Widget build(BuildContext context) {

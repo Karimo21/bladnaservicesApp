@@ -13,8 +13,8 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   bool _isHovered = false; // Variable pour l'effet hover
 
-  TextEditingController _phoneController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   // Function to handle login request
   Future<void> login() async {
@@ -47,12 +47,16 @@ class _LoginScreenState extends State<LoginScreen> {
             data['user']['service'] ?? '',
             data['user']['availability'] ?? ''
               );
+
+              //SocketService();
       }
+
+
       
-      print(data);
+
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => MainScreen()),
+        MaterialPageRoute(builder: (context) => const MainScreen()),
       );
       print("Logged in");
     } else {
@@ -68,7 +72,7 @@ class _LoginScreenState extends State<LoginScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -77,12 +81,12 @@ class _LoginScreenState extends State<LoginScreen> {
       body: SingleChildScrollView(
         // ✅ Permet de scroller pour éviter l'overflow
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 70), // ✅ Utiliser SizedBox au lieu de Padding
-              Text(
+              const SizedBox(height: 70), // ✅ Utiliser SizedBox au lieu de Padding
+              const Text(
                 "Connectez-vous",
                 style: TextStyle(
                   fontSize: 24,
@@ -90,48 +94,48 @@ class _LoginScreenState extends State<LoginScreen> {
                   color: Color(0xFF565656),
                 ),
               ),
-              SizedBox(height: 90),
+              const SizedBox(height: 90),
               TextField(
                 controller: _phoneController,
                 keyboardType: TextInputType.phone,
                 decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.phone),
+                  prefixIcon: const Icon(Icons.phone),
                   hintText: "Entrez votre téléphone",
                   filled: true,
                   fillColor: Colors.grey[200],
-                  contentPadding: EdgeInsets.symmetric(vertical: 15),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 15),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
                   ),
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               TextField(
                 controller: _passwordController,
                 obscureText: true,
                 decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.lock),
+                  prefixIcon: const Icon(Icons.lock),
                   hintText: "Entrez votre mot de passe",
                   filled: true,
                   fillColor: Colors.grey[200],
-                  contentPadding: EdgeInsets.symmetric(vertical: 15),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 15),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
                   ),
                 ),
               ),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
               MouseRegion(
                 onEnter: (_) => setState(() => _isHovered = true),
                 onExit: (_) => setState(() => _isHovered = false),
                 child: AnimatedContainer(
-                  duration: Duration(milliseconds: 200),
+                  duration: const Duration(milliseconds: 200),
                   width: double.infinity,
                   height: 56,
                   decoration: BoxDecoration(
-                    color: _isHovered ? Colors.blue[700] : Color(0xFF0054A5),
+                    color: _isHovered ? Colors.blue[700] : const Color(0xFF0054A5),
                     borderRadius: BorderRadius.circular(8),
                     boxShadow: _isHovered
                         ? [
@@ -151,7 +155,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     onPressed: () {
                       login();
                     },
-                    child: Text(
+                    child: const Text(
                       "Se Connecter",
                       style: TextStyle(
                         fontSize: 18,
@@ -162,11 +166,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
+                  const Text(
                     "Êtes-vous nouveau ? ",
                     style: TextStyle(fontSize: 16, color: Colors.black54),
                   ),
@@ -177,7 +181,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         MaterialPageRoute(builder: (context) => SignupScreen()),
                       );
                     },
-                    child: Text(
+                    child: const Text(
                       "Inscrivez-vous",
                       style: TextStyle(
                         fontSize: 16,
@@ -188,7 +192,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                   height: 50), // ✅ Ajout d'espace en bas pour éviter l'overflow
             ],
           ),

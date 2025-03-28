@@ -11,13 +11,25 @@ exports.getUserNotifications = async (req, res) => {
   }
 };
 
-// Marquer une notification comme lue
-exports.markNotificationAsRead = async (req, res) => {
+// Récupérer les notifications d'un utilisateur 
+exports.unreadNotifications = async (req, res) => {
   try {
-    const notificationId = req.params.notificationId;
-    await Notification.markAsRead(notificationId);
-    res.json({ success: true, message: "Notification marquée comme lue" });
+    const userId = req.params.userId;
+    const unreadNotifications = await Notification.getUnreadNotifications(userId);
+  
+    res.json({ count:unreadNotifications[0].count });
   } catch (error) {
-    res.status(500).json({ error: "Erreur lors de la mise à jour de la notification" });
+    res.status(500).json({ error: "Erreur lors de la récupération des notifications non lus" });
   }
 };
+exports.markNotificationAsRead = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    await Notification.markNotificationAsRead(userId);
+  
+    res.json({ message: "Notification marquée comme lue"});
+  } catch (error) {
+    res.status(500).json({ error: "Erreur  notifications non lus" });
+  }
+};
+

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:bladnaservices/screens/auth/info_screen.dart';
 import 'package:bladnaservices/screens/auth/login_screen.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +20,10 @@ class _CreatePasswordScreenState extends State<PasswordScreen> {
   final TextEditingController _confirmPasswordController = TextEditingController();
   final TextEditingController _nomController = TextEditingController();
   final TextEditingController _prenomController = TextEditingController();
-  final TextEditingController _ageController = TextEditingController();
+  String role="";
+  List<Map<String, dynamic>> cities = [];
+  
+  String? _selectedCity;
   final _formKey = GlobalKey<FormState>();
 
   bool _passwordVisible = false;
@@ -39,6 +43,27 @@ class _CreatePasswordScreenState extends State<PasswordScreen> {
     }
   }
 
+  // Fetch cities from the API
+  Future<void> fetchCities() async {
+    final response = await http.get(Uri.parse('http://localhost:3000/cities'));
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      setState(() {
+        cities = List<Map<String, dynamic>>.from(data['cities']);
+      });
+    } else {
+    }
+  }
+  @override
+  void initState() {
+    super.initState();
+    fetchCities();
+    print(widget.dataUser);
+
+    role = widget.dataUser.firstWhere(
+                              (element) => element.containsKey("role"),
+                              orElse: () => {"role": "client"})["role"];
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,7 +72,7 @@ class _CreatePasswordScreenState extends State<PasswordScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => {
             widget.dataUser.clear(),
             Navigator.pop(context),
@@ -56,25 +81,25 @@ class _CreatePasswordScreenState extends State<PasswordScreen> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 40),
+          padding: const EdgeInsets.symmetric(horizontal: 40),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 20),
-                Text(
+                const SizedBox(height: 20),
+                const Text(
                   "Créez votre mot de passe ",
                   style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.w500,
                       color: Color(0xFF565656)),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 TextFormField(
                   controller: _nomController,
                   decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.person),
+                    prefixIcon: const Icon(Icons.person),
                     hintText: "Nom",
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8)),
@@ -82,11 +107,11 @@ class _CreatePasswordScreenState extends State<PasswordScreen> {
                   validator: (value) =>
                       value!.isEmpty ? "Le nom est obligatoire" : null,
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 TextFormField(
                   controller: _prenomController,
                   decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.person_outline),
+                    prefixIcon: const Icon(Icons.person_outline),
                     hintText: "Prénom",
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8)),
@@ -94,12 +119,37 @@ class _CreatePasswordScreenState extends State<PasswordScreen> {
                   validator: (value) =>
                       value!.isEmpty ? "Le prénom est obligatoire" : null,
                 ),
-                SizedBox(height: 20),
+
+                if(role=="client") 
+                const SizedBox(height: 20),
+
+                if(role=="client")            // Dropdown for Cities
+                DropdownButtonFormField<String>(
+                  decoration: InputDecoration(
+                    prefixIcon: const Icon(Icons.location_city),
+                    hintText: "Sélectionnez une ville",
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                  value: _selectedCity,
+                  items: cities.map((city) {
+                    return DropdownMenuItem<String>(
+                      value: city["city_id"].toString(), // Ensure it's a string
+                      child: Text(city["city_name"]),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedCity = value;
+                    });
+                  },
+                  validator: (value) => value == null ? "Veuillez choisir une ville" : null,
+                ),
+                const SizedBox(height: 20),
                 TextFormField(
                   controller: _passwordController,
                   obscureText: !_passwordVisible,
                   decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.lock),
+                    prefixIcon: const Icon(Icons.lock),
                     hintText: "Mot de passe",
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8)),
@@ -112,19 +162,21 @@ class _CreatePasswordScreenState extends State<PasswordScreen> {
                     ),
                   ),
                   validator: (value) {
-                    if (value!.isEmpty)
+                    if (value!.isEmpty) {
                       return "Le mot de passe est obligatoire";
-                    if (value.length < 6)
+                    }
+                    if (value.length < 6) {
                       return "Le mot de passe doit contenir au moins 6 caractères";
+                    }
                     return null;
                   },
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 TextFormField(
                   controller: _confirmPasswordController,
                   obscureText: !_confirmPasswordVisible,
                   decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.lock_outline),
+                    prefixIcon: const Icon(Icons.lock_outline),
                     hintText: "Confirmez votre mot de passe",
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8)),
@@ -140,13 +192,13 @@ class _CreatePasswordScreenState extends State<PasswordScreen> {
                       ? "Les mots de passe ne correspondent pas"
                       : null,
                 ),
-                SizedBox(height: 40),
+                const SizedBox(height: 40),
                 SizedBox(
                   width: double.infinity,
                   height: 56,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF0054A5),
+                      backgroundColor: const Color(0xFF0054A5),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8)),
                     ),
@@ -160,14 +212,30 @@ class _CreatePasswordScreenState extends State<PasswordScreen> {
                               (element) => element.containsKey("phone"),
                               orElse: () => {"phone": ""})["phone"],
                           "password": _passwordController.text,
+                          "ville_id2": _selectedCity,
                           "role": widget.dataUser.firstWhere(
                               (element) => element.containsKey("role"),
                               orElse: () => {"role": "client"})["role"],
+                          "ville_id": widget.dataUser.firstWhere(
+                                    (element) => element.containsKey("ville"),
+                                       orElse: () => {"ville": null}
+                                     )["ville"],
+                          "service_id":widget.dataUser.firstWhere(
+                                   (element) => element.containsKey("service"),
+                                     orElse: () => {"service": null}
+                                  )["service"],
+                          "adresse":widget.dataUser.firstWhere(
+                                   (element) => element.containsKey("adresse"),
+                                    orElse: () => {"adresse": "Not found"})["adresse"],
+                          "description":widget.dataUser.firstWhere(
+                                   (element) => element.containsKey("description"),
+                                    orElse: () => {"description": "Not found"})["description"],
                         };
 
                         // Create Multipart Request
                         String url = '';
                         String role = userData["role"];
+                        print(userData);
                         if (role == "client") {
                           url = "http://localhost:3000/create-client";
                         } else if (role == "provider") {
@@ -178,7 +246,13 @@ class _CreatePasswordScreenState extends State<PasswordScreen> {
                           ..fields['fname'] = userData["fname"]
                           ..fields['lname'] = userData["lname"]
                           ..fields['phone'] = userData['phone']
+                          ..fields['password'] = userData["lname"]
+                          ..fields['adresse'] = userData["adresse"]
                           ..fields['password'] = userData["password"]
+                          ..fields['description'] = userData["description"]
+                          ..fields['ville_id'] = userData["ville_id"] ?? ""
+                          ..fields['ville_id2'] = userData["ville_id2"] ?? ""
+                          ..fields['service_id'] = userData["service_id"] ?? ""
                           ..fields['role'] = role;
   
                           
@@ -218,9 +292,22 @@ class _CreatePasswordScreenState extends State<PasswordScreen> {
                         try {
                           var response = await request.send();
                           if (response.statusCode == 200) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text("Compte créé avec succès!")),
+
+                            if(role=="client"){
+                              ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text("Compte créé avec succès!")),
                             );
+                              Navigator.push(
+                                 context,
+                                 MaterialPageRoute(builder: (context) => LoginScreen()),
+                              );
+                            }
+                            if(role=="provider"){
+                              Navigator.push(
+                                 context,
+                                 MaterialPageRoute(builder: (context) => ConfirmationScreen()),
+                              );
+                            }
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text("Erreur: ${response.statusCode}")),
@@ -229,15 +316,15 @@ class _CreatePasswordScreenState extends State<PasswordScreen> {
                         } catch (e) {
                           print("Error: $e");
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("Impossible de se connecter au serveur")),
+                            const SnackBar(content: Text("Impossible de se connecter au serveur")),
                           );
                         }
                       }
                     },
-                    child: Text("Enregistrer", style: TextStyle(fontSize: 17, color: Colors.white)),
+                    child: const Text("Enregistrer", style: TextStyle(fontSize: 17, color: Colors.white)),
                   ),
                 ),
-                SizedBox(height: 20), // Add some space to avoid overflow
+                const SizedBox(height: 20), // Add some space to avoid overflow
               ],
             ),
           ),

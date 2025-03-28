@@ -14,7 +14,7 @@ const User = {
 
   // Function to get all provider POSITION
   
-    getAllProviders: (callback) => {
+  getAllProviders: (callback) => {
         const query = `
           SELECT providers_id AS id, latitude AS lat, longitude AS lng, profile_picture AS image, CONCAT(firstname, ' ', lastname) AS nom
           FROM providers
@@ -40,7 +40,7 @@ getProviderDetails: (callback) => {
       FROM providers p
       JOIN services s USING(service_id)
       LEFT JOIN reservations rs ON p.providers_id = rs.reserved_provider_id 
-      JOIN ratings r ON p.providers_id = r.provider_id
+      LEFT JOIN ratings r ON p.providers_id = r.provider_id
       where p.availability=1
       GROUP BY p.providers_id;
     `;
@@ -83,7 +83,9 @@ getMoreProviderDetails(providerId, callback) {
   });
 }, 
 
-createClientUser: (fname, lname, phone, password, role, callback) => {
+createClientUser: (fname, lname, phone, password, role,ville_id2, callback) => {
+
+   console.log("data: "+fname,lname,phone,password,role,ville_id2);
     db.query(
         "INSERT INTO users (phone, password, role) VALUES (?, ?, ?)", 
         [phone, password, role], 
@@ -91,11 +93,13 @@ createClientUser: (fname, lname, phone, password, role, callback) => {
             if (err) return callback(err, null);
 
             const userId = result.insertId; // Get the generated user ID
-
-            // Now, insert the user_id into the clients table
+            
+            //default profile
+            const profile= "/uploads/profile_pictures/default_profile.png";
+            
             db.query(
-                "INSERT INTO clients (clients_id, firstname,lastname) VALUES (?, ?, ?)", 
-                [userId,fname,lname], 
+                "INSERT INTO clients (clients_id, firstname,lastname,city_id,profile_picture ) VALUES (?, ?, ?, ?, ?)", 
+                [userId,fname,lname,ville_id2,profile], 
                 (err, clientResult) => {
                     if (err) return callback(err, null);
 
@@ -106,19 +110,23 @@ createClientUser: (fname, lname, phone, password, role, callback) => {
         }
     );
 },
-createProviderUser: (fname, lname, phone, password, role, callback) => {
+
+createProviderUser: (fname, lname, phone, password, role,service_id,ville_id,description,adresse, callback) => {
   db.query(
       "INSERT INTO users (phone, password, role) VALUES (?, ?, ?)", 
+      
       [phone, password, role], 
       (err, result) => {
           if (err) return callback(err, null);
 
           const userId = result.insertId; // Get the generated user ID
 
+          const profile= "/uploads/profile_pictures/default_profile.png";
+
           // Now, insert the user_id into the clients table
           db.query(
-              "INSERT INTO providers (providers_id, firstname,lastname) VALUES (?, ?, ?)", 
-              [userId,fname,lname], 
+              "INSERT INTO providers (providers_id, firstname,lastname,service_id ,city_id,description,adresse,profile_picture) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", 
+              [userId,fname,lname,service_id,ville_id,description,adresse,profile], 
               (err, clientResult) => {
                   if (err) return callback(err, null);
 
@@ -159,36 +167,38 @@ async getProviderProfile(userId) {
     try {
       // Query to get provider's profile along with total reservations
       const query = `
-        SELECT 
-          firstname, 
-          lastname, 
-          adresse, 
-          description, 
-          profile_picture, 
-          city_name, 
-          availability,
-          title AS service, 
-          ROUND(AVG(rt.rating), 1) AS rate,
-          COALESCE(COUNT(reservations_id), 0) AS total_reservation
-        FROM 
-          services 
-        JOIN 
-          providers p USING(service_id) 
-        LEFT JOIN
-          ratings rt on rt.provider_id=p.providers_id
-        LEFT JOIN 
-          reservations r ON p.providers_id = r.reserved_provider_id 
-        JOIN 
-          city USING(city_id) 
-        WHERE 
-          p.providers_id = ?
-        AND (r.statut_id = 4 OR r.reservations_id IS NULL)
-        GROUP BY 
-          p.providers_id;
+       SELECT
+    firstname,
+    lastname,
+    adresse,
+    description,
+    profile_picture,
+    ct.city_id as city_id,
+    availability,
+    title AS service,
+    ROUND(AVG(rt.rating), 1) AS rate,
+    -- Count only reservations with statut_id = 4, if there are no such reservations, return NULL
+    COALESCE(COUNT(CASE WHEN r.statut_id = 4 THEN reservations_id END), NULL) AS total_reservation
+FROM
+    services
+JOIN
+    providers p USING(service_id)
+LEFT JOIN
+    ratings rt ON rt.provider_id = p.providers_id
+LEFT JOIN
+    reservations r ON p.providers_id = r.reserved_provider_id
+JOIN
+    city ct USING(city_id)
+WHERE
+    p.providers_id = ?
+GROUP BY
+    p.providers_id;
+
       `;
       
       // Execute the query and pass the userId as a parameter to prevent SQL injection
       const [rows] = await db.promise().query(query, [userId]);
+      console.log("rows: "+rows);
   
       // Return the results (provider profile and reservation count)
       return rows;
@@ -299,9 +309,6 @@ FROM reservations s
 JOIN clients c ON s.client_id = c.clients_id
 JOIN providers p ON s.reserved_provider_id = p.providers_id 
 JOIN statut st ON s.statut_id = st.statut_id;
->>>>>>> 56e511c3202a2429d8684b1dffc1842b574b7d20
-
-
   `;
   db.query(query, (err, result) => {
       if (err) return callback(err, null);
@@ -309,9 +316,6 @@ JOIN statut st ON s.statut_id = st.statut_id;
   });
 }
 };
-<<<<<<< HEAD
 
 
-=======
->>>>>>> 064cefb0f146674925f053eb5636e7fc5145044e
 module.exports = User;

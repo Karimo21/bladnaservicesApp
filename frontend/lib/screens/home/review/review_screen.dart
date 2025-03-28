@@ -23,10 +23,10 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           "Avis",
           style: TextStyle(
-              color: const Color(0xFF0054A5),
+              color: Color(0xFF0054A5),
               fontSize: 20,
               fontWeight: FontWeight.bold),
         ),
@@ -35,7 +35,7 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
         centerTitle: false,
         leading: IconButton(
           icon:
-              Icon(Icons.arrow_back, color: const Color(0xFF0054A5), size: 22),
+              const Icon(Icons.arrow_back, color: Color(0xFF0054A5), size: 22),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -45,12 +45,12 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 14.0),
         child: Column(
           children: [
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Expanded(
               child: isLoading
-                  ? Center(child: CircularProgressIndicator())
+                  ? const Center(child: CircularProgressIndicator())
                   : widget.reviews.isEmpty
-                      ? Center(child: Text("Aucun avis disponible."))
+                      ? const Center(child: Text("Aucun avis disponible."))
                       : ListView.builder(
                           itemCount: widget.reviews.length,
                           itemBuilder: (context, index) {
@@ -79,13 +79,13 @@ class ReviewCard extends StatelessWidget {
   final String feedback;
 
   const ReviewCard({
-    Key? key,
+    super.key,
     required this.name,
     required this.rating,
     required this.date,
     required this.avatar,
     required this.feedback,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -113,27 +113,27 @@ class ReviewCard extends StatelessWidget {
                 backgroundImage: NetworkImage(avatar),
                 radius: 20,
               ),
-              SizedBox(width: 10),
+              const SizedBox(width: 10),
               Expanded(
                 child: Text(
                   name,
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                 ),
               ),
               Text(
                 date,
-                style: TextStyle(color: Colors.grey, fontSize: 13),
+                style: const TextStyle(color: Colors.grey, fontSize: 13),
               ),
             ],
           ),
-          SizedBox(height: 6),
+          const SizedBox(height: 6),
           buildStarRating(rating),
-          SizedBox(height: 6),
+          const SizedBox(height: 6),
           Text(
             feedback,
-            style: TextStyle(fontSize: 12.5, color: Colors.black87),
+            style: const TextStyle(fontSize: 12.5, color: Colors.black87),
           ),
         ],
       ),
@@ -147,12 +147,12 @@ class ReviewCard extends StatelessWidget {
     return Row(
       children: List.generate(5, (index) {
         if (index < fullStars) {
-          return Icon(Icons.star, color: const Color(0xFF0054A5), size: 18);
+          return const Icon(Icons.star, color: Color(0xFF0054A5), size: 18);
         } else if (index == fullStars && halfStar) {
-          return Icon(Icons.star_half,
-              color: const Color(0xFF0054A5), size: 18);
+          return const Icon(Icons.star_half,
+              color: Color(0xFF0054A5), size: 18);
         } else {
-          return Icon(Icons.star_border, color: Colors.grey, size: 18);
+          return const Icon(Icons.star_border, color: Colors.grey, size: 18);
         }
       }),
     );

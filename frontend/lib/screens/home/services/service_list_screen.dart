@@ -5,21 +5,21 @@ class ServiceListPage extends StatelessWidget {
   final List<Map<String, dynamic>> providers;
   final List<Map<String, dynamic>> services;
 
-  ServiceListPage({required this.providers, required this.services});
+  const ServiceListPage({required this.providers, required this.services});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           "Services",
           style: TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -31,7 +31,7 @@ class ServiceListPage extends StatelessWidget {
           // Liste des services
         
           
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
 
           // Liste des prestataires
           Expanded(
@@ -48,7 +48,7 @@ class ProviderListScreen extends StatelessWidget {
   final String profession;
   final List<Map<String, dynamic>> providers;
 
-  ProviderListScreen({required this.profession, required this.providers});
+  const ProviderListScreen({required this.profession, required this.providers});
 
   @override
   Widget build(BuildContext context) {
@@ -61,14 +61,14 @@ class ProviderListScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
       ),
       body: filteredProviders.isEmpty
-          ? Center(child: Text("Aucun prestataire trouvé"))
+          ? const Center(child: Text("Aucun prestataire trouvé"))
           : ListView.builder(
               itemCount: filteredProviders.length,
               itemBuilder: (context, index) {
@@ -83,7 +83,7 @@ class ProviderListScreen extends StatelessWidget {
 class ServiceProvidersList extends StatelessWidget {
   final List<Map<String, dynamic>> providers;
 
-  ServiceProvidersList({required this.providers});
+  const ServiceProvidersList({required this.providers});
 
 
   @override
@@ -107,10 +107,10 @@ class ServiceProvidersList extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: Text(
                 "🛠️ ${entry.key}",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
-          Container(
+          SizedBox(
   height: 235, // Hauteur du scroll horizontal
   child: ListView.builder(
     scrollDirection: Axis.horizontal,
@@ -124,7 +124,7 @@ class ServiceProvidersList extends StatelessWidget {
   ),
 ),
 
-           SizedBox(height: 20),
+           const SizedBox(height: 20),
           ],
         );
       }).toList(),
@@ -136,13 +136,13 @@ class ServiceProvidersList extends StatelessWidget {
 class ProviderCard extends StatelessWidget {
   final Map<String, dynamic> provider;
 
-  ProviderCard({required this.provider});
+  const ProviderCard({required this.provider});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: 160,
-      margin: EdgeInsets.only(left: 20, bottom: 10),
+      margin: const EdgeInsets.only(left: 20, bottom: 10),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
@@ -160,7 +160,7 @@ class ProviderCard extends StatelessWidget {
           Container(
             width: 150,
             height: 100,
-            margin: EdgeInsets.all(8),
+            margin: const EdgeInsets.all(8),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: Image.network(
@@ -174,17 +174,17 @@ class ProviderCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(provider["name"], style: TextStyle(fontWeight: FontWeight.bold)),
-                Text(provider["profession"], style: TextStyle(color: Colors.grey)),
-                SizedBox(height: 10),
+                Text(provider["name"], style: const TextStyle(fontWeight: FontWeight.bold)),
+                Text(provider["profession"], style: const TextStyle(color: Colors.grey)),
+                const SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.star, color: Color(0xFF0054A5)),
-                        SizedBox(width: 2),
-                        Text("${provider["rating"]}", style: TextStyle(fontWeight: FontWeight.bold)),
+                        const Icon(Icons.star, color: Color(0xFF0054A5)),
+                        const SizedBox(width: 2),
+                        Text("${provider["rating"]}", style: const TextStyle(fontWeight: FontWeight.bold)),
                       ],
                     ),
                     ElevatedButton(
@@ -197,14 +197,14 @@ class ProviderCard extends StatelessWidget {
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF0054A5),
+                        backgroundColor: const Color(0xFF0054A5),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                        minimumSize: Size(80, 30),
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        minimumSize: const Size(80, 30),
                       ),
-                      child: Text("Détails", style: TextStyle(color: Colors.white, fontSize: 14)),
+                      child: const Text("Détails", style: TextStyle(color: Colors.white, fontSize: 14)),
                     ),
                   ],
                 ),

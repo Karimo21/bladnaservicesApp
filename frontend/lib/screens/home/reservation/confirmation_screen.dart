@@ -1,6 +1,4 @@
-import 'package:bladnaservices/screens/home/main_screen.dart';
 import 'package:bladnaservices/screens/home/profile/User.dart';
-import 'package:bladnaservices/screens/home/services/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -8,8 +6,7 @@ import 'dart:convert';
 class ConfirmationScreen extends StatefulWidget {
   final Map<String, dynamic>? reservationUtilisateur;
 
-  const ConfirmationScreen({Key? key, required this.reservationUtilisateur})
-      : super(key: key);
+  const ConfirmationScreen({super.key, required this.reservationUtilisateur});
 
   @override
   _ConfirmationScreenState createState() => _ConfirmationScreenState();
@@ -30,6 +27,8 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
       "providerId": widget.reservationUtilisateur?['provider_id'],
       "startDate": widget.reservationUtilisateur?['date_debut'],
       "endDate": widget.reservationUtilisateur?['date_fin'],
+      "address": widget.reservationUtilisateur?['address'],
+      "hour": widget.reservationUtilisateur?['hour'],
       "statutId": 1
     };
 
@@ -44,11 +43,11 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
         debugPrint("Réservation créée avec succès !");
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text("Réservation confirmée avec succès !")));
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => MainScreen()),
-          (route) => false, // This removes all previous routes from the stack
-        );
+        //Navigator.pushAndRemoveUntil(
+        //  context,
+        //  MaterialPageRoute(builder: (context) => MainScreen()),
+        //  (route) => false, // This removes all previous routes from the stack
+       // );
       } else {
         debugPrint("Échec de la création de la réservation : ${response.body}");
         ScaffoldMessenger.of(context).showSnackBar(
@@ -199,14 +198,14 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
   }
 
   Widget _buildInfoBox() {
-    return Row(
+    return const Row(
       crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        const Icon(Icons.info_outline, color: Color(0xFF0054A5), size: 24),
-        const SizedBox(width: 8),
-        const Expanded(
+      children:  [
+        Icon(Icons.info_outline, color: Color(0xFF0054A5), size: 24),
+        SizedBox(width: 8),
+        Expanded(
           child: Text(
-            "Si le prestataire accepte votre demande, vous serez notifié(e).",
+            "Si vous avez confirmé la réservation, vous ne pourrez plus l'annuler",
             style: TextStyle(fontSize: 14),
             textAlign: TextAlign.center,
           ),

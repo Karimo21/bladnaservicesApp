@@ -1,11 +1,18 @@
 const SuivieModel = require('../models/suivieModel');
 
+let io; // Store Socket.io instance
+
+// Function to set io (called from server.js)
+ setIo = (socketIo) => {
+    io = socketIo;
+};
+
 // Get reserved reservations (where the provider is already reserved)
-async function getReservedProviderReservations(req, res) {
+ async function getReservedProviderReservations(req, res) {
   const providerId = req.params.providerId;
   try {
     const reservationsbyclient  = await SuivieModel.getReservedProviderReservations(providerId);
-    const reservationsbyprovider=await SuivieModel.getProviderReservingProviderReservations(providerId);
+    const reservationsbyprovider = await SuivieModel.getProviderReservingProviderReservations(providerId);
 
     // Merge both results
      const reservations = [...reservationsbyclient, ...reservationsbyprovider];
@@ -13,7 +20,7 @@ async function getReservedProviderReservations(req, res) {
   } catch (error) {
     res.status(500).json({ error: 'Error fetching reserved reservations: ' + error.message });
   }
-}
+ }
 
 async function getReservingReservations(req, res) {
   const { role, userId } = req.params; // Get role and userId from params
@@ -66,7 +73,16 @@ async function updateReservationStatut(req, res) {
         if (updateReservation.affectedRows === 0) {
           return res.status(404).json({ error: "Reservation not found or status unchanged" });
         }
-    
+
+        console.log(updateReservation[0].name);
+
+        if (io) {
+          console.log('Emitting reservationStatutUpdated event to userId:'+userId);
+          io.to(userId).emit('reservationStatutUpdated', {
+            reservationId: reservationId,
+            statutName: updateReservation[0].name,
+          });
+      }
         // Success response
         res.status(200).json({
           message: "Reservation status updated successfully",
@@ -78,6 +94,7 @@ async function updateReservationStatut(req, res) {
 }
 
 module.exports = {
+  setIo,
   getReservedProviderReservations,
   getReservingReservations,
   getReservationsHistory,

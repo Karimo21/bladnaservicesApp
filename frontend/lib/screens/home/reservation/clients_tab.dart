@@ -12,20 +12,35 @@ class ClientsTab extends StatefulWidget  {
   class _ClientsTabState extends State<ClientsTab> {
   List<Map<String, String>> reservations = [];
   bool isLoading = true;
+  final SocketService socketService = SocketService();
   int userId=User.userId;
     @override
   void initState() {
     super.initState();
-
-  // Join the socket room for live updates
-  SocketService().joinRoom(userId);
-  
-  // Listen for new reservations
-  SocketService().setOnNewReservation((newReservation) {
-    setState(() {
-      reservations.add(newReservation); // Update list dynamically
+    SocketService();
+    socketService.joinRoom(User.userId);
+    // Listen for new reservations
+    socketService.setOnNewReservation((newReservation) {
+    //if(newReservation['providerId'].toString()==User.userId){}
+    if (mounted) {
+      setState(() {
+        print("✅ New reservation received: $newReservation"); // Debugging
+        reservations.add({
+          'id': newReservation['reservationId'].toString(),
+          'client_id': newReservation['clientId'].toString(),
+          'name': newReservation['client_name'].toString(),
+          'start_date': newReservation['startDate'].toString(),
+          'end_date': newReservation['endDate'].toString(),
+          'status': newReservation['statut'].toString(),
+          'city_name': newReservation['city_name'].toString(),
+          'hour': newReservation['hour'].toString(),
+          'address': newReservation['address'].toString(),
+          'phone': newReservation['phone'].toString(),
+          'profile_picture': newReservation['profile_picture'].toString(),
+        });
+      });
+    }
     });
-  });
 
     fetchReservations();
   
@@ -47,6 +62,9 @@ class ClientsTab extends StatefulWidget  {
             'end_date': '${item['end_date']}',
             'status': item['status'].toString(),
             'phone': item['phone'].toString(),
+            'hour': item['hour'].toString(),
+            'address': item['address'].toString(),
+            'city_name': item['city_name'].toString(),
             'profile_picture': item['profile_picture'].toString(),
           };
         }).toList()); 
@@ -65,7 +83,7 @@ class ClientsTab extends StatefulWidget  {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      padding: EdgeInsets.all(10),
+      padding: const EdgeInsets.all(10),
       itemCount: reservations.length,
       itemBuilder: (context, index) {
         print(reservations[index]);

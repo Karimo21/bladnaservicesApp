@@ -1,4 +1,5 @@
 import 'package:bladnaservices/screens/home/notification/notification_screen.dart';
+import 'package:bladnaservices/screens/home/profile/User.dart';
 import 'package:bladnaservices/screens/home/services/profile_screen.dart';
 import 'package:bladnaservices/screens/home/services/search_screen.dart';
 import 'package:bladnaservices/screens/home/services/service_list_screen.dart';
@@ -30,7 +31,31 @@ class _HomescreenState extends State<Homescreen> {
     {"name": "Agent de sécurité", "emoji": "🛡"},
   ];
 
-  final List<Map<String, dynamic>> providers = [];
+  List<Map<String, dynamic>> providers = [];
+  bool isLoading = true;  
+    // Fake provider data
+  final List<Map<String, dynamic>> fakeProviders = [
+    {
+      "provider_id": 1,
+      "name": "nom complete",
+      "profession": "service",
+      "rating": 0,
+      "image": "assets/images/placeholder.png",
+      "reservations": 3,
+      "location": "Location 1",
+      "description": "Description 1",
+    },
+    {
+      "provider_id": 2,
+      "name": "nom complete",
+      "profession": "service",
+      "rating": 0,
+      "image": "assets/images/placeholder.png",
+      "reservations": 2,
+      "location": "Location 2",
+      "description": "Description 2",
+    }
+  ];
 
 Future<void> fetchProviders() async {
   final response = await http.get(Uri.parse('http://localhost:3000/providers'));
@@ -51,31 +76,58 @@ Future<void> fetchProviders() async {
       };
     }).toList();
     setState(() {
+      providers.clear();
       providers.addAll(fetchedProviders);
+      isLoading = false;
     });
   } else {
     print("Erreur lors du chargement des prestataires");
   }
 }
 
+int unreadNotifications = 0;
+Future<void> fetchUnreadNotifications() async {
+  final response = await http.get(Uri.parse('http://localhost:3000/notifications/unread/${User.userId}'));
+
+  if (response.statusCode == 200) {
+    final data = jsonDecode(response.body);
+    setState(() {
+      unreadNotifications = data['count'];
+    });
+  } else {
+    print("Erreur lors du chargement des notifications non lues");
+  }
+}
+Future<void> markNotificationAsRead() async {
+  final response = await http.post(Uri.parse('http://localhost:3000/notifications/read/${User.userId}'));
+
+  if (response.statusCode == 200) {
+     print("Notification lues avec success");
+  } else {
+    print("Erreur lors du chargement des notifications non lues");
+  }
+}
 @override
 void initState() {
   super.initState();
-  fetchProviders();
+  providers=fakeProviders;
+  fetchProviders().then((_) => fetchUnreadNotifications());
 }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xffF9F9F9),
+      backgroundColor: const Color(0xffF9F9F9),
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 15),
+              const SizedBox(height: 15),
               Container(
-                padding: EdgeInsets.all(8),
+                padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -87,27 +139,62 @@ void initState() {
                       height: 40,
                     ),
                     GestureDetector(
+                      
                       onTap: () {
+                        setState(() {
+                            unreadNotifications = 0;
+                        });
+                        markNotificationAsRead();
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => NotificationScreen()),
                         );
                       },
-                      child: Icon(Icons.notifications,
-                          color: Colors.black, size: 30),
+                      child: Stack(
+    children: [
+      const Icon(Icons.notifications, color: Colors.black, size: 30),
+      if (unreadNotifications > 0)
+        Positioned(
+          right: 0,
+          top: 0,
+          child: Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: Colors.red,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            constraints: const BoxConstraints(
+              minWidth: 10,
+              minHeight: 5,
+            ),
+            child: Text(
+              '$unreadNotifications',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+    ],
+   ),
+
+                          
                     )
                   ],
                 ),
               ),
 
-              SizedBox(height: 15),
+              const SizedBox(height: 15),
 
               // Container pour le titre
               Container(
-                padding: EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+                padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
                 width: double.infinity,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
                       Color(0xFF007CF2),
@@ -154,68 +241,74 @@ void initState() {
                 ),
               ),
 
-              SizedBox(height: 0), // Espacement ajusté
-           Container(
-  decoration: BoxDecoration(
-    boxShadow: [
-      BoxShadow(
-        color: Colors.black.withOpacity(0.2),
-        blurRadius: 8,
-        spreadRadius: 2,
-        offset: Offset(0, 4),
-      ),
-    ],
-  ),
-  child: InkWell(
-    onTap: () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => SearchScreen(  providers: providers)),
-      );
-    },
-    child: AbsorbPointer(
-      child: TextField(
-        style: TextStyle(fontSize: 16),
-        decoration: InputDecoration(
-          filled: true,
-          fillColor: Colors.white,
-          hintText: "Recherche ici...",
-          hintStyle: TextStyle(fontSize: 16, color: Colors.grey),
-          prefixIcon: Icon(Icons.search, color: Colors.grey, size: 26),
-        
-          contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(0),
-              topRight: Radius.circular(0),
-              bottomLeft: Radius.circular(10),
-              bottomRight: Radius.circular(10),
-            ),
-            borderSide: BorderSide.none,
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(0),
-              topRight: Radius.circular(0),
-              bottomLeft: Radius.circular(10),
-              bottomRight: Radius.circular(10),
-            ),
-            borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(0),
-              topRight: Radius.circular(0),
-              bottomLeft: Radius.circular(10),
-              bottomRight: Radius.circular(10),
-            ),
-            borderSide: BorderSide(color: Color(0xFF0054A5), width: 1),
-          ),
-        ),
-      ),
-    ),
-  ),
-),
+              const SizedBox(height: 0), // Espacement ajusté
+              Container(
+                decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black
+                          .withOpacity(0.2), // Ombre légère et réaliste
+                      blurRadius: 8,
+                      spreadRadius: 2,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: InkWell(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                       MaterialPageRoute(builder: (context) => SearchScreen(  providers: providers)),
+                        );
+                    },
+                  child: AbsorbPointer(
+                    child: TextField(
+                      style: const TextStyle(fontSize: 16),
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white,
+                        hintText: "Recherche ici...",
+                        hintStyle: const TextStyle(fontSize: 16, color: Colors.grey),
+                        prefixIcon:
+                            const Icon(Icons.search, color: Colors.grey, size: 26),
+                        suffixIcon: const Icon(Icons.tune,
+                            color: Colors.grey, size: 24), // Icône filtre
+                        contentPadding:
+                            const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                        border: const OutlineInputBorder(
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(0), // Pas d'arrondi en haut
+                            topRight: Radius.circular(0), // Pas d'arrondi en haut
+                            bottomLeft: Radius.circular(10), // Arrondi en bas
+                            bottomRight: Radius.circular(10), // Arrondi en bas
+                          ),
+                          borderSide: BorderSide.none,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(0),
+                            topRight: Radius.circular(0),
+                            bottomLeft: Radius.circular(10),
+                            bottomRight: Radius.circular(10),
+                          ),
+                          borderSide:
+                              BorderSide(color: Colors.grey.shade300, width: 1),
+                        ),
+                        focusedBorder: const OutlineInputBorder(
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(0),
+                            topRight: Radius.circular(0),
+                            bottomLeft: Radius.circular(10),
+                            bottomRight: Radius.circular(10),
+                          ),
+                          borderSide:
+                              BorderSide(color: Color(0xFF0054A5), width: 1),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
 
               const SizedBox(height: 20),
 
@@ -223,7 +316,7 @@ void initState() {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
+                  const Text(
                     "Services populaires",
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
@@ -236,7 +329,7 @@ void initState() {
                                 ServicesScreen(providers: providers)),
                       );
                     },
-                    child: Text(
+                    child: const Text(
                       "Voir Plus",
                       style: TextStyle(
                         color: Color(0xFF0054A5),
@@ -246,10 +339,10 @@ void initState() {
                   ),
                 ],
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
 
               // Liste des services
-              Container(
+              SizedBox(
                 height: 100,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
@@ -257,7 +350,7 @@ void initState() {
                   itemBuilder: (context, index) {
                     return Container(
                       width: 100,
-                      margin: EdgeInsets.only(right: 10),
+                      margin: const EdgeInsets.only(right: 10),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(8),
@@ -267,17 +360,17 @@ void initState() {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(services[index]["emoji"],
-                              style: TextStyle(fontSize: 30)),
-                          SizedBox(height: 5),
+                              style: const TextStyle(fontSize: 30)),
+                          const SizedBox(height: 5),
                           Text(services[index]["name"],
-                              style: TextStyle(fontSize: 14)),
+                              style: const TextStyle(fontSize: 14)),
                         ],
                       ),
                     );
                   },
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Section Prestataires
               Row(
@@ -296,7 +389,7 @@ void initState() {
                                 providers: providers, services: services)),
                       );
                     },
-                    child: Text(
+                    child: const Text(
                       "Voir Plus",
                       style: TextStyle(
                         color: Color(0xFF0054A5),
@@ -306,10 +399,10 @@ void initState() {
                   ),
                 ],
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
 
               // Liste des prestataires (Expanded pour éviter le débordement)
-              Container(
+              SizedBox(
                 height: 220, // Augmenter un peu la hauteur
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
@@ -317,7 +410,7 @@ void initState() {
                   itemBuilder: (context, index) {
                     return Container(
                       width: 160,
-                      margin: EdgeInsets.only(right: 10),
+                      margin: const EdgeInsets.only(right: 10),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(10),
@@ -337,7 +430,7 @@ void initState() {
                           Container(
                             width: 150,
                             height: 100,
-                            margin: EdgeInsets.all(8),
+                            margin: const EdgeInsets.all(8),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(10),
                               child: Image.network(
@@ -353,13 +446,13 @@ void initState() {
                               children: [
                                 Text(
                                   providers[index]["name"],
-                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                  style: const TextStyle(fontWeight: FontWeight.bold),
                                 ),
                                 Text(
                                   providers[index]["profession"],
-                                  style: TextStyle(color: Colors.grey),
+                                  style: const TextStyle(color: Colors.grey),
                                 ),
-                                SizedBox(height: 15),
+                                const SizedBox(height: 15),
                                 Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
@@ -368,10 +461,10 @@ void initState() {
                                       children: [
                                         const Icon(Icons.star,
                                             color: Color(0xFF0054A5)),
-                                        SizedBox(width: 2),
+                                        const SizedBox(width: 2),
                                         Text(
                                           "${providers[index]["rating"]}",
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                               fontWeight: FontWeight.bold),
                                         ),
                                       ],
@@ -387,14 +480,14 @@ void initState() {
                                         );
                                       },
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: Color(0xFF0054A5),
+                                        backgroundColor: const Color(0xFF0054A5),
                                         shape: RoundedRectangleBorder(
                                           borderRadius:
                                               BorderRadius.circular(20),
                                         ),
-                                        padding: EdgeInsets.symmetric(
+                                        padding: const EdgeInsets.symmetric(
                                             horizontal: 12, vertical: 8),
-                                        minimumSize: Size(80, 30),
+                                        minimumSize: const Size(80, 30),
                                       ),
                                       child: const Text(
                                         "Détails",

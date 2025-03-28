@@ -34,7 +34,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   void _nextPage() {
     if (_currentPage < OnboardingScreen.onboardingData.length - 1) {
       _pageController.nextPage(
-        duration: Duration(milliseconds: 500),
+        duration: const Duration(milliseconds: 500),
         curve: Curves.ease,
       );
     } else {
@@ -50,7 +50,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     return Scaffold(
       body: Container(
         width: double.infinity,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -62,7 +62,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             Align(
               alignment: Alignment.topRight,
               child: Padding(
-                padding: EdgeInsets.only(top: 40, right: 20),
+                padding: const EdgeInsets.only(top: 40, right: 20),
                 child: TextButton(
                   onPressed: () {
                     Navigator.pushReplacement(
@@ -70,7 +70,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       MaterialPageRoute(builder: (context) => HomePage()),
                     );
                   },
-                  child: Text(
+                  child: const Text(
                     "Skip",
                     style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
@@ -102,14 +102,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 (index) => _buildIndicator(index == _currentPage),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
-                  foregroundColor: Color(0xFF0054A5),
-                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 14),
+                  foregroundColor: const Color(0xFF0054A5),
+                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 14),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -119,11 +119,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   _currentPage == OnboardingScreen.onboardingData.length - 1
                       ? "Terminer"
                       : "Suivant",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
-            SizedBox(height: 40),
+            const SizedBox(height: 40),
           ],
         ),
       ),
@@ -132,29 +132,29 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   Widget _buildPage(String title, String description, String image) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 24),
+      padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
             title,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Image.asset(
             image,
             width: 250, // Ajustez la taille selon vos besoins
             height: 250,
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Text(
             description,
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 16, color: Colors.white70),
+            style: const TextStyle(fontSize: 16, color: Colors.white70),
           ),
         ],
       ),
@@ -163,7 +163,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   Widget _buildIndicator(bool isActive) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 4),
+      margin: const EdgeInsets.symmetric(horizontal: 4),
       width: isActive ? 16 : 8,
       height: 8,
       decoration: BoxDecoration(
@@ -178,8 +178,8 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Page d'accueil")),
-      body: Center(child: Text("Bienvenue sur Bladna Service !")),
+      appBar: AppBar(title: const Text("Page d'accueil")),
+      body: const Center(child: Text("Bienvenue sur Bladna Service !")),
     );
   }
 }

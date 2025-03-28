@@ -36,6 +36,7 @@ exports.createContact = async (req, res) => {
     const result = await Message.createContact(senderId, receiverId);
     const result1 = result.result1[0];
     const result2 = result.result2[0];  
+    console.log(result1,result2);
     // Check if the rows were affected (both insertions should have affected rows)
     if (result1.affectedRows > 0 && result2.affectedRows > 0) {
       return res.status(201).json({ message: "Contact created successfully" });
@@ -70,7 +71,7 @@ exports.getMessages = async (req, res) => {
   try {
 
     // Mark all messages between the user and contact as read
-    await Message.markAllAsRead(userId, contactId);   
+    //await Message.markAllAsRead(userId, contactId);   
      
     const messages = await Message.findMessagesBetweenUsers(userId, contactId);
     res.json(messages);

@@ -200,7 +200,8 @@ class _ChatListScreenState extends State<ChatListScreen> {
                               )
                             : null,
                         onTap: () {
-                          socketService.markMessagesAsRead(widget.loggeduserId, contact['contact_user_id']);
+        
+                          
                           fetchContacts();
                           String picture = "http://localhost:3000" + contact['profile_picture'].trim();
                           Navigator.push(

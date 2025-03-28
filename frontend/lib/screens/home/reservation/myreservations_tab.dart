@@ -1,3 +1,4 @@
+import 'package:bladnaservices/services/socket_service.dart';
 import 'package:flutter/material.dart';
 import 'package:bladnaservices/screens/home/profile/User.dart';
 import 'dart:convert';
@@ -14,12 +15,41 @@ class ReservationsTab extends StatefulWidget {
 
 class _ReservationsTabState extends State<ReservationsTab> {
   List<Map<String, String>> reservations = [];
+  final SocketService socketService = SocketService();
   String role=User.role; 
   int userId=User.userId; 
 
   @override
   void initState() {
     super.initState();
+    SocketService();
+    socketService.joinRoom(User.userId);
+    socketService.setOnReservationUpdate((newReservation){
+       print(User.userId);
+       print("New reservation update: $newReservation");
+       print(reservations);
+       if (mounted) {
+       setState(() {
+           print("id: ${newReservation['reservationId']}");
+           bool found = false;
+           int reservationId = int.parse(newReservation['reservationId'].toString()); 
+           String statutName = newReservation['statutName']; 
+           print("id: $reservationId");
+       for (var reservation in reservations) {
+         print(int.tryParse(reservation['id'] ?? ''));
+         if (int.tryParse(reservation['id'] ?? '') == reservationId) {
+           reservation['status'] = statutName;
+           found = true;
+           break;
+         }
+       }
+       if (!found) print("Aucune réservation trouvée pour $reservationId");
+       if (found) print("réservation trouvée pour $reservationId");
+       });
+      
+       }
+    });
+
     _fetchReservations();
   }
 
@@ -43,6 +73,9 @@ class _ReservationsTabState extends State<ReservationsTab> {
             'end_date': '${item['end_date']}',
             'phone': item['phone'].toString(),
             'status': item['status'].toString(),
+            'hour': item['hour'].toString(),
+             'city_name': item['city_name'].toString(),
+            'address': item['address'].toString(),
             'profile_picture': item['profile_picture'].toString(),
           };
         }).toList()); 
@@ -61,7 +94,7 @@ class _ReservationsTabState extends State<ReservationsTab> {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      padding: EdgeInsets.all(10),
+      padding: const EdgeInsets.all(10),
       itemCount: reservations.length,
       itemBuilder: (context, index) {
         return myReservationCard(data: reservations[index]);
@@ -72,13 +105,13 @@ class _ReservationsTabState extends State<ReservationsTab> {
 
 class myReservationCard extends StatelessWidget {
   final Map<String, String> data;
-  myReservationCard({required this.data});
+  const myReservationCard({required this.data});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 14),
-      padding: EdgeInsets.all(16),
+      margin: const EdgeInsets.symmetric(vertical: 14),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -87,7 +120,7 @@ class myReservationCard extends StatelessWidget {
             color: Colors.grey.withOpacity(0.2),
             blurRadius: 5,
             spreadRadius: 1,
-            offset: Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -100,7 +133,7 @@ class myReservationCard extends StatelessWidget {
             ),
             title: Text(
               data["name"]!,
-              style: TextStyle(
+              style: const TextStyle(
                 fontWeight: FontWeight.normal,
                 color: Color(0xFF565656),
               ),
@@ -108,14 +141,16 @@ class myReservationCard extends StatelessWidget {
           ),
           Divider(color: Colors.grey.shade400),
           buildInfoRow("Date de début", data["start_date"]!),
-           buildInfoRow("Date de fin", data["end_date"]!),
-          buildInfoRow("Heure", "8:00"),
-          buildInfoRow("Ville", "Agadir"),
+          buildInfoRow("Date de fin", data["end_date"]!),
+          buildInfoRow("Ville", data["city_name"]!),
+          buildInfoRow("Lieu de réservation", data["address"]!),
+          buildInfoRow("Heure", data["hour"]!),
+          
           buildInfoRow(
             "Téléphone",
             data["phone"]!,
             isLink: true,
-            color: Color(0xFF0054A5),
+            color: const Color(0xFF0054A5),
             underline: true,
             underlineColor: Colors.green,
           ),
@@ -123,7 +158,7 @@ class myReservationCard extends StatelessWidget {
             "Statut",
             data["status"]!,
             isLink: true,
-            color: Color(0xFF0054A5),
+            color: const Color(0xFF0054A5),
             underline: data["status"] == "En attente",
             underlineColor: Colors.blue,
           ),
@@ -144,7 +179,7 @@ class myReservationCard extends StatelessWidget {
         children: [
           Text(
             label,
-            style: TextStyle(
+            style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
                 color: Color(0xFF565656)),
@@ -156,10 +191,10 @@ class myReservationCard extends StatelessWidget {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
-                color: color ?? Color(0xFF565656),
+                color: color ?? const Color(0xFF565656),
                 decoration:
                     underline ? TextDecoration.underline : TextDecoration.none,
-                decorationColor: underlineColor ?? Color(0xFF0054A5),
+                decorationColor: underlineColor ?? const Color(0xFF0054A5),
               ),
             ),
           ),

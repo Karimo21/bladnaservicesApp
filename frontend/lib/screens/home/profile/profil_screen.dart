@@ -1,4 +1,4 @@
-import 'package:bladnaservices/screens/home/notification/notification_screen.dart';
+import 'package:bladnaservices/screens/auth/login_screen.dart';
 import 'package:bladnaservices/screens/home/profile/addImage_screen.dart';
 import 'package:bladnaservices/screens/home/profile/editProfil_screen.dart';
 import 'package:bladnaservices/screens/home/profile/User.dart';
@@ -47,8 +47,8 @@ Future<void> updateProviderAvailability(int providerId, int value) async {
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: ListView(
             children: [
-              SizedBox(height: 20),
-              Text(
+              const SizedBox(height: 20),
+              const Text(
                 'Profil',
                 style: TextStyle(
                   fontSize: 18,
@@ -56,57 +56,57 @@ Future<void> updateProviderAvailability(int providerId, int value) async {
                   color: primaryColor,
                 ),
               ),
-              SizedBox(height: 15), 
+              const SizedBox(height: 15), 
               Row(
                 children: [
                   CircleAvatar(
                     radius: 40,
                     backgroundImage:
-                        NetworkImage("http://localhost:3000"+User.profile),
+                        NetworkImage("http://localhost:3000${User.profile}"),
                   ),
-                  SizedBox(width: 14),
+                  const SizedBox(width: 14),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         '${User.fname} ${User.lname}',
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontSize: 18, fontWeight: FontWeight.normal),
                       ),
                       if(User.role=="provider")
                       Text(User.service,
-                          style: TextStyle(color: Colors.grey, fontSize: 18)),
-                      SizedBox(height: 5),
+                          style: const TextStyle(color: Colors.grey, fontSize: 18)),
+                      const SizedBox(height: 5),
                       Row(
                         children: [
                           if(User.role=="provider")
-                          Icon(Icons.star, color: primaryColor, size: 18),
+                          const Icon(Icons.star, color: primaryColor, size: 18),
                           if(User.role=="provider")
                           Text(User.rate,
                               style:
-                                  TextStyle(color: primaryColor, fontSize: 18)),
+                                  const TextStyle(color: primaryColor, fontSize: 18)),
                         ],
                       ),
-                      SizedBox(height: 5),
+                      const SizedBox(height: 5),
                       if(User.role=="provider")
                       Row(
                         children: [
-                          Icon(Icons.emoji_events,
+                          const Icon(Icons.emoji_events,
                               color: primaryColor, size: 18),
                           Text("Total des réservations: ${User.totalreservations.toString()}",
                               style:
-                                  TextStyle(color: primaryColor, fontSize: 18)),
+                                  const TextStyle(color: primaryColor, fontSize: 18)),
                         ],
                       ), //
                     ],
                   ),
                 ],
               ),
-              SizedBox(height: 25),
-              Text('Informations du profil',
+              const SizedBox(height: 25),
+              const Text('Informations du profil',
                   style:
                       TextStyle(fontWeight: FontWeight.normal, fontSize: 16)),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               ProfileOption(
                 icon: Icons.person_outline,
                 title: 'Éditer le profil',
@@ -129,11 +129,11 @@ Future<void> updateProviderAvailability(int providerId, int value) async {
                   );
                 },
               ),
-              SizedBox(height: 11),
-              Text('Préférences générales',
+              const SizedBox(height: 11),
+              const Text('Préférences générales',
                   style:
                       TextStyle(fontWeight: FontWeight.normal, fontSize: 16)),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               if(User.role=="provider")
               ProfileOption(
                    icon: Icons.access_alarm,
@@ -159,17 +159,17 @@ Future<void> updateProviderAvailability(int providerId, int value) async {
                               BorderRadius.circular(12), // Arrondir les coins
                         ),
                         contentPadding:
-                            EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+                            const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
                         content: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Image.network(
-                              'https://cdn-icons-png.flaticon.com/512/1828/1828479.png', // Image de déconnexion
-                              width: 60,
-                              height: 60,
+                            const Icon(
+                              Icons.logout, // Using the built-in logout icon
+                              size: 60, // Size of the icon
+                             color: primaryColor, // Apply the primary color
                             ),
-                            SizedBox(height: 12),
-                            Text(
+                            const SizedBox(height: 12),
+                            const Text(
                               "Déconnexion",
                               style: TextStyle(
                                 fontSize: 18,
@@ -177,31 +177,32 @@ Future<void> updateProviderAvailability(int providerId, int value) async {
                                 color: Color(0xFF565656),
                               ),
                             ),
-                            SizedBox(height: 8),
-                            Text(
-                              "Are you sure to logout?",
+                            const SizedBox(height: 8),
+                            const Text(
+                              "Êtes-vous sûr de vouloir vous déconnecte?",
                               style: TextStyle(
                                   fontSize: 13,
                                   color: Color.fromARGB(255, 86, 86, 86)),
                               textAlign: TextAlign.center,
                             ),
-                            SizedBox(height: 20),
+                            const SizedBox(height: 20),
                             Column(
                               children: [
                                 ElevatedButton(
                                   onPressed: () {
-                                    Navigator.pop(
-                                        context); // Fermer la boîte de dialogue
-                                    // Logique de déconnexion ici
+                                   Navigator.pushReplacement(
+                                       context,
+                                       MaterialPageRoute(builder: (context) => LoginScreen()), // Replace with your login screen
+                                   );
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: primaryColor,
-                                    minimumSize: Size(double.infinity, 45),
+                                    minimumSize: const Size(double.infinity, 45),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                   ),
-                                  child: Text(
+                                  child: const Text(
                                     "Déconnexion",
                                     style: TextStyle(
                                         color: Colors.white,
@@ -209,13 +210,13 @@ Future<void> updateProviderAvailability(int providerId, int value) async {
                                         fontWeight: FontWeight.normal),
                                   ),
                                 ),
-                                SizedBox(height: 10),
+                                const SizedBox(height: 10),
                                 TextButton(
                                   onPressed: () {
                                     Navigator.pop(
                                         context); // Fermer la boîte de dialogue
                                   },
-                                  child: Text(
+                                  child: const Text(
                                     "Annuler",
                                     style: TextStyle(
                                       color: primaryColor,
@@ -233,7 +234,7 @@ Future<void> updateProviderAvailability(int providerId, int value) async {
                   );
                 },
               ),
-              SizedBox(height: 15),
+              const SizedBox(height: 15),
             ],
           ),
         ),
@@ -251,7 +252,7 @@ class ProfileOption extends StatefulWidget {
   final bool toggle; // New parameter for toggle button
   final ValueChanged<bool>? onToggle; // Callback when toggle is changed
 
-  ProfileOption({
+  const ProfileOption({
     required this.icon,
     required this.title,
     this.isLast = false,
@@ -276,11 +277,11 @@ class _ProfileOptionState extends State<ProfileOption> {
       onTap: widget.onTap, // Handle navigation dynamically
       child: Container(
         margin: EdgeInsets.only(bottom: widget.isLast ? 0 : 4),
-        padding: EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(10),
-          boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4)],
+          boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 4)],
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -288,8 +289,8 @@ class _ProfileOptionState extends State<ProfileOption> {
             Row(
               children: [
                 Icon(widget.icon, color: primaryColor, size: 28),
-                SizedBox(width: 10),
-                Text(widget.title, style: TextStyle(fontSize: 18)),
+                const SizedBox(width: 10),
+                Text(widget.title, style: const TextStyle(fontSize: 18)),
               ],
             ),
             // If toggle is true, show the switch button
@@ -312,12 +313,12 @@ class _ProfileOptionState extends State<ProfileOption> {
               Container(
                 width: 44,
                 height: 44,
-                padding: EdgeInsets.all(10),
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: primaryColor,
                   borderRadius: BorderRadius.circular(6),
                 ),
-                child: Icon(Icons.arrow_forward_ios,
+                child: const Icon(Icons.arrow_forward_ios,
                     color: Colors.white, size: 19),
               ),
           ],
@@ -337,7 +338,7 @@ class ProfileTextField extends StatelessWidget {
   final Function(String) onChanged;
   final String? errorText;
 
-  ProfileTextField({
+  const ProfileTextField({
     required this.label,
     required this.hintText,
     required this.controller,
@@ -351,8 +352,8 @@ class ProfileTextField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: TextStyle(fontSize: 16)),
-        SizedBox(height: 8),
+        Text(label, style: const TextStyle(fontSize: 16)),
+        const SizedBox(height: 8),
         TextField(
           controller: controller,
           focusNode: focusNode,
@@ -363,7 +364,7 @@ class ProfileTextField extends StatelessWidget {
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(6)),
           ),
         ),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
       ],
     );
   }
@@ -374,7 +375,7 @@ class ProfileDropdown extends StatelessWidget {
   final List<String> items;
   final Function(String?) onChanged;
 
-  ProfileDropdown(
+  const ProfileDropdown(
       {required this.label, required this.items, required this.onChanged});
 
   @override
@@ -384,11 +385,11 @@ class ProfileDropdown extends StatelessWidget {
       children: [
         Text(
           label,
-          style: TextStyle(fontSize: 16),
+          style: const TextStyle(fontSize: 16),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(6),
             border: Border.all(
@@ -399,8 +400,8 @@ class ProfileDropdown extends StatelessWidget {
           child: DropdownButton<String>(
             isExpanded: true,
             onChanged: onChanged,
-            hint: Text("Sélectionner une ville"),
-            underline: SizedBox(),
+            hint: const Text("Sélectionner une ville"),
+            underline: const SizedBox(),
             items: items.map((item) {
               return DropdownMenuItem<String>(
                 value: item,
@@ -409,7 +410,7 @@ class ProfileDropdown extends StatelessWidget {
             }).toList(),
           ),
         ),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
       ],
     );
   }

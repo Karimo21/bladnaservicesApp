@@ -6,7 +6,7 @@ class ProvidersList extends StatelessWidget {
   final List<Map<String, dynamic>> services;
   final String selectedService;
 
-  ProvidersList({
+  const ProvidersList({
     required this.providers,
     required this.services,
     required this.selectedService,
@@ -21,15 +21,15 @@ class ProvidersList extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(" $selectedService", style: TextStyle(color: Colors.black)),
+        title: Text(" $selectedService", style: const TextStyle(color: Colors.black)),
         backgroundColor: Colors.white,
         elevation: 0, 
-        iconTheme: IconThemeData(color: Colors.black),
+        iconTheme: const IconThemeData(color: Colors.black),
       ),
       body: filteredProviders.isEmpty
           ? Center(child: Text("Aucun prestataire trouvé pour $selectedService"))
           : Padding(
-              padding: EdgeInsets.all(10),
+              padding: const EdgeInsets.all(10),
               child: GridView.builder(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2, // Deux prestataires par ligne
@@ -73,19 +73,19 @@ class ProvidersList extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(filteredProviders[index]["name"],
-                                  style: TextStyle(fontWeight: FontWeight.bold)),
+                                  style: const TextStyle(fontWeight: FontWeight.bold)),
                               Text(filteredProviders[index]["profession"],
-                                  style: TextStyle(color: Colors.grey)),
-                              SizedBox(height: 10),
+                                  style: const TextStyle(color: Colors.grey)),
+                              const SizedBox(height: 10),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Row(
                                     children: [
-                                      Icon(Icons.star, color: Color(0xFF0054A5)),
-                                      SizedBox(width: 2),
+                                      const Icon(Icons.star, color: Color(0xFF0054A5)),
+                                      const SizedBox(width: 2),
                                       Text("${filteredProviders[index]["rating"]}",
-                                          style: TextStyle(fontWeight: FontWeight.bold)),
+                                          style: const TextStyle(fontWeight: FontWeight.bold)),
                                     ],
                                   ),
                                   ElevatedButton(
@@ -98,14 +98,14 @@ class ProvidersList extends StatelessWidget {
                                       );
                                     },
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: Color(0xFF0054A5),
+                                      backgroundColor: const Color(0xFF0054A5),
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(20),
                                       ),
-                                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                      minimumSize: Size(80, 30),
+                                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                      minimumSize: const Size(80, 30),
                                     ),
-                                    child: Text(
+                                    child: const Text(
                                       "Détails",
                                       style: TextStyle(color: Colors.white, fontSize: 14),
                                     ),

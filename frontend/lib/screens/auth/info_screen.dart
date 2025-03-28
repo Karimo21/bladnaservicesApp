@@ -1,3 +1,4 @@
+import 'package:bladnaservices/screens/auth/login_screen.dart';
 import 'package:flutter/material.dart';
 
 class ConfirmationScreen extends StatelessWidget {
@@ -12,7 +13,7 @@ class ConfirmationScreen extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
-            boxShadow: [
+            boxShadow: const [
               BoxShadow(
                 color: Colors.black26,
                 blurRadius: 10,
@@ -24,7 +25,7 @@ class ConfirmationScreen extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              CircleAvatar(
+              const CircleAvatar(
                  backgroundColor: Color(0xFF0054A5),
                 radius: 30,
                 child: Icon(Icons.check, color: Colors.white, size: 30),
@@ -40,8 +41,8 @@ class ConfirmationScreen extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               const Text(
-                "Votre demande pour le service de plomberie a été prise en compte.\n"
-                "Vous recevrez un message de confirmation de notre équipe.",
+                "Nous avons bien pris en compte votre demande.\n"
+                "Elle est en cours de traitement",
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 14, color: Colors.black54),
               ),
@@ -51,15 +52,19 @@ class ConfirmationScreen extends StatelessWidget {
                 height: 50,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                     backgroundColor: Color(0xFF0054A5),
+                     backgroundColor: const Color(0xFF0054A5),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
                     padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
                   onPressed: () {
-                    Navigator.pop(context);
+                    Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => LoginScreen()),
+                              );
                   },
+              
                   child: const Text(
                     "Revenir",
                     style: TextStyle(fontSize: 16, color: Colors.white),
