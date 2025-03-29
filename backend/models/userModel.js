@@ -173,6 +173,7 @@ async getProviderProfile(userId) {
     adresse,
     description,
     profile_picture,
+    is_validated,
     ct.city_id as city_id,
     availability,
     title AS service,

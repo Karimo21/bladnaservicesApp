@@ -148,15 +148,16 @@ exports.loginUser = async (req, res) => {
 
     // Check if the password matches (simple comparison for now)
     const user = results[0];
-    console.log(user);
+
+    //console.log(user);
     if (user.password !== password) {
       
-      console.log(user.password,password);
+      //console.log(user.password,password);
       return res.status(401).json({ message: "Incorrect password" });
     }
     let profile="";
     if(user.role==="client"){
-       profile =await User.getClientProfile(user.user_id);
+       profile = await User.getClientProfile(user.user_id);
        res.json({
         message: "Login successful",
         user: {
@@ -178,7 +179,7 @@ exports.loginUser = async (req, res) => {
     }
     if(user.role==="provider"){
        profile =await User.getProviderProfile(user.user_id);
-       console.log("profile: "+profile);
+       //console.log("profile: "+profile);
        res.json({
         message: "Login successful",
         user: {
@@ -190,6 +191,7 @@ exports.loginUser = async (req, res) => {
           adresse:profile[0].adresse,
           description:profile[0].description,
           profile:profile[0]['profile_picture'],
+          isValidated:profile[0].is_validated,
           rate:profile[0].rate,
           city:profile[0].city_id,
           service:profile[0].service,

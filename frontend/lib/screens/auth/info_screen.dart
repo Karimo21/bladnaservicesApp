@@ -41,7 +41,8 @@ class ConfirmationScreen extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               const Text(
-                "Nous avons bien pris en compte votre demande.\n"
+                "Nous avons bien pris en compte\n"
+                "votre demande de création de compte.\n"
                 "Elle est en cours de traitement",
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 14, color: Colors.black54),

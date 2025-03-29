@@ -1,3 +1,4 @@
+import 'package:bladnaservices/screens/auth/info_screen.dart';
 import 'package:bladnaservices/screens/auth/role_screen.dart';
 import 'package:bladnaservices/screens/home/main_screen.dart';
 import 'package:bladnaservices/screens/home/profile/User.dart';
@@ -51,13 +52,19 @@ class _LoginScreenState extends State<LoginScreen> {
               //SocketService();
       }
 
-
-      
-
-      Navigator.push(
+      print("role: ${data['user']['role']}  isValidated: ${data['user']['isValidated']}");
+      if(data['user']['role']=="provider" && data['user']['isValidated']==0 ){
+        print("Existe");
+        Navigator.push(
+         context,
+         MaterialPageRoute(builder: (context) => ConfirmationScreen()),
+        );       
+      }else{
+       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const MainScreen()),
-      );
+       );
+      }
       print("Logged in");
     } else {
       print('Login failed: ${response.body}');

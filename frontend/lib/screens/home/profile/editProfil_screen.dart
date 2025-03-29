@@ -208,13 +208,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         User.adresse = address;
         User.description = description;
         User.city=int.parse(city);
-   Navigator.pushAndRemoveUntil(
-  context,
-  MaterialPageRoute(builder: (context) => const MainScreen()),
-  (route) => false, // This removes all previous routes from the stack
-);
+     Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => const MainScreen(initialIndex: 4)),
+      (route) => false, // This removes all previous routes from the stack
+     );
         // Optionally, parse the response body
-        var jsonResponse = jsonDecode(response.body);
+      
       } else {
   
       }
