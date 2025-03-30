@@ -1,5 +1,6 @@
 import 'package:bladnaservices/screens/home/chat/chat_screen.dart';
 import 'package:bladnaservices/screens/home/profile/User.dart';
+import 'package:bladnaservices/screens/home/reservation/rate_screen.dart';
 import 'package:bladnaservices/screens/home/reservation/reservation_prestataire_screen.dart';
 import 'package:bladnaservices/screens/home/review/review_screen.dart';
 import 'package:bladnaservices/screens/home/services/galerie_screen.dart';
@@ -195,6 +196,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             ],
                           ),
                           const Spacer(),
+                          if(User.userId != widget.provider['provider_id'])
                           IconButton(
                             icon: const Icon(Icons.chat, color: Color(0xFF0054A5)),
                             onPressed: () async {
@@ -217,10 +219,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
                             },
                           ),
-                       //   IconButton(
-                       //     icon: const Icon(Icons.call, color: Color(0xFF0054A5)),
-                       //     onPressed: () {},
-                       //   ),
+
                         ],
                       ),
                       const SizedBox(height: 5),
@@ -237,7 +236,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         children: [
                           const Icon(Icons.location_on, color: Colors.grey),
                           const SizedBox(width: 5),
-                          Text(widget.provider['location']),
+                          Text(widget.provider['city_name']+", "+widget.provider['location']),
                         ],
                       ),
                       const SizedBox(height: 10),
@@ -420,18 +419,27 @@ class _ProfilePageState extends State<ProfilePage> {
                     flex: 3, // 30% de l'espace
                     child: ElevatedButton(
                       onPressed: () {
-                        //  Navigator.push(
-                        //     context,
-                        //     MaterialPageRoute(
-                        //        builder: (context) => RateScreen(provider:widget.provider)),
-                         // );                         
+                          Navigator.push(
+                            context,
+                             MaterialPageRoute(
+                                builder: (context) =>  RateScreen(
+                                    providerId: widget.provider['provider_id'].toString(),
+                                    profileImage:widget.provider['image'],
+                                    providerName: widget.provider['name'].toString(),
+                                    serviceName: widget.provider['profession'].toString(),
+                                    city: widget.provider['city_name'].toString(),
+                                    rate: widget.provider['rating'].toString(),
+                                )),
+                          );                         
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFD3D3D3),
-                        foregroundColor: Colors.white,
-                        minimumSize: const Size(double.infinity, 50),
-                      ),
-                      child: const Text('Évaluer'),
+                               backgroundColor: const Color(0xFF28A745 ), // Couleur de fond
+                               padding: const EdgeInsets.symmetric(vertical: 15), // Padding interne
+                               shape: RoundedRectangleBorder(
+                               borderRadius: BorderRadius.circular(5), // Coins carrés
+                                ),
+                            ),
+                      child: const Text('Évaluer',style: TextStyle(color: Colors.white, fontSize: 16),),
                     ),
                   ),
                   if(User.userId != widget.provider['provider_id'])
@@ -448,11 +456,13 @@ class _ProfilePageState extends State<ProfilePage> {
                               );     
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF0054A5),
-                        foregroundColor: Colors.white,
-                        minimumSize: const Size(double.infinity, 50),
-                      ),
-                      child: const Text('Réserver'),
+                               backgroundColor: const Color(0xFF0054A5), // Couleur de fond
+                               padding: const EdgeInsets.symmetric(vertical: 15), // Padding interne
+                               shape: RoundedRectangleBorder(
+                               borderRadius: BorderRadius.circular(5), // Coins carrés
+                                ),
+                            ),
+                      child: const Text('Réserver',style: TextStyle(color: Colors.white, fontSize: 16),),
                     ),
                   ),
                 ],

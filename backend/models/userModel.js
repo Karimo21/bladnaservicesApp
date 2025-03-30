@@ -34,11 +34,13 @@ getProviderDetails: (callback) => {
              p.profile_picture,
              s.title,
              ROUND(AVG(r.rating), 1) AS rating,
+             ct.city_name,
              p.adresse,
              p.description,
              COUNT(DISTINCT rs.reservations_id) AS nbr_res
       FROM providers p
       JOIN services s USING(service_id)
+      JOIN city ct using(city_id)
       LEFT JOIN reservations rs ON p.providers_id = rs.reserved_provider_id 
       LEFT JOIN ratings r ON p.providers_id = r.provider_id
       where p.availability=1
@@ -60,10 +62,21 @@ getMoreProviderDetails(providerId, callback) {
   
   // Query to get ratings and feedback for the provider
   const ratingsQuery = `
-      SELECT c.firstname, c.lastname, r.feedback, DATE_FORMAT(r.created_at, '%M %d, %Y %l:%i %p') AS created_at, r.rating, c.profile_picture
-      FROM clients c
-      JOIN ratings r ON c.clients_id = r.client_id
-      WHERE r.provider_id = ?;
+    SELECT c.firstname, c.lastname, r.feedback, 
+           DATE_FORMAT(r.created_at, '%M %d, %Y %l:%i %p') AS created_at, 
+           r.rating, c.profile_picture
+    FROM clients c
+    JOIN ratings r ON c.clients_id = r.client_id
+    WHERE r.provider_id = ?;
+  `;
+  // Query to get ratings and feedback for the provider
+  const ratingsQuery2 = `
+    SELECT p.firstname, p.lastname, r.feedback, 
+           DATE_FORMAT(r.created_at, '%M %d, %Y %l:%i %p') AS created_at, 
+           r.rating, p.profile_picture
+    FROM providers p
+    JOIN ratings r ON p.providers_id = r.client_id
+    WHERE r.provider_id = ?;
   `;
 
   // Execute the image query firsts
@@ -71,15 +84,19 @@ getMoreProviderDetails(providerId, callback) {
       if (err) return callback(err, null);
 
       // Execute the ratings query
-      db.query(ratingsQuery, [providerId], (err, ratings) => {
+      db.query(ratingsQuery, [providerId], (err, ratingsFromClients) => {
           if (err) return callback(err, null);
+          db.query(ratingsQuery2, [providerId], (err, ratingsFromProviders) => {
+            if (err) return callback(err, null);
 
+          const ratings = [...ratingsFromClients, ...ratingsFromProviders];
           // Combine both results and return them
           callback(null, {
               images: images,   // Array of image URLs
               ratings: ratings  // Array of ratings and feedback
           });
       });
+    });
   });
 }, 
 

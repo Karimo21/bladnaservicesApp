@@ -1,6 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:bladnaservices/screens/home/profile/User.dart';
 
 class RateScreen extends StatefulWidget {
+  final providerId;
+  final profileImage;
+  final providerName;
+  final serviceName;
+  final city;
+  final rate;
+
+  const RateScreen(
+      {super.key,
+      required this.providerId,
+      this.providerName,
+      this.serviceName,
+      this.city,
+      this.rate,
+      this.profileImage});
+
   @override
   _RateScreenState createState() => _RateScreenState();
 }
@@ -9,18 +28,52 @@ class _RateScreenState extends State<RateScreen> {
   int selectedStars = 0; // Default rating
   TextEditingController commentController = TextEditingController();
   bool showWarning = false;
+  int loggedUser = User.userId; // Replace with actual logged-in user ID
 
-  void submitReview() {
+  // Function to send the rating to the backend API
+  Future<void> submitReview() async {
     if (selectedStars == 0) {
       setState(() {
         showWarning = true;
       });
-    } else {
-      setState(() {
-        showWarning = false;
-      });
-      print("Rating: $selectedStars stars");
-      print("Comment: ${commentController.text}");
+      return;
+    }
+
+    setState(() {
+      showWarning = false;
+    });
+
+    const String apiUrl = 'http://localhost:3000/api/ratings'; // Replace with your actual backend URL
+
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({
+          "clientId": loggedUser, // Assuming `User.userId` is the client ID
+          "providerId": widget.providerId,
+          "rating": selectedStars,
+          "feedback": commentController.text,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        // Successfully saved rating
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Évaluation envoyée avec succès!")),
+        );
+        Navigator.pop(context); // Close the screen
+      } else {
+        // Handle server error
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Erreur lors de l'envoi de l'évaluation.")),
+        );
+      }
+    } catch (e) {
+      // Handle network error
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Échec de la connexion: $e")),
+      );
     }
   }
 
@@ -46,7 +99,7 @@ class _RateScreenState extends State<RateScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Profile Card with Rectangle Image
+            // Profile Card
             Card(
               elevation: 2,
               shape: RoundedRectangleBorder(
@@ -64,23 +117,26 @@ class _RateScreenState extends State<RateScreen> {
                         width: 90,
                         height: 130,
                         color: Colors.grey[300],
-                        child: const Icon(Icons.person, size: 40, color: Colors.grey),
+                        child: widget.profileImage != null &&
+                                widget.profileImage.isNotEmpty
+                            ? Image.network(widget.profileImage, fit: BoxFit.cover)
+                            : const Icon(Icons.person, size: 50, color: Colors.grey),
                       ),
                     ),
                     const SizedBox(width: 12),
-                    const Expanded(
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text("Hassan Rochdi",
-                              style: TextStyle(fontWeight: FontWeight.bold)),
-                          Text("Médecin - Agadir"),
+                          Text(widget.providerName ?? "",
+                              style: const TextStyle(fontWeight: FontWeight.bold)),
+                          Text(widget.serviceName ?? ""),
+                          Text(widget.city ?? ""),
                           Row(
                             children: [
-                              Icon(Icons.star,
-                                  color: Color(0xFF0054A5), size: 18),
-                              Text(" 4.8"),
+                              const Icon(Icons.star, color: Color(0xFF0054A5), size: 18),
+                              Text(widget.rate.toString()),
                             ],
                           ),
                         ],
@@ -93,21 +149,18 @@ class _RateScreenState extends State<RateScreen> {
 
             const SizedBox(height: 20),
 
-            // Titre Évaluation
+            // Star Rating
             const Text(
               "Évaluer le dernier service",
               style: TextStyle(
                   fontWeight: FontWeight.bold, color: Color(0xFF565656)),
             ),
-
             const SizedBox(height: 10),
-
-            // Star Rating System inside White Container
             Container(
-              padding: const EdgeInsets.symmetric(vertical: 16), // Add padding
+              padding: const EdgeInsets.symmetric(vertical: 16),
               decoration: BoxDecoration(
-                color: Colors.white, // White background
-                borderRadius: BorderRadius.circular(12), // Rounded corners
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.1),
@@ -122,7 +175,7 @@ class _RateScreenState extends State<RateScreen> {
                   return IconButton(
                     icon: Icon(
                       index < selectedStars ? Icons.star : Icons.star_border,
-                      color: const Color(0xFF0054A5), // Blue color for stars
+                      color: const Color(0xFF0054A5),
                       size: 36,
                     ),
                     onPressed: () {
@@ -151,8 +204,7 @@ class _RateScreenState extends State<RateScreen> {
                 hintText: "Saisissez votre commentaire ici",
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(color: Color(0xFFC5C6CC)), // Border color
-                  
+                  borderSide: const BorderSide(color: Color(0xFFC5C6CC)),
                 ),
               ),
             ),
@@ -184,13 +236,13 @@ class _RateScreenState extends State<RateScreen> {
 
             const SizedBox(height: 20),
 
-            // Submit Button (Bigger & Blue)
+            // Submit Button
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: submitReview,
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 18), // Bigger height
+                  padding: const EdgeInsets.symmetric(vertical: 18),
                   backgroundColor: const Color(0xFF0054A5),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(6),

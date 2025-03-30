@@ -1,3 +1,4 @@
+import 'package:bladnaservices/screens/home/main_screen.dart';
 import 'package:bladnaservices/screens/home/profile/User.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -43,11 +44,11 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
         debugPrint("Réservation créée avec succès !");
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text("Réservation confirmée avec succès !")));
-        //Navigator.pushAndRemoveUntil(
-        //  context,
-        //  MaterialPageRoute(builder: (context) => MainScreen()),
-        //  (route) => false, // This removes all previous routes from the stack
-       // );
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => MainScreen()),
+          (route) => false, // This removes all previous routes from the stack
+        );
       } else {
         debugPrint("Échec de la création de la réservation : ${response.body}");
         ScaffoldMessenger.of(context).showSnackBar(

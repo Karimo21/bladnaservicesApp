@@ -14,15 +14,34 @@ exports.getProviderRatings = async (req, res) => {
 };
 
 // Create a new rating
-exports.createRating = async (clientId, providerId, rating, feedback) => {
+exports.createRating = async (req, res) => {
+  const { clientId, providerId, rating, feedback } = req.body;
+
   try {
-    const result = await db.promise().query(
-      `INSERT INTO ratings (client_id, provider_id, rating, feedback, created_at) VALUES (?, ?, ?, ?, NOW())`,
-      [clientId, providerId, rating, feedback]
+    // Check if a rating already exists
+    const [existingRating] = await db.promise().query(
+      `SELECT * FROM ratings WHERE client_id = ? AND provider_id = ?`,
+      [clientId, providerId]
     );
-    return result;
+
+    if (existingRating.length > 0) {
+      // If rating exists, update it
+      await db.promise().query(
+        `UPDATE ratings SET rating = ?, feedback = ?, created_at = NOW() WHERE client_id = ? AND provider_id = ?`,
+        [rating, feedback, clientId, providerId]
+      );
+      return res.status(200).json({ message: 'Rating successfully updated' });
+    } else {
+      // If no rating exists, insert a new one
+      await db.promise().query(
+        `INSERT INTO ratings (client_id, provider_id, rating, feedback, created_at) VALUES (?, ?, ?, ?, NOW())`,
+        [clientId, providerId, rating, feedback]
+      );
+      return res.status(200).json({ message: 'Rating successfully created' });
+    }
   } catch (error) {
-    throw new Error('Error saving rating: ' + error.message);
+    console.error(error);
+    return res.status(500).json({ message: 'An error occurred', error });
   }
 };
 

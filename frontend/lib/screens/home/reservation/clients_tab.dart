@@ -46,11 +46,15 @@ class ClientsTab extends StatefulWidget  {
   
   }
     Future<void> fetchReservations() async {
+
+    if (!mounted) return;  
     final response = await http.get(Uri.parse('http://localhost:3000/api/reservations/reserved/$userId'));
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-     
+
+      
+     if (!mounted) return;  
       setState(() {
         reservations = List<Map<String, String>>.from(data['reservations'].map((item) {
           // Ensure that the values you're mapping are all strings

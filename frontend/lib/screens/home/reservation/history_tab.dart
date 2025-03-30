@@ -116,6 +116,7 @@ class HistoryCard extends StatelessWidget {
                 color: Color(0xFF565656),
               ),
             ),
+            
           ),
           Divider(color: Colors.grey.shade400),
           buildInfoRow("Date de début", data["start_date"]!),

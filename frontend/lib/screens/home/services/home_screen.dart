@@ -58,6 +58,7 @@ class _HomescreenState extends State<Homescreen> {
   ];
 
 Future<void> fetchProviders() async {
+
   final response = await http.get(Uri.parse('http://localhost:3000/providers'));
 
   if (response.statusCode == 200) {
@@ -68,6 +69,7 @@ Future<void> fetchProviders() async {
         "provider_id": provider["providers_id"],
         "name": provider["provider_name"],
         "profession": provider["title"],
+        "city_name": provider["city_name"],
         "rating": double.tryParse(provider["rating"] ?? "0") ?? 0.0,
         "image": "http://localhost:3000" + provider["profile_picture"],
         "reservations": provider["nbr_res"],
@@ -111,6 +113,7 @@ Future<void> markNotificationAsRead() async {
 void initState() {
   super.initState();
   providers=fakeProviders;
+  //if(!mounted) return;
   fetchProviders().then((_) => fetchUnreadNotifications());
 }
 

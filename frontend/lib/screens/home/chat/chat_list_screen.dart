@@ -32,17 +32,19 @@ class _ChatListScreenState extends State<ChatListScreen> {
       } else if (User.role == "provider") {
         url = 'http://localhost:3000/api/provider-contacts/${User.userId}';
       }
-
+       if (!mounted) return; 
       final response = await http.get(Uri.parse(url));
+        if (!mounted) return;
+      
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
+         if (!mounted) return;
 
-        if (mounted) {
+        
           setState(() {
             contacts = data;
             filteredContacts = data;  // Initialize filteredContacts with full data
           });
-        }
       } else {
         throw Exception('Failed to load contacts');
       }
