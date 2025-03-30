@@ -251,14 +251,17 @@ class _ProfilePageState extends State<ProfilePage> {
                         textAlign: TextAlign.justify,
                       ),
                       const SizedBox(height: 20),
+                      if(galleryImages.isNotEmpty)
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
+                          
                           const Text(
                             'Galerie',
                             style: TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.bold),
                           ),
+                         
                           TextButton(
                             onPressed: () {
                               Navigator.push(
@@ -279,10 +282,11 @@ class _ProfilePageState extends State<ProfilePage> {
                         ],
                       ),
 
+                      if(galleryImages.isNotEmpty)
                       const SizedBox(height: 10),
 
                       // Largeur de l'image
-
+                     if(galleryImages.isNotEmpty)
                       Container(
                         constraints: const BoxConstraints(
                           maxHeight: 120, // Hauteur maximale
@@ -309,8 +313,10 @@ class _ProfilePageState extends State<ProfilePage> {
                           },
                         ),
                       ),
-
+                      
+                      if(galleryImages.isNotEmpty)
                       const SizedBox(height: 20),
+                      if(reviews.isNotEmpty)
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -337,8 +343,9 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                         ],
                       ),
-
-                      const SizedBox(height: 10),
+                      if(reviews.isEmpty)
+                      const SizedBox(height: 50),
+                      if(reviews.isNotEmpty)
                       ListView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
