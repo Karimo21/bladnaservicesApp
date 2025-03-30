@@ -67,7 +67,7 @@ class _HistoryTabState extends State<HistoryTab> {
     }
 
     if (reservations.isEmpty) {
-      return const Center(child: Text("No history available"));
+      return const Center(child: Text("Aucun historique disponible"));
     }
 
     return ListView.builder(

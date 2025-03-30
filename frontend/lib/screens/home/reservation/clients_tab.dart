@@ -86,6 +86,10 @@ class ClientsTab extends StatefulWidget  {
   }
   @override
   Widget build(BuildContext context) {
+    
+     if (reservations.isEmpty) {
+      return const Center(child: Text("Aucune demande disponible"));
+    }
     return ListView.builder(
       padding: const EdgeInsets.all(10),
       itemCount: reservations.length,

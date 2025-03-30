@@ -93,6 +93,9 @@ class _ReservationsTabState extends State<ReservationsTab> {
 
   @override
   Widget build(BuildContext context) {
+    if (reservations.isEmpty) {
+      return const Center(child: Text("Vous n'avez aucune réservation"));
+    }
     return ListView.builder(
       padding: const EdgeInsets.all(10),
       itemCount: reservations.length,
@@ -109,6 +112,7 @@ class myReservationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 14),
       padding: const EdgeInsets.all(16),
