@@ -15,17 +15,36 @@ const User = {
   // Function to get all provider POSITION
   
   getAllProviders: (callback) => {
-        const query = `
-          SELECT providers_id AS id, latitude AS lat, longitude AS lng, profile_picture AS image, CONCAT(firstname, ' ', lastname) AS nom
-          FROM providers
-          WHERE latitude IS NOT NULL AND longitude IS NOT NULL;
-        `;
-    
-        db.query(query, (err, results) => {
-          if (err) return callback(err, null);
-          callback(null, results);
-        });
-      },
+    const query = `
+     SELECT 
+      p.providers_id AS id,
+      CONCAT(p.firstname, ' ', p.lastname) AS nom,
+      p.profile_picture AS image,
+      s.title AS profession,
+      ROUND(AVG(r.rating), 1) AS rating,
+      p.adresse AS location,
+      p.description,
+      COUNT(DISTINCT rs.reservations_id) AS reservations,
+      p.latitude AS lat,
+p.longitude AS lng,
+ct.city_name as cityName
+FROM providers p
+JOIN services s USING(service_id)
+JOIN city ct using(city_id)
+LEFT JOIN reservations rs ON p.providers_id = rs.reserved_provider_id 
+LEFT JOIN ratings r ON p.providers_id = r.provider_id
+WHERE p.latitude IS NOT NULL 
+AND p.longitude IS NOT NULL
+AND p.availability = 1
+GROUP BY p.providers_id;
+
+    `;
+
+    db.query(query, (err, results) => {
+      if (err) return callback(err, null);
+      callback(null, results);
+    });
+  },
 
 getProviderDetails: (callback) => {
     const query = `

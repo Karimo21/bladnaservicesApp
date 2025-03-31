@@ -35,6 +35,14 @@ exports.getAllProviders = (req, res) => {
 
     // Format the data to match the structure of _prestataires
     const formattedProviders = providers.map((provider) => ({
+
+      reservations: provider.reservations,
+      rating: provider.rating,
+      description: provider.description,
+      location: provider.location,
+      profession: provider.profession,
+      cityName:provider.cityName,
+      id: provider.id,
       lat: parseFloat(provider.lat),
       lng: parseFloat(provider.lng),
       image: provider.image,
@@ -409,3 +417,4 @@ exports.getAllreservation = (req, res) => {
     res.json(results);
   });
 };
+
