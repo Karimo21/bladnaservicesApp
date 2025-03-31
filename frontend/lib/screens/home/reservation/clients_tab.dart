@@ -84,6 +84,7 @@ class ClientsTab extends StatefulWidget  {
       reservations.removeAt(index);
     });
   }
+  
   @override
   Widget build(BuildContext context) {
     

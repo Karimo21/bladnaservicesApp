@@ -88,7 +88,7 @@ class _MoroccoMapState extends State<MoroccoMap> {
     } catch (e) {
       print('Erreur de chargement: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erreur de chargement des prestataires')),
+        const SnackBar(content: Text('Erreur de chargement des prestataires')),
       );
     }
   }
@@ -211,12 +211,12 @@ class _MoroccoMapState extends State<MoroccoMap> {
               );
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text("Erreur : ID du prestataire invalide")),
+                const SnackBar(content: Text("Erreur : ID du prestataire invalide")),
               );
             }
           },
           child: Container(
-            padding: EdgeInsets.all(4),
+            padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
               color: Colors.white,
               shape: BoxShape.rectangle,
@@ -270,10 +270,10 @@ class _MoroccoMapState extends State<MoroccoMap> {
             ),
           ),
         ),
-        SizedBox(height: 6),
+        const SizedBox(height: 6),
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          constraints: BoxConstraints(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          constraints: const BoxConstraints(
             minWidth: 80,  // Augmenté pour mieux contenir les noms
             maxWidth: 120,
           ),
@@ -292,11 +292,11 @@ class _MoroccoMapState extends State<MoroccoMap> {
             mainAxisSize: MainAxisSize.min,  // Changé à Row pour affichage horizontal
             children: [
               if (isCurrentUser) 
-                Icon(Icons.location_on, size: 12, color: Colors.white),
+                const Icon(Icons.location_on, size: 12, color: Colors.white),
               Flexible(
                 child: Text(
                   isCurrentUser ? ' Vous' : displayName,  // Espace ajouté après l'icône
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 11,  // Légèrement réduit pour mieux fit
                     fontWeight: FontWeight.w600,
@@ -349,24 +349,24 @@ class _MoroccoMapState extends State<MoroccoMap> {
                   controller: _searchController,
                   decoration: InputDecoration(
                     hintText: "Rechercher un prestataire...",
-                    prefixIcon: Icon(Icons.search),
+                    prefixIcon: const Icon(Icons.search),
                     suffixIcon: GestureDetector(
                       onTap: () {
                         _searchController.clear();
                         _getCurrentLocation();
                       },
-                      child: Icon(Icons.my_location, color: Color(0xFF0054A5)),
+                      child: const Icon(Icons.my_location, color: Color(0xFF0054A5)),
                     ),
                     border: InputBorder.none,
-                    contentPadding: EdgeInsets.all(10),
+                    contentPadding: const EdgeInsets.all(10),
                   ),
                 ),
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
 
               if (_isSearching && _filteredPrestataires.isEmpty)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8),
                   child: Text(
                     "Aucun prestataire trouvé",
                     style: TextStyle(color: Colors.red),
@@ -381,20 +381,20 @@ class _MoroccoMapState extends State<MoroccoMap> {
                       FlutterMap(
                         mapController: _mapController,
                         options: MapOptions(
-                          center: LatLng(31.7917, -7.0926),
+                          center: const LatLng(31.7917, -7.0926),
                           zoom: 6.0,
                           interactiveFlags:
                               InteractiveFlag.all & ~InteractiveFlag.rotate,
                           maxBounds: LatLngBounds(
-                            LatLng(21.0, -20.0),
-                            LatLng(37.5, 2.0),
+                            const LatLng(21.0, -20.0),
+                            const LatLng(37.5, 2.0),
                           ),
                         ),
                         children: [
                           TileLayer(
                             urlTemplate:
                                 "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                            subdomains: ['a', 'b', 'c'],
+                            subdomains: const ['a', 'b', 'c'],
                           ),
                           MarkerLayer(
                             markers: (_isSearching
@@ -423,7 +423,7 @@ class _MoroccoMapState extends State<MoroccoMap> {
                                   point: _currentPosition!,
                                   width: 40,
                                   height: 40,
-                                  child: Icon(
+                                  child: const Icon(
                                     Icons.location_on,
                                     color: Colors.red,
                                     size: 40,
@@ -433,7 +433,7 @@ class _MoroccoMapState extends State<MoroccoMap> {
                             ),
                         ],
                       ),
-                      Positioned(
+                      const Positioned(
                         bottom: 20,
                         right: 10,
                         child: Column(

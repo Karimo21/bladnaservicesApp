@@ -57,6 +57,7 @@ const Notification = {
     } catch (error) {
       throw error;
     }
+    
   },
 };
 

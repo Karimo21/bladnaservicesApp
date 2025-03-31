@@ -96,6 +96,7 @@ class _ReservationsTabState extends State<ReservationsTab> {
     if (reservations.isEmpty) {
       return const Center(child: Text("Vous n'avez aucune réservation"));
     }
+    
     return ListView.builder(
       padding: const EdgeInsets.all(10),
       itemCount: reservations.length,

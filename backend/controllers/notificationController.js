@@ -33,3 +33,4 @@ exports.markNotificationAsRead = async (req, res) => {
   }
 };
 
+

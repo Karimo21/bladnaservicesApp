@@ -17,6 +17,7 @@ exports.sendOTP = async (req, res) => {
     if (!phoneNumber) {
       return res.status(400).json({ message: 'Phone number is required' });
     }
+    
 
     // Send OTP via Twilio
     const verification = await client.verify.v2.services(verifyServiceSid)

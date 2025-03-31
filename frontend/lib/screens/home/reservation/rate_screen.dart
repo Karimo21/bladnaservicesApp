@@ -45,6 +45,7 @@ class _RateScreenState extends State<RateScreen> {
 
     const String apiUrl = 'http://localhost:3000/api/ratings'; // Replace with your actual backend URL
 
+
     try {
       final response = await http.post(
         Uri.parse(apiUrl),

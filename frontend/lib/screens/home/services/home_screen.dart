@@ -75,6 +75,7 @@ Future<void> fetchProviders() async {
         "reservations": provider["nbr_res"],
         "location": provider["adresse"],
         "description": provider["description"],
+        
       };
     }).toList();
     setState(() {

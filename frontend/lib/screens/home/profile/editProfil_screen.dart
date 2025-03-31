@@ -199,6 +199,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
+        
         body: jsonEncode(requestData),
       );
       // Check if the request was successful

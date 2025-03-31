@@ -25,6 +25,7 @@ class _MainScreenState extends State<MainScreen> {
     _selectedIndex = widget.initialIndex; // Utilisation de l'index initial
   }
 
+
   // A list of widgets representing each page/screen.
   final List<Widget> _screens = [
     Homescreen(), // Tab 1: Acceuil

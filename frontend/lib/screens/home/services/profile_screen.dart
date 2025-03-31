@@ -240,6 +240,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ],
                       ),
                       const SizedBox(height: 10),
+                      
                       const Text(
                         "À propos",
                         style: TextStyle(

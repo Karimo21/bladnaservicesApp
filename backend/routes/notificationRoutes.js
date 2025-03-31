@@ -9,5 +9,4 @@ router.get('/notifications/unread/:userId', unreadNotifications);
 router.post('/notifications/read/:userId', markNotificationAsRead);
 
 
-
 module.exports = router;

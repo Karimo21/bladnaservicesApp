@@ -46,7 +46,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
             content: Text("Réservation confirmée avec succès !")));
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => MainScreen()),
+          MaterialPageRoute(builder: (context) => const MainScreen()),
           (route) => false, // This removes all previous routes from the stack
         );
       } else {

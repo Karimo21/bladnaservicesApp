@@ -60,6 +60,7 @@ class _HistoryTabState extends State<HistoryTab> {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
     if (isLoading) {

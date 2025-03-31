@@ -40,7 +40,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
         final data = jsonDecode(response.body);
          if (!mounted) return;
 
-        
+         
           setState(() {
             contacts = data;
             filteredContacts = data;  // Initialize filteredContacts with full data

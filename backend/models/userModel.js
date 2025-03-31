@@ -46,6 +46,7 @@ GROUP BY p.providers_id;
     });
   },
 
+  
 getProviderDetails: (callback) => {
     const query = `
       SELECT p.providers_id,

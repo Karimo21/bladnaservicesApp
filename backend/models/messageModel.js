@@ -14,6 +14,7 @@ const Message = {
          ORDER BY m.created_at ASC`,
         [userId, contactId, contactId, userId]
       );
+      
       return rows;
     } catch (error) {
       throw error;

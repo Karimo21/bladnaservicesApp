@@ -8,7 +8,6 @@ const {getProviderContacts, getClientContacts,getMessages,createMessage,createCo
 router.post('/add-contact',createContact)
 // Send a message
 router.post('/send-message/:senderId/:receiverId',createMessage)
-
 // Get all messages between two users
 router.get('/api/messages/:userId/:contactId', getMessages);
 

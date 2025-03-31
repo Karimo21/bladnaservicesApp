@@ -124,7 +124,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 decoration: InputDecoration(
                   prefixIcon: const Icon(Icons.lock),
                   hintText: "Entrez votre mot de passe",
-                  filled: true,
+                  filled: true, 
                   fillColor: Colors.grey[200],
                   contentPadding: const EdgeInsets.symmetric(vertical: 15),
                   border: OutlineInputBorder(

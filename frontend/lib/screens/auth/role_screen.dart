@@ -47,7 +47,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 fontSize: 50,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF565656),
-              ),
+              ), 
             ),
             const SizedBox(height: 30),
             _buildRoleCard("provider", "Je propose un service"),

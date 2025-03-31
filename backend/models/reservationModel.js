@@ -15,6 +15,7 @@ createReservation: async (role, clientId, providerId, startDate, endDate, statut
           const clientName = result.length > 0 ? result[0].client_name : "Un Client";
           await db.promise().query(notificationQuery, [providerId, `${clientName} a fait une demande de réservation`]);
         }
+        
 
         if(role=="provider"){
           query='INSERT INTO reservations (reserving_provider_id, reserved_provider_id, start_date, end_date, statut_id,hour,address) VALUES (?, ?, ?, ?, ?, ?, ?)';

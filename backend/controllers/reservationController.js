@@ -5,6 +5,7 @@ let io; // Store Socket.io instance
 exports.setIo = (socketIo) => {
     io = socketIo;
 };
+
 // Send a message
 exports.createReservation = async (req,res) => {
     try {

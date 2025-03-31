@@ -5,6 +5,7 @@ const chart = {
         const query = 'select s.name,count(r.statut_id) as total from reservations r join statut s using(statut_id)  group by r.statut_id';
         db.query(query, callback);
     },
+    
     getReservationsByservices: (callback) => {
       const query = 'select s.title,count(p.providers_id) as total_provider from services s join providers p using(service_id) group by s.title;';
       db.query(query, callback);

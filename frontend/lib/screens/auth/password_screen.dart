@@ -135,6 +135,7 @@ class _CreatePasswordScreenState extends State<PasswordScreen> {
                     return DropdownMenuItem<String>(
                       value: city["city_id"].toString(), // Ensure it's a string
                       child: Text(city["city_name"]),
+                      
                     );
                   }).toList(),
                   onChanged: (value) {

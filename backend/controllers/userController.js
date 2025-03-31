@@ -33,6 +33,7 @@ exports.getAllProviders = (req, res) => {
       return res.status(500).json({ message: 'Internal server error' });
     }
 
+    
     // Format the data to match the structure of _prestataires
     const formattedProviders = providers.map((provider) => ({
 

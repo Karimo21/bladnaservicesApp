@@ -51,6 +51,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
   Future<void> markNotificationAsRead(int notificationId) async {
     try {
+      
       await http.put(
         Uri.parse('http://localhost:3000/api/notifications/:userId'),
       );

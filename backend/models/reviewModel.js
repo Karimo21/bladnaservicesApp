@@ -29,3 +29,4 @@ WHERE r.provider_id = ?;
 };
 
 module.exports = Rating;
+

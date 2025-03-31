@@ -16,6 +16,7 @@ class ServiceListPage extends StatelessWidget {
           "Services",
           style: TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
         ),
+        
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(

@@ -43,6 +43,7 @@ async function getReservingReservations(req, res) {
 async function getReservationsHistory(req, res) {
     const { role, userId } = req.params;
 
+    
     try {
         let reservations;
 

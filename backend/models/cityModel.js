@@ -9,6 +9,7 @@ const City = {
     } catch (error) {
       throw error;
     }
+    
   },
 };
 

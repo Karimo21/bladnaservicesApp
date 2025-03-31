@@ -230,7 +230,6 @@ async getClientReservationHistory(clientId) {
   }
 }
 
-
 };
 
 module.exports = SuivieModel;

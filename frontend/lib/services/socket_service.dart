@@ -37,6 +37,7 @@ class SocketService with WidgetsBindingObserver {
           print("Statut updated for the reservation: $data"); // 🔍 Vérification immédiate
     });
 
+
     socket.onDisconnect((_) => print('Disconnected from Socket Server'));
   }
 

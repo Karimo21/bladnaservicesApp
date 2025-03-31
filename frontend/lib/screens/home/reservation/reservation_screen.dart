@@ -277,6 +277,7 @@ class _ReservationCardState extends State<ReservationCard> {
                     style: TextStyle(color: Colors.white, fontSize: 20),
                   ),
                 ),
+                
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,

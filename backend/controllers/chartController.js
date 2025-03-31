@@ -32,4 +32,5 @@ exports.getAllCounts = (req, res) => {
           reservations: results[0].total_reservations
       });
   });
+  
 };

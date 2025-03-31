@@ -22,6 +22,7 @@ router.get('/api/reservations/reserving/:role/:userId', getReservingReservations
 // Route to get the history of all reservations for a provider
 router.get('/api/reservations/history/:role/:userId', getReservationsHistory);
 
+
 //Route to update the statut of reservation
 router.post('/api/reservations/update_status',updateReservationStatut);
 

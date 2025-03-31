@@ -41,6 +41,7 @@ const UserContact = {
       throw error; // Handle errors properly
     }
   },
+  
   async findProviderContactById(userId) {
     try {
       const [rows] = await db.promise().query(

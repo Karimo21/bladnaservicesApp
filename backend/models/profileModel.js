@@ -33,6 +33,7 @@ updateProfileData: (userId, data, callback) => {
             if (err) return callback(err, null);
             callback(null, result);
         });
+        
        }
 },    
 updateProviderProfilePicture: (providerId, imageUrl, callback) => {

@@ -40,7 +40,7 @@ class _PrestataireSignupScreenState extends State<PrestataireSignupScreen> {
       setState(() {
         cities = List<Map<String, dynamic>>.from(data['cities']);
       });
-    } else {
+    } else { 
       setState(() {
         hasError = true;
       });

@@ -49,6 +49,7 @@ exports.updateProfileData = (req, res) => {
         return res.json({ message: "Profile updated successfully", result });
     });
 };
+
 //get provider work images
 exports.getProviderWorkImages = (req, res) => {
     const { providerId } = req.params; // Assuming providerId is passed in the URL params

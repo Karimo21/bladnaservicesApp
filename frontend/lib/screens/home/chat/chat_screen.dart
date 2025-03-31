@@ -125,6 +125,7 @@ class _ChatScreenState extends State<ChatScreen> {
               'isRead': msg['is_read'],
               'isSent': msg['sender_id'] == widget.userId,
             };
+            
           }).toList();
         });
         _scrollToBottom(); // Scroll to the bottom after loading messages

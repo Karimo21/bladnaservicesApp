@@ -51,6 +51,7 @@ exports.createContact = async (req, res) => {
 
 
 
+
 //mark messages as read
 exports.markAllMessagesAsRead = async (userId, contactId) => {
   try {

@@ -30,6 +30,7 @@ exports.createRating = async (req, res) => {
         `UPDATE ratings SET rating = ?, feedback = ?, created_at = NOW() WHERE client_id = ? AND provider_id = ?`,
         [rating, feedback, clientId, providerId]
       );
+      
       return res.status(200).json({ message: 'Rating successfully updated' });
     } else {
       // If no rating exists, insert a new one

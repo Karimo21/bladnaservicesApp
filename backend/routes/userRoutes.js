@@ -34,8 +34,6 @@ router.get("/api/notifications/:userId", getUserNotifications);
 // Route to create a new ratings
 router.post('/api/ratings', createRating);
 
-
-
 // Update provider's latitude and longitude
 router.post('/api/providers/:providers_id/position', updateProviderPosition);
 

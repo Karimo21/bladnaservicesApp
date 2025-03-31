@@ -102,6 +102,7 @@ class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
               _buildSectionTitle("Importer votre diplôme"),
               _buildUploadButton(_diplomaImage, "diploma", _diplomaError),
 
+
               const SizedBox(height: 40),
 
               SizedBox(

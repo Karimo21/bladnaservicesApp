@@ -87,7 +87,7 @@ class _PhoneScreenState extends State<PhoneScreen> {
   }
 
   // Fonction pour afficher un message d'erreur sous le TextField
-  void _showError(String message) {
+  void _showError(String message) { 
     setState(() {
       _errorMessage = message;
     });

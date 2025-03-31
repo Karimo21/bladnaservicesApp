@@ -22,6 +22,7 @@ class ServicesScreen extends StatelessWidget {
     {"name": "Chauffeur", "emoji": "🚕"},
     {"name": "Professeur", "emoji": "📚"},
     {"name": "Agent de sécurité", "emoji": "🛡️"}
+    
   ];
 
   @override
