@@ -46,7 +46,7 @@ GROUP BY p.providers_id;
     });
   },
 
-  
+
 getProviderDetails: (callback) => {
     const query = `
       SELECT p.providers_id,
@@ -57,13 +57,14 @@ getProviderDetails: (callback) => {
              ct.city_name,
              p.adresse,
              p.description,
+             p.is_validated,
              COUNT(DISTINCT rs.reservations_id) AS nbr_res
       FROM providers p
       JOIN services s USING(service_id)
       JOIN city ct using(city_id)
       LEFT JOIN reservations rs ON p.providers_id = rs.reserved_provider_id 
       LEFT JOIN ratings r ON p.providers_id = r.provider_id
-      where p.availability=1
+      where p.availability=1 and p.is_validated=1
       GROUP BY p.providers_id;
     `;
 
