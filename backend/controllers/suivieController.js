@@ -69,6 +69,7 @@ async function updateReservationStatut(req, res) {
   const providerId=req.body.providerId;
   console.log(reservationId,statutId,userId,providerId);
   try {
+    
     const updateReservation = await SuivieModel.updateReservationStatut(reservationId,statutId,userId,providerId);
         // Check if the update was successful
         if (updateReservation.affectedRows === 0) {

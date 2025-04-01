@@ -67,6 +67,7 @@ const SuivieModel = {
       const query = `
          update reservations set statut_id=? where reservations_id=?;
       `;
+      
       if(statutId==2){
        const providerNameQuery = `SELECT CONCAT(firstname, ' ', lastname) AS provider_name FROM providers WHERE providers_id = ?`;
        const [providerRows] = await db.promise().query(providerNameQuery, [providerId]);
