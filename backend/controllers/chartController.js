@@ -20,7 +20,7 @@ exports.getReservationsByservices = (req, res) => {
 };
 
 
-exports.getAllCounts = (req, res) => {
+ exports.getAllCounts = (req, res) => {
   chart.getAllCounts((err, results) => {  // Remplace statsModel par chart
       if (err) {
           console.error("Erreur lors de la récupération des statistiques :", err);

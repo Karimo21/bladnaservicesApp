@@ -3,7 +3,7 @@ const db = require('../config/db');
 const chart = {
   getReservationsByStatus: (callback) => {
         const query = 'select s.name,count(r.statut_id) as total from reservations r join statut s using(statut_id)  group by r.statut_id';
-        db.query(query, callback);
+         db.query(query, callback);
     },
     
     getReservationsByservices: (callback) => {
