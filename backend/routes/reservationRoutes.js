@@ -2,7 +2,7 @@ const express = require('express');
 const { createReservation,getClientReservations,getReservationsDate } = require('../controllers/reservationController');
 const { getReservedProviderReservations, getReservingReservations, getReservationsHistory, updateReservationStatut } = require('../controllers/suivieController');
 const {getAllCities} = require('../controllers/cityController');
-const {getAllServices} = require('../controllers/serviceController');
+const  {getAllServices, deleteService ,addService , addCities ,deleteCities} = require('../controllers/serviceController');
 const router = express.Router();
 
 router.post("/create-reservation", createReservation);
@@ -26,5 +26,9 @@ router.get('/api/reservations/history/:role/:userId', getReservationsHistory);
 //Route to update the statut of reservation
 router.post('/api/reservations/update_status',updateReservationStatut);
 
+router.delete("/services/:id",deleteService);
+router.post("/servicesAdd",addService);
 
+router.delete("/cities/:id",deleteCities);
+router.post("/citiesAdd",addCities);
 module.exports = router;
