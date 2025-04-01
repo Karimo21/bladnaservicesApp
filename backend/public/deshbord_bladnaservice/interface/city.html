@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bladna Services</title>
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+  <link rel="stylesheet" href="https://localhost:3000/public/deshbord_bladnaservice/interface/srch.css">
+  <link rel="stylesheet" href="srch.css">
+  <style>
+    #success-alert {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 10px 20px;
+      background-color: #0054A5; /* Couleur verte */
+      color: white;
+      border-radius: 5px;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+      font-weight: bold;
+      z-index: 1000;
+    }
+    .card-tools {
+    display: flex;
+    justify-content: flex-start; /* Aligne les éléments à gauche */
+    align-items: center; /* Aligne verticalement les éléments */
+}
+
+.card-tools .btn {
+    margin-left: 10px; /* Espace entre les boutons */
+}
+#success-alert {
+    position: fixed;
+    top: 70px; /* Ajuste la valeur en fonction de la hauteur de ta navbar */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1050; /* Assure-toi qu'il soit au-dessus de tout le reste */
+    width: 90%; /* Ajuste la largeur de l'alerte */
+    max-width: 500px;
+    display: none; /* Caché par défaut */
+}
+
+  </style>
+</head>
+<body class="hold-transition sidebar-mini">
+
+  <div class="wrapper">
+      <!-- Navbar -->
+      <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+          <ul class="navbar-nav">
+              <li class="nav-item">
+                  <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+              </li>
+          </ul>
+      </nav>
+  
+      <!-- Sidebar -->
+      <aside class="main-sidebar sidebar-dark-primary elevation-4">
+          <a href="tableauBord.html" class="brand-link">
+            <img src="logo.png" alt="Bladna Services Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+              <span class="brand-text font-weight-light">Bladna Services</span>
+          </a>
+          <div class="sidebar">
+              <nav class="mt-2">
+                  <ul class="nav nav-pills nav-sidebar flex-column">
+                      <li class="nav-item">
+                          <a href="tableauBord.html" class="nav-link active" style="background-color: #343A40;">
+                              <i class="nav-icon fas fa-tachometer-alt"></i>
+                              <p>Tableau de bord</p>
+                          </a>
+                      </li>
+                      <li class="nav-header">Gestion des utilisateurs</li>
+                      <li class="nav-item">
+                          <a href="client.html" class="nav-link">
+                              <i class="nav-icon fas fa-users"></i>
+                              <p>Tous les clients</p>
+                          </a>
+                      </li>
+                      <li class="nav-item">
+                          <a href="prestatire.html" class="nav-link">
+                              <i class="nav-icon fas fa-users"></i>
+                              <p>Tous les Prestataires</p>
+                          </a>
+                      </li>
+                      <li class="nav-item">
+                          <a href="demandeValidation.html"  class="nav-link ">
+                              <i class="nav-icon fas fa-hourglass-half"></i>
+                              <p>Validation</p>
+                          </a>
+                      </li>
+                      <li class="nav-item">
+                        <a href="reservation.html"  class="nav-link ">
+                            <i class="nav-icon fas fa-users"></i>
+                            <p>reservation</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                      <a href="services.html" class="nav-link">
+                          <i class="nav-icon fas fa-cogs"></i> <!-- Icône représentant la gestion des services -->
+                          <p>Gestion des services</p>
+                      </a>
+                  </li>
+                  
+                  <li class="nav-item">
+                      <a href="city.html" class="nav-link custom-blue">
+                          <i class="nav-icon fas fa-city"></i> <!-- Icône représentant la gestion des villes -->
+                          <p>Gestion des villes</p>
+                      </a>
+                  </li>
+                  
+                      <li class="nav-item">
+                          <a href="../login/login.html" class="nav-link text-danger">
+                              <i class="nav-icon fas fa-sign-out-alt"></i>
+                              <p>Déconnexion</p>
+                          </a>
+                      </li>
+                  </ul>
+              </nav>
+          </div>
+      </aside>
+<!-- Contenu principal -->
+<div class="content-wrapper">
+  <section class="content">
+      <div class="card">
+          <!-- Ajout du bouton Ajouter -->
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h3 class="card-title"><b>Liste des Villes</b></h3>
+        
+            <!-- Barre de recherche -->
+            <input type="text" id="searchInput" class="form-control w-25 mb-0" placeholder="Rechercher une ville...">
+        
+            <!-- Bouton Ajouter -->
+            <div class="ml-3">
+                <button type="button" class="btn btn-success" onclick="ajouterCity()"> 
+                    <i class="fas fa-plus"></i> Ajouter
+                </button>
+            </div>
+        </div>
+        
+
+          <div class="card-body p-0">
+              <table class="table table-striped projects">
+                  <thead>
+                      <tr>
+                          <th>#</th>
+                          <th>Ville</th>
+                          <th>Supprimer</th>
+                      </tr>
+                  </thead>
+                  <tbody id="cities-list">
+                      <tr id="noResultsMessage" style="display: none;">
+                          <td colspan="3" class="text-center text-danger">Aucune ville trouvée</td>
+                      </tr>
+                  </tbody>
+              </table>
+          </div>
+      </div>
+  </section>
+</div>
+
+<!-- Modal pour ajouter une ville -->
+<div class="modal fade" id="addCityModal" tabindex="-1" aria-labelledby="addCityModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="addCityModalLabel">Ajouter une ville</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          <div class="modal-body">
+              <form id="addCityForm">
+                  <div class="form-group">
+                      <label for="cityName">Nom de la ville</label>
+                      <input type="text" class="form-control" id="cityName" placeholder="Entrez le nom de la ville">
+
+                  </div>
+              </form>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+              <button type="button" class="btn btn-primary" id="addCityButton">Ajouter</button>
+          </div>
+      </div>
+  </div>
+</div>
+
+<!-- Alert de succès -->
+<div id="success-alert" class="alert alert-success text-center" style="display: none;">
+  <strong>avec Succès !</strong>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<!-- Modale de confirmation pour la suppression -->
+<div id="confirmDeleteCityModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title">Confirmer la suppression</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          <div class="modal-body">
+              <p>Êtes-vous sûr de vouloir supprimer cette ville ?</p>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Non</button>
+              <button type="button" class="btn btn-danger" id="confirmDeleteCityButton">Oui, Supprimer</button>
+          </div>
+      </div>
+  </div>
+</div>
+<div id="error-alert" class="alert alert-danger" style="display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999;">
+  <strong>Erreur : </strong> La ville ne peut pas être supprimé !
+</div>
+
+<script>
+$(document).ready(function () {
+  let citiesList = [];
+  let cityIdToDelete = null; // Variable pour stocker l'ID de la ville à supprimer
+
+  // Charger les villes au démarrage
+  function chargerCities() {
+      $.get("http://localhost:3000/cities", function (data) {
+          citiesList = data.cities; // Stocker la liste des villes
+          afficherCities(citiesList);
+      });
+  }
+
+  // Afficher les villes
+  function afficherCities(cities) {
+      let tbody = $("#cities-list");
+      tbody.empty(); // Vider le tableau avant d'ajouter de nouvelles lignes
+
+      if (cities.length === 0) {
+          tbody.append(`<tr><td colspan="3" class="text-center">Aucune ville trouvée</td></tr>`);
+          return;
+      }
+
+      cities.forEach((city, index) => {
+          let row = `
+              <tr>
+                  <td>${index + 1}</td>
+                  <td>${city.city_name || "N/A"}</td>
+                  <td class="project-actions text-right">
+                      <a class="btn btn-danger btn-sm" href="#" onclick="demanderSuppressionCity(${city.city_id})">
+                          <i class="fas fa-trash"></i> Supprimer
+                      </a>
+                  </td>
+              </tr>
+          `;
+          tbody.append(row);
+      });
+  }
+
+  // Demander confirmation pour supprimer une ville
+  window.demanderSuppressionCity = function (city_id) {
+      cityIdToDelete = city_id; // Stocker l'ID de la ville
+      $("#confirmDeleteCityModal").modal("show"); // Afficher la modale de confirmation
+  };
+
+  // Confirmer la suppression de la ville
+  $("#confirmDeleteCityButton").click(function () {
+      if (cityIdToDelete) {
+          $.ajax({
+              url: `http://localhost:3000/cities/${cityIdToDelete}`,
+              type: "DELETE",
+              success: function () {
+                  $("#confirmDeleteCityModal").modal("hide");
+                  $("#success-alert").show().delay(3000).fadeOut();
+                  chargerCities(); // Recharger la liste après suppression
+              },
+              error: function () {
+                  alert("Erreur lors de la suppression de la ville");
+              },
+          });
+      }
+  });
+
+  // Fonction pour afficher la modal d'ajout
+  window.ajouterCity = function () {
+      $('#addCityModal').modal('show');
+  };
+
+  // Ajouter une ville via AJAX
+  $("#addCityButton").click(function () {
+      let cityData = {
+          city_name: $("#cityName").val().trim(),
+      };
+
+      // Vérifier si le champ 'city_name' est rempli
+      if (!cityData.city_name) {
+          alert("Le champ 'Nom de la ville' est requis !");
+          return;
+      }
+
+      // Requête AJAX pour ajouter la ville
+      $.ajax({
+          url: "http://localhost:3000/citiesAdd",
+          type: "POST",
+          data: cityData,
+          success: function () {
+              $('#addCityModal').modal('hide');  // Ferme la modal
+              $("#success-alert").show().delay(3000).fadeOut();  // Affiche un message de succès
+              chargerCities(); // Rafraîchir la liste des villes
+          },
+          error: function() {
+            // Afficher le message d'erreur dans la div
+            $("#error-alert").fadeIn().delay(3000).fadeOut(); // Affiche et masque l'alerte après 3 secondes
+        }
+      });
+  });
+
+  // Fonction pour filtrer les villes en fonction du texte saisi dans le champ de recherche
+  $("#searchInput").on("input", function () {
+      let searchTerm = $(this).val().toLowerCase();  // Récupérer la valeur du champ de recherche
+      filterCities(searchTerm);
+  });
+
+  // Fonction pour filtrer les villes
+  function filterCities(searchTerm) {
+      $.get("http://localhost:3000/cities", function (data) {
+          let filteredCities = data.cities.filter(city => 
+              city.city_name.toLowerCase().includes(searchTerm) // Filtrer en fonction du terme de recherche
+          );
+          afficherCities(filteredCities);  // Afficher les villes filtrées
+      });
+  }
+
+  // Appel de l'API pour récupérer les villes et afficher la liste
+  chargerCities();
+});
+</script>
+
+</body>
+</html>

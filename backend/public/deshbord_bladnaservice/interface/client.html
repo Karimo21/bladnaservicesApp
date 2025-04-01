@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bladna Services</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+  <link rel="stylesheet" href="https://localhost:3000/public/deshbord_bladnaservice/interface/srch.css">
+<link rel="stylesheet" href="srch.css">
+  
+</head>
+
+<body class="hold-transition sidebar-mini layout-fixed">
+  <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+      </li>
+    </ul>
+  </nav>
+  
+  <aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <a href="tableauBord.html" class="brand-link">
+      <img src="logo.png" alt="Bladna Services Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+            
+      <span class="brand-text font-weight-light">Bladna Services</span>
+    </a>
+    <div class="sidebar">
+      <nav class="mt-2">
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+          <li class="nav-item">
+            <a href="tableauBord.html" class="nav-link active" style="background-color: #343A40;">
+              <i class="nav-icon fas fa-tachometer-alt"></i>
+              <p>Tableau de bord</p>
+            </a>
+          </li>
+          <li class="nav-header">Gestion des utilisateurs</li>
+          <li class="nav-item" >
+            <a href="client.html" class="nav-link custom-blue">
+              <i class="nav-icon fas fa-users"></i>
+              <p>Tous les clients</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="prestatire.html"  class="nav-link">
+              <i class="nav-icon fas fa-users"></i>
+              <p>Tous les Prestataires</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="demandeValidation.html" class="nav-link">
+              <i class="nav-icon fas fa-hourglass-half"></i>
+              <p>Validation</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="reservation.html"  class="nav-link ">
+                <i class="nav-icon fas fa-users"></i>
+                <p>reservation</p>
+            </a>
+        </li>
+        <li class="nav-item">
+          <a href="services.html" class="nav-link">
+              <i class="nav-icon fas fa-cogs"></i> <!-- Icône représentant la gestion des services -->
+              <p>Gestion des services</p>
+          </a>
+      </li>
+      
+      <li class="nav-item">
+          <a href="city.html" class="nav-link ">
+              <i class="nav-icon fas fa-city"></i> <!-- Icône représentant la gestion des villes -->
+              <p>Gestion des villes</p>
+          </a>
+      </li>
+      
+          <li class="nav-item">
+            <a href="../login/login.html" class="nav-link text-danger">
+              <i class="nav-icon fas fa-sign-out-alt"></i>
+              <p>Déconnexion</p>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </aside>
+  
+  <div class="content-wrapper">
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h3 class="card-title"><b>Tous les Clients</b></h3>
+              <input type="text" id="searchInput" class="form-control w-25" placeholder="Rechercher un client...">
+            </div>
+          </div>
+          
+          <div class="card-body table-responsive">
+            <table class="table table-bordered table-hover">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Nom</th>
+                  <th>Prénom</th>
+                  <th>Adresse</th>
+                  
+                  <th>Téléphone</th>
+                
+                </tr>
+              </thead>
+              <tbody id="clientsTable">
+                <tr><td colspan="7" class="text-center">Chargement...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/js/adminlte.min.js"></script>
+  
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      let clientsData = [];
+      
+      // Charger la liste des clients depuis l'API
+      fetch("http://localhost:3000/clients")
+        .then(response => response.json())
+        .then(data => {
+          clientsData = data;
+          afficherClients(data);
+        })
+        .catch(error => {
+          console.error("Erreur lors du chargement des clients :", error);
+          document.getElementById("clientsTable").innerHTML = 
+            "<tr><td colspan='5' class='text-center text-danger'>Erreur de chargement</td></tr>";
+        });
+  
+      // Fonction pour afficher les clients dans la table
+      function afficherClients(data) {
+        const tableBody = document.getElementById("clientsTable");
+        if (!tableBody) {
+          console.error("Erreur : élément clientsTable introuvable !");
+          return;
+        }
+        
+        tableBody.innerHTML = "";
+        if (data.length === 0) {
+          tableBody.innerHTML = "<tr><td colspan='5' class='text-center text-warning'>Aucun client trouvé</td></tr>";
+          return;
+        }
+  
+        data.forEach((client, index) => {
+          const row = `
+            <tr>
+              <td>${index + 1}</td>
+              <td>${client.firstname}</td>
+              <td>${client.lastname}</td>
+              <td>${client.adresse}</td>
+              <td>${client.phone}</td>
+            </tr>
+          `;
+          tableBody.innerHTML += row;
+        });
+      }
+  
+      // Fonction de recherche des clients
+      const searchInput = document.getElementById("searchInput");
+      if (searchInput) {
+        searchInput.addEventListener("input", function() {
+          const searchTerm = this.value.toLowerCase();
+          const filteredClients = clientsData.filter(client =>
+            client.firstname.toLowerCase().includes(searchTerm) ||
+            client.lastname.toLowerCase().includes(searchTerm)
+          );
+  
+          afficherClients(filteredClients);
+  
+          // Afficher un message si aucun client ne correspond à la recherche
+          if (filteredClients.length === 0) {
+            document.getElementById("clientsTable").innerHTML = 
+              "<tr><td colspan='5' class='text-center text-warning'>Aucun client ne correspond à votre recherche</td></tr>";
+          }
+        });
+      } else {
+        console.error("Erreur : élément searchInput introuvable !");
+      }
+    });
+  </script>
+  
+</body>
+</html>

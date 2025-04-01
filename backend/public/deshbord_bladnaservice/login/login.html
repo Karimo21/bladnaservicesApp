@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bladna Services</title>
+
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome -->
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css">
+<!-- icheck bootstrap -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/icheck-bootstrap/icheck-bootstrap.min.css">
+<!-- Theme style -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte/dist/css/adminlte.min.css">
+
+
+
+</head>
+<body class="hold-transition login-page">
+<div class="login-box">
+  <!-- /.login-logo -->
+  <div class="card card-outline card-primary">
+    <div class="card-header text-center">
+      <a class="h1"><b>Bladna</b> Services</a>
+    </div>
+    <div class="card-body">
+      <p class="login-box-msg">  Connectez-vous pour démarrer votre session</p>
+
+      <form id="loginForm">
+        <div class="input-group mb-3">
+          <input type="text" id="phone" class="form-control" placeholder="Phone" required>
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-phone"></span>
+            </div>
+          </div>
+        </div>
+        <div class="input-group mb-3">
+          <input type="password" id="password" class="form-control" placeholder="Password" required>
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-lock"></span>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-8">
+            <div class="icheck-primary">
+              <input type="checkbox" id="remember">
+              <label for="remember">Souviens-toi de moi</label>
+            </div>
+          </div>
+          <div class="col-4">
+            <button type="submit" class="btn btn-primary btn-block">connecté</button>
+          </div>
+        </div>
+      </form>
+      <p id="error-message" class="text-danger text-center mt-2"></p>
+    
+    </div>
+  </div>
+</div>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- AdminLTE App -->
+<script src="https://cdn.jsdelivr.net/npm/admin-lte/dist/js/adminlte.min.js"></script>
+<script> 
+  document.addEventListener("DOMContentLoaded", function () {
+    const loginForm = document.getElementById("loginForm");
+    if (!loginForm) return;
+  
+    loginForm.addEventListener("submit", async function (event) {
+      event.preventDefault();
+  
+      const phone = document.getElementById("phone")?.value.trim();
+      const password = document.getElementById("password")?.value.trim();
+      const errorMessage = document.getElementById("error-message");
+  
+      if (!phone || !password) {
+        errorMessage.textContent = "Veuillez remplir tous les champs.";
+        return;
+      }
+  
+      try {
+        const response = await fetch("http://localhost:3000/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ phone, password }),
+        });
+  
+        const data = await response.json();
+        console.log("Réponse du serveur :", data); // Debugging
+  
+        if (!response.ok || !data.user) {
+          errorMessage.textContent = data.message || "Identifiants incorrects.";
+          return;
+        }
+  
+        // Vérification stricte du rôle (suppression des caractères invisibles)
+        const role = data.user.role.trim();
+        if (role === "admin") {
+          window.location.href = "http://localhost:3000/interface/tableauBord.html";
+        } else {
+          errorMessage.textContent = "Accès refusé. Seuls les administrateurs peuvent se connecter.";
+        }
+      } catch (error) {
+        console.error("Erreur de connexion :", error);
+        errorMessage.textContent = "Une erreur s'est produite. Veuillez réessayer.";
+      }
+    });
+  });
+  </script>
+  
+  
+  
+</body>
+</html>

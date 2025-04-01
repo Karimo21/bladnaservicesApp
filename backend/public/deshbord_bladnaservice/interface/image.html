@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prestataire - Images</title>
+
+  <!-- Bootstrap et AdminLTE -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/css/adminlte.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ekko-lightbox/dist/ekko-lightbox.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <link rel="stylesheet" href="../dist/css/adminlte.min.css">
+  <link rel="stylesheet" href="image.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ekko-lightbox/dist/ekko-lightbox.min.js"></script>
+
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+  <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+      </li>
+    </ul>
+  </nav>
+  
+  <aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <a href="tableauBord.html" class="brand-link">
+      <img src="logo.png" alt="Bladna Services Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+            
+      <span class="brand-text font-weight-light">Bladna Services</span>
+    </a>
+    <div class="sidebar">
+      <nav class="mt-2">
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+          <li class="nav-item">
+            <a href="tableauBord.html" class="nav-link active" style="background-color: #343A40;">
+              <i class="nav-icon fas fa-tachometer-alt"></i>
+              <p>Tableau de bord</p>
+            </a>
+          </li>
+          <li class="nav-header">Gestion des utilisateurs</li>
+          <li class="nav-item">
+            <a href="client.html" class="nav-link">
+              <i class="nav-icon fas fa-users"></i>
+              <p>Tous les clients</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="prestatire.html" class="nav-link">
+              <i class="nav-icon fas fa-users"></i>
+              <p>Tous les Prestataires</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="demandeValidation.html" class="nav-link">
+              <i class="nav-icon fas fa-hourglass-half"></i>
+              <p>Validation</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="reservation.html"  class="nav-link ">
+                <i class="nav-icon fas fa-users"></i>
+                <p>reservation</p>
+            </a>
+        </li>
+        <li class="nav-item">
+          <a href="services.html" class="nav-link">
+              <i class="nav-icon fas fa-cogs"></i> <!-- Icône représentant la gestion des services -->
+              <p>Gestion des services</p>
+          </a>
+      </li>
+      
+      <li class="nav-item">
+          <a href="city.html" class="nav-link ">
+              <i class="nav-icon fas fa-city"></i> <!-- Icône représentant la gestion des villes -->
+              <p>Gestion des villes</p>
+          </a>
+      </li>
+      
+          <li class="nav-item">
+            <a href="../login/login.html" class="nav-link text-danger">
+              <i class="nav-icon fas fa-sign-out-alt"></i>
+              <p>Déconnexion</p>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </aside>
+  
+  <div class="wrapper">
+    <!-- Contenu principal -->
+    <div class="content-wrapper">
+      <section class="content">
+        <div class="container-fluid">
+        
+          <!-- Galerie d'images -->
+          <div class="card card-primary">
+            <div class="card-header">
+              <h4 class="card-title">Galerie d'images du prestataire</h4>
+            </div>
+            <div class="card-body">
+              <div class="row" id="imageGallery">
+                <!-- Les images seront ajoutées ici dynamiquement -->
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+    </div>
+  </div>
+    <!-- jQuery & AdminLTE -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/js/adminlte.min.js"></script>
+  <script>
+    const BASE_URL = "http://localhost:3000";
+
+    // Fonction pour récupérer l'ID du prestataire depuis l'URL
+    function getProviderIdFromURL() {
+        const params = new URLSearchParams(window.location.search);
+        return params.get("id"); // On attend un paramètre ?id=xx
+    }
+
+    // Fonction pour récupérer et afficher les images du prestataire
+    function loadProviderImages() {
+        const providerId = getProviderIdFromURL();
+        if (!providerId) {
+            alert("Erreur : Aucun ID de prestataire fourni !");
+            return;
+        }
+
+        console.log("Chargement des images pour le prestataire ID :", providerId);
+
+        fetch(`http://localhost:3000/prestatairs/documents-image/${providerId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Erreur lors de la récupération des images.");
+                }
+                return response.json();
+            })
+            .then(data => {
+                const gallery = document.getElementById("imageGallery");
+                gallery.innerHTML = ""; // Vider la galerie avant d'ajouter les nouvelles images
+
+                if (!data || data.length === 0) {
+                    gallery.innerHTML = "<p>Aucune image trouvée.</p>";
+                    return;
+                }
+
+                let imageFound = false; // Vérifie si au moins une image est trouvée
+
+        data.forEach(item => {
+            if (item.front_card_image) {
+                gallery.insertAdjacentHTML("beforeend", createImageCard(`${BASE_URL}${item.front_card_image}`, "Carte d'identité (avant)"));
+                imageFound = true;
+            }
+            if (item.back_card_image) {
+                gallery.insertAdjacentHTML("beforeend", createImageCard(`${BASE_URL}${item.back_card_image}`, "Carte d'identité (arrière)"));
+                imageFound = true;
+            }
+            if (item.diplomat_image) {
+                gallery.insertAdjacentHTML("beforeend", createImageCard(`${BASE_URL}${item.diplomat_image}`, "Diplôme"));
+                imageFound = true;
+            }
+        });
+
+        // Si aucune image n'est trouvée, afficher un message
+        if (!imageFound) {
+            gallery.innerHTML = "<p class='text-danger'>Aucune image disponible pour ce prestataire.</p>";
+        }
+
+                console.log("Images chargées avec succès.");
+            })
+            .catch(error => console.error("Erreur de chargement des images :", error));
+    }
+
+    // Fonction pour créer une carte d'image avec le Lightbox
+    function createImageCard(imagePath, title) {
+        return `
+            <div class="col-sm-3">
+                <a href="${imagePath}" data-toggle="lightbox" data-title="${title}" data-gallery="gallery">
+                    <img src="${imagePath}" class="img-fluid mb-2" alt="${title}" style="max-height: 150px; object-fit: cover;"/>
+                </a>
+            </div>`;
+    }
+
+    // Charger les images au chargement de la page
+    document.addEventListener("DOMContentLoaded", loadProviderImages);
+  </script>
+
+</body>
+</html>

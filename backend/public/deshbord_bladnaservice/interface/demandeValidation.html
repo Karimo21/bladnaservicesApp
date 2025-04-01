@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bladna Services</title>
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+  <link rel="stylesheet" href="https://localhost:3000/public/deshbord_bladnaservice/interface/srch.css">
+  <link rel="stylesheet" href="srch.css">
+  <style>
+    #success-alert {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    background-color: #28a745; /* Couleur verte */
+    color: white;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    font-weight: bold;
+    z-index: 1000;
+}
+
+  </style>
+</head>
+<body class="hold-transition sidebar-mini">
+
+  <div class="wrapper">
+      <!-- Navbar -->
+      <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+          <ul class="navbar-nav">
+              <li class="nav-item">
+                  <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+              </li>
+          </ul>
+      </nav>
+  
+      <!-- Sidebar -->
+      <aside class="main-sidebar sidebar-dark-primary elevation-4">
+          <a href="tableauBord.html" class="brand-link">
+            <img src="logo.png" alt="Bladna Services Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+              <span class="brand-text font-weight-light">Bladna Services</span>
+          </a>
+          <div class="sidebar">
+              <nav class="mt-2">
+                  <ul class="nav nav-pills nav-sidebar flex-column">
+                      <li class="nav-item">
+                          <a href="tableauBord.html" class="nav-link active" style="background-color: #343A40;">
+                              <i class="nav-icon fas fa-tachometer-alt"></i>
+                              <p>Tableau de bord</p>
+                          </a>
+                      </li>
+                      <li class="nav-header">Gestion des utilisateurs</li>
+                      <li class="nav-item">
+                          <a href="client.html" class="nav-link">
+                              <i class="nav-icon fas fa-users"></i>
+                              <p>Tous les clients</p>
+                          </a>
+                      </li>
+                      <li class="nav-item">
+                          <a href="prestatire.html" class="nav-link">
+                              <i class="nav-icon fas fa-users"></i>
+                              <p>Tous les Prestataires</p>
+                          </a>
+                      </li>
+                      <li class="nav-item">
+                          <a href="demandeValidation.html"  class="nav-link custom-blue">
+                              <i class="nav-icon fas fa-hourglass-half"></i>
+                              <p>Validation</p>
+                          </a>
+                      </li>
+                      <li class="nav-item">
+                        <a href="reservation.html"  class="nav-link ">
+                            <i class="nav-icon fas fa-users"></i>
+                            <p>reservation</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                      <a href="services.html" class="nav-link">
+                          <i class="nav-icon fas fa-cogs"></i> <!-- Icône représentant la gestion des services -->
+                          <p>Gestion des services</p>
+                      </a>
+                  </li>
+                  
+                  <li class="nav-item">
+                      <a href="city.html" class="nav-link ">
+                          <i class="nav-icon fas fa-city"></i> <!-- Icône représentant la gestion des villes -->
+                          <p>Gestion des villes</p>
+                      </a>
+                  </li>
+                  
+                      <li class="nav-item">
+                          <a href="../login/login.html" class="nav-link text-danger">
+                              <i class="nav-icon fas fa-sign-out-alt"></i>
+                              <p>Déconnexion</p>
+                          </a>
+                      </li>
+                  </ul>
+              </nav>
+          </div>
+      </aside>
+
+      <!-- Contenu principal -->
+      <div class="content-wrapper">
+          <section class="content">
+              <div class="card">
+                  <div class="card-header">
+                      <h3 class="card-title"><b>Liste des Prestataires Non Validés</b></h3>
+                      <input type="text" id="searchInput" class="form-control w-25 mb-3" placeholder="Rechercher un Prestataire...">
+
+                      <div class="card-tools">
+                        <!--  <button type="button" class="btn btn-tool" data-card-widget="collapse">-->
+                            <!--     <i class="fas fa-minus"></i>-->
+                          </button>
+                      </div>
+                  </div>
+  
+                  <div class="card-body p-0">
+                    <table class="table table-striped projects">
+                      <thead>
+                          <tr>
+                              <th style="width: 5%">#</th>
+                              <th style="width: 10%">Nom</th>
+                              <th style="width: 10%">Prénom</th>
+                              <th style="width: 10%">Adresse</th>
+                              <th style="width: 10%">Métier</th>
+                              <th style="width: 10%">Téléphone</th>
+                              <th style="width: 15%">Description</th>
+                              <th style="width: 50%">Actions</th>
+                          </tr>
+                      </thead>
+                      <tbody id="prestataires-list">
+                        <tr id="noResultsMessage" style="display: none;">
+                          <td colspan="8" class="text-center text-danger">Aucun prestataire trouvé</td>
+                      </tr>
+                      </tbody>
+                  </table>
+                  </div>
+              </div>
+          </section>
+      </div>
+  </div>
+  <div id="success-alert" class="alert alert-success text-center" style="display: none; position: fixed; top: 20px; right: 20px; width: 300px; z-index: 1050;">
+    <strong>Succès !</strong> Prestataire validé avec succès !
+</div>
+<div id="success-alert" style="display: none;" class="alert alert-success">Prestataire refusé avec succès !</div>
+
+
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- AdminLTE -->
+  <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/js/adminlte.min.js"></script>
+
+  <script>
+    $(document).ready(function () {
+      fetchPrestatairesNonValides();
+    });
+
+    function fetchPrestatairesNonValides() {
+      $.ajax({
+        url: "http://localhost:3000/prestatairesNoval", // Assurez-vous que votre API fonctionne
+        method: "GET",
+        dataType: "json",
+        success: function (data) {
+          afficherPrestataires(data);
+        },
+        error: function (xhr, status, error) {
+          console.error("Erreur lors de la récupération des prestataires:", error);
+        }
+      });
+    }
+
+    function afficherPrestataires(prestataires) {
+      let tbody = $("#prestataires-list");
+      tbody.empty(); // Vider le tableau avant d'ajouter de nouvelles lignes
+
+      if (prestataires.length === 0) {
+        tbody.append(`<tr><td colspan="8" class="text-center">Aucun prestataire trouvé</td></tr>`);
+        return;
+      }
+
+      prestataires.forEach((prestataire, index) => {
+        let row = `
+          <tr>
+            <td>${index + 1}</td>
+            <td>${prestataire.firstname || "N/A"}</td>
+            <td>${prestataire.lastname || "N/A"}</td>
+            <td>${prestataire.adresse || "N/A"}</td>
+            <td>${prestataire.metier || "Non spécifié"}</td>
+            <td>${prestataire.phone || "N/A"}</td>
+            <td>${prestataire.description || "Aucune description"}</td>
+            <td class="project-actions text-right">
+
+              <a class="btn btn-primary btn-sm" href="image.html?id=${prestataire.providers_id}">
+  <i class="fas fa-folder"></i> Voir
+</a>
+
+
+
+
+              <a class="btn btn-info btn-sm" href="#" onclick="confirmerValidation(${prestataire.providers_id})"><i class="fas fa-check"></i> Valider  </a>
+<a class="btn btn-danger btn-sm" href="#" onclick="refuserPrestataire(${prestataire.providers_id})"><i class="fas fa-trash"></i> Refuser
+</a>
+
+            </td>
+          </tr>
+        `;
+        tbody.append(row);
+      });
+    }
+
+    function confirmerValidation(providers_id) {
+    let confirmationBox = `
+        <div id="confirm-box" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+        background: white; padding: 20px; box-shadow: 0px 0px 10px rgba(0,0,0,0.2); text-align: center; z-index: 1050;">
+            <p>Voulez-vous vraiment valider ce prestataire ?</p>
+            <button class="btn btn-success" onclick="validerPrestataire(${providers_id})">Oui</button>
+            <button class="btn btn-danger" onclick="fermerConfirmation()">Non</button>
+        </div>`;
+    
+    $("body").append(confirmationBox);
+}
+
+function fermerConfirmation() {
+    $("#confirm-box").remove();
+}
+
+function validerPrestataire(providers_id) {
+    fermerConfirmation();
+    $.ajax({
+        url: `http://localhost:3000/prestatairs/valider/${providers_id}`,
+        method: "POST",
+        success: function () {
+            $("#success-alert").fadeIn().delay(2000).fadeOut(); 
+            fetchPrestatairesNonValides();
+        },
+        error: function () {
+            alert("Erreur lors de la validation.");
+        }
+    });
+}
+
+
+
+
+
+function refuserPrestataire(providers_id) {
+    let confirmationBox = `
+        <div id="confirm-box" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+        background: white; padding: 20px; box-shadow: 0px 0px 10px rgba(0,0,0,0.2); text-align: center; z-index: 1050;">
+            <p>Voulez-vous vraiment refuser ce prestataire ?</p>
+            <button class="btn btn-success" onclick="supprimerPrestataire(${providers_id})">Oui</button>
+            <button class="btn btn-danger" onclick="fermerConfirmation()">Non</button>
+        </div>`;
+    
+    $("body").append(confirmationBox);
+}
+
+function supprimerPrestataire(providers_id) {
+  console.log("ID du prestataire à supprimer :", providers_id);
+    fermerConfirmation();
+    $.ajax({
+        url: `http://localhost:3000/prestatairs/suppremer/${providers_id}`,
+        method: "DELETE",
+        success: function () {
+            $("#success-alert").text("Prestataire supprimé avec succès !").fadeIn().delay(2000).fadeOut();
+            fetchPrestatairesNonValides();
+        },
+        error: function () {
+            alert("Erreur lors de la suppression.");
+        }
+    });
+}
+
+function fermerConfirmation() {
+    $("#confirm-box").remove();
+}
+
+$(document).ready(function () {
+    $("#searchInput").on("keyup", function () {
+        let value = $(this).val().toLowerCase();
+        let rows = $("#prestataires-list tr");
+        let found = false;
+
+        rows.each(function () {
+            if ($(this).text().toLowerCase().indexOf(value) > -1) {
+                $(this).show();
+                found = true;
+            } else {
+                $(this).hide();
+            }
+        });
+
+        // Afficher ou cacher le message "Aucun prestataire trouvé"
+        if (found) {
+            $("#noResultsMessage").hide();
+        } else {
+            $("#noResultsMessage").show();
+        }
+    });
+});
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,76 @@
+
+
+
+
+.search-container {
+  margin-bottom: 20px;
+}
+ 
+#searchInput {
+  width: 50%;
+  padding: 10px;
+  font-size: 16px;
+  border: 2px solid #0054A5;
+  border-radius: 5px;
+  outline: none;
+}
+
+#searchInput:focus {
+  border-color: #0056b3;
+  box-shadow: 0 0 5px #0054A5;
+}
+
+/* Style pour la table */
+table {
+  width: 80%;
+  margin: 0 auto;
+  border-collapse: collapse;
+  background: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+th, td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+th {
+  background-color: #0054A5;
+  color: white;
+}
+
+tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+/* Message d'erreur ou d'alerte */
+.text-center {
+  text-align: center;
+}
+
+.text-warning {
+  color: #ff9800;
+  font-weight: bold;
+}
+
+.text-danger {
+  color: red;
+  font-weight: bold;
+}
+.card-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+
+#searchInput {
+margin-left: auto;
+width: 250px; /* Ajuste la largeur selon ton besoin */
+}
+.custom-blue {
+  background-color: #0054A5 !important; /* Bleu Bootstrap */
+  color: white !important; /* Texte blanc pour contraste */
+}
