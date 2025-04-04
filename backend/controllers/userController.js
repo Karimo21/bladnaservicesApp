@@ -63,6 +63,7 @@ exports.getProviderProfile = (req, res) => {
       res.json(data); // Retourne une liste de providers
   });
 };
+
 exports.getMoreProviderDetails = (req, res) => {
   const providerId = req.params.providerId; // Get provider ID from request parameterss
 

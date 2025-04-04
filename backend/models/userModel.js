@@ -67,7 +67,6 @@ getProviderDetails: (callback) => {
       where p.availability=1 and p.is_validated=1
       GROUP BY p.providers_id;
     `;
-
     db.query(query, (err, providers) => {
         if (err) return callback(err, null);
         callback(null, providers); // Retourne toutes les lignes trouvées
