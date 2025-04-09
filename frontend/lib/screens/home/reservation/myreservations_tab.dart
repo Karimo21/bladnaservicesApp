@@ -1,3 +1,4 @@
+import 'package:bladnaservices/env.dart';
 import 'package:bladnaservices/services/socket_service.dart';
 import 'package:flutter/material.dart';
 import 'package:bladnaservices/screens/home/profile/User.dart';
@@ -56,7 +57,7 @@ class _ReservationsTabState extends State<ReservationsTab> {
   // Fetch reservations from the API
   Future<void> _fetchReservations() async {
     final url =
-        'http://localhost:3000/api/reservations/reserving/$role/$userId';
+        '${Environment.apiHost}/api/reservations/reserving/$role/$userId';
     try {
       final response = await http.get(Uri.parse(url));
 
@@ -134,7 +135,7 @@ class myReservationCard extends StatelessWidget {
         children: [
           ListTile(
             leading: CircleAvatar(
-              backgroundImage: NetworkImage("http://localhost:3000${data['profile_picture']}"),
+              backgroundImage: NetworkImage("${Environment.apiHost}${data['profile_picture']}"),
             ),
             title: Text(
               data["name"]!,

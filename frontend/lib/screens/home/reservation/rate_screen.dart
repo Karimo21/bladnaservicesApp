@@ -1,3 +1,4 @@
+import 'package:bladnaservices/env.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -43,7 +44,7 @@ class _RateScreenState extends State<RateScreen> {
       showWarning = false;
     });
 
-    const String apiUrl = 'http://localhost:3000/api/ratings'; // Replace with your actual backend URL
+    const String apiUrl = '${Environment.apiHost}/api/ratings'; // Replace with your actual backend URL
 
 
     try {

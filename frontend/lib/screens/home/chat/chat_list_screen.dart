@@ -1,3 +1,4 @@
+import 'package:bladnaservices/env.dart';
 import 'package:bladnaservices/screens/home/profile/User.dart';
 import 'package:bladnaservices/services/socket_service.dart';
 import 'package:flutter/material.dart';
@@ -28,9 +29,9 @@ class _ChatListScreenState extends State<ChatListScreen> {
       String url = '';
       
       if (User.role == "client") {
-        url = 'http://localhost:3000/api/client-contacts/${User.userId}';
+        url = '${Environment.apiHost}/api/client-contacts/${User.userId}';
       } else if (User.role == "provider") {
-        url = 'http://localhost:3000/api/provider-contacts/${User.userId}';
+        url = '${Environment.apiHost}/api/provider-contacts/${User.userId}';
       }
        if (!mounted) return; 
       final response = await http.get(Uri.parse(url));
@@ -162,7 +163,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                         leading: CircleAvatar(
                           radius: 25,
                           backgroundColor: Colors.grey[300], // Placeholder color
-                          backgroundImage: NetworkImage("http://localhost:3000" + contact['profile_picture'].trim()),
+                          backgroundImage: NetworkImage("${Environment.apiHost}" + contact['profile_picture'].trim()),
                         ),
                         title: Text(
                           contact['firstname'] + " " + contact['lastname'], // Display the business name
@@ -201,12 +202,12 @@ class _ChatListScreenState extends State<ChatListScreen> {
                                 ],
                               )
                             : null,
-                        onTap: () {
+                        onTap: () async {
         
                           
-                          fetchContacts();
-                          String picture = "http://localhost:3000" + contact['profile_picture'].trim();
-                          Navigator.push(
+                
+                          String picture = "${Environment.apiHost}" + contact['profile_picture'].trim();
+                          await Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => ChatScreen(
@@ -218,6 +219,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                               ),
                             ),
                           );
+                          fetchContacts();
                         },
                       );
                     },

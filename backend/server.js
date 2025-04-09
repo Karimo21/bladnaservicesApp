@@ -43,9 +43,10 @@ const chatRoutes = require('./routes/chatRoutes');
 const chartRoutes = require('./routes/chartRoutes'); 
 const reservationRoutes = require('./routes/reservationRoutes'); 
 const notificationRoutes = require('./routes/notificationRoutes');
+const dashboardRoutes = require('./routes/dashbordRoutes');
 
 //use the user routes
-app.use(userRoutes,reservationRoutes,chatRoutes,chartRoutes,otpRoutes,notificationRoutes);
+app.use(userRoutes,reservationRoutes,chatRoutes,chartRoutes,otpRoutes,notificationRoutes,dashboardRoutes);
 
 io.on('connection', (socket) => {
     console.log('A user connected');
@@ -134,6 +135,6 @@ io.on('connection', (socket) => {
 });
 
 
-const PORT = 3000;
+const PORT = 3001;
 server.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
  

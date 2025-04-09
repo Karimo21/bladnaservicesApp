@@ -1,3 +1,4 @@
+import 'package:bladnaservices/env.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -37,6 +38,7 @@ class _ReservationsPageState extends State<ReservationsPage> {
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9F9),
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text(
           "Réservations",
           style: TextStyle(
@@ -47,11 +49,7 @@ class _ReservationsPageState extends State<ReservationsPage> {
         ),
         backgroundColor: const Color(0xFFF9F9F9),
         elevation: 0,
-        iconTheme: const IconThemeData(color: Color(0xFF0054A5)),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {},
-        ),
+
       ),
       body: Column(
         children: [
@@ -143,7 +141,7 @@ class _ReservationCardState extends State<ReservationCard> {
 
   Future<void> changeStatut(String reservationId, int statutId, int userId) async {
   
-  final url = Uri.parse('http://localhost:3000/api/reservations/update_status');
+  final url = Uri.parse('${Environment.apiHost}/api/reservations/update_status');
   final loggedUser = User.userId;
   final response = await http.post(
     url,
@@ -222,7 +220,7 @@ class _ReservationCardState extends State<ReservationCard> {
         children: [
           ListTile(
             leading: CircleAvatar(
-              backgroundImage: NetworkImage("http://localhost:3000${widget.data['profile_picture']}"),
+              backgroundImage: NetworkImage("${Environment.apiHost}${widget.data['profile_picture']}"),
             ),
             title: Text(
               widget.data["name"]!,

@@ -1,3 +1,4 @@
+import 'package:bladnaservices/env.dart';
 import 'package:bladnaservices/screens/home/profile/User.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -29,7 +30,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
     try {
       final response = await http.get(
-        Uri.parse('http://localhost:3000/api/notifications/${widget.userId}'),
+        Uri.parse('${Environment.apiHost}/api/notifications/${widget.userId}'),
       );
 
       if (response.statusCode == 200) {
@@ -53,7 +54,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
     try {
       
       await http.put(
-        Uri.parse('http://localhost:3000/api/notifications/:userId'),
+        Uri.parse('${Environment.apiHost}/api/notifications/:userId'),
       );
       setState(() {
         notifications = notifications.map((notif) {

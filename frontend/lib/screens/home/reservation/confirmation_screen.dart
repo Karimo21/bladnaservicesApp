@@ -1,3 +1,4 @@
+import 'package:bladnaservices/env.dart';
 import 'package:bladnaservices/screens/home/main_screen.dart';
 import 'package:bladnaservices/screens/home/profile/User.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +21,7 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
   }
 
   Future<void> createReservation() async {
-    const String apiUrl = 'http://localhost:3000/create-reservation';
+    const String apiUrl = '${Environment.apiHost}/create-reservation';
 
     final Map<String, dynamic> reservationData = {
       "role": User.role,

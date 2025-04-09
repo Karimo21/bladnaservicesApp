@@ -1,3 +1,4 @@
+import 'package:bladnaservices/env.dart';
 import 'package:bladnaservices/screens/auth/info_screen.dart';
 import 'package:bladnaservices/screens/auth/role_screen.dart';
 import 'package:bladnaservices/screens/home/main_screen.dart';
@@ -24,7 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     // Make an API call to Node.js backend for authentication
     final response = await http.post(
-      Uri.parse('http://localhost:3000/login'),
+      Uri.parse('${Environment.apiHost}/login'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode({
         'phone': phone,

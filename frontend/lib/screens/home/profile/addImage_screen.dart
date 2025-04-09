@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:bladnaservices/env.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:bladnaservices/screens/home/profile/User.dart';
@@ -69,7 +70,7 @@ class _ImageUploadPageState extends State<ImageUploadPage> {
   Future<void> _fetchImages() async {
     try {
       final response = await http.get(Uri.parse(
-          'http://localhost:3000/providers-work-images/${User.userId}'));
+          '${Environment.apiHost}/providers-work-images/${User.userId}'));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -81,7 +82,7 @@ class _ImageUploadPageState extends State<ImageUploadPage> {
             _fetchedImages = images
                 .map((image) => {
                       'id': image['id'],
-                      'image_url': 'http://localhost:3000${image['image_url']}'
+                      'image_url': '${Environment.apiHost}${image['image_url']}'
                     })
                 .toList();
           });
@@ -102,7 +103,7 @@ class _ImageUploadPageState extends State<ImageUploadPage> {
     });
 
     var uri = Uri.parse(
-        "http://localhost:3000/upload-provider-images/${User.userId}");
+        "${Environment.apiHost}/upload-provider-images/${User.userId}");
     var request = http.MultipartRequest('POST', uri);
     // Upload only the new images (not the fetched URLs)
     for (var image in _images) {
@@ -161,7 +162,7 @@ class _ImageUploadPageState extends State<ImageUploadPage> {
   Future<void> _deleteImage(int imageId) async {
     // Extract the image ID from the URL (assuming it's at the end of the URL)
     
-    final url = 'http://localhost:3000/delete-provider-image/$imageId';
+    final url = '${Environment.apiHost}/delete-provider-image/$imageId';
     print(url);
     try {
       final response = await http.post(Uri.parse(url));

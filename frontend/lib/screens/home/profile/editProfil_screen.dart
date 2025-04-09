@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:bladnaservices/env.dart';
 import 'package:bladnaservices/screens/home/main_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -99,7 +100,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       return;
     }
 
-    var uri = Uri.parse("http://localhost:3000/profile/picture"); // API URL
+    var uri = Uri.parse("${Environment.apiHost}/profile/picture"); // API URL
     var request = http.MultipartRequest('POST', uri);
 
     // For mobile: Add the image from file system
@@ -180,7 +181,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Future<void> _submitProfileEdit() async {
     // Construct the API URL using the User's ID
-    var url = Uri.parse("http://localhost:3000/profile-edit/${User.userId}");
+    var url = Uri.parse("${Environment.apiHost}/profile-edit/${User.userId}");
     print(url);
     // Prepare the data to be sent to the API
     Map<String, dynamic> requestData = {
@@ -226,7 +227,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
    // Fetch cities from the API
   Future<void> fetchCities() async {
-    final response = await http.get(Uri.parse('http://localhost:3000/cities'));
+    final response = await http.get(Uri.parse('${Environment.apiHost}/cities'));
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
 
@@ -284,7 +285,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           radius: 50,
                           backgroundColor: Colors.grey[300],
                           backgroundImage: NetworkImage(
-                              "http://localhost:3000${User.profile}"),
+                              "${Environment.apiHost}${User.profile}"),
                         ),
                         Positioned(
                           bottom: 0,

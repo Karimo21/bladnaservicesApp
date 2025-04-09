@@ -59,7 +59,7 @@ class _PhoneScreenState extends State<PhoneScreen> {
 
     // Make the API request to send OTP
   // final response = await http.post(
-  //   Uri.parse('http://localhost:3000/send'),
+  //   Uri.parse('${Environment.apiHost}/send'),
   //   headers: <String, String>{
   //     'Content-Type': 'application/json',
   //   },

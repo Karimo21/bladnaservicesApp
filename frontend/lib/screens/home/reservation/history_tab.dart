@@ -1,3 +1,4 @@
+import 'package:bladnaservices/env.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -24,7 +25,7 @@ class _HistoryTabState extends State<HistoryTab> {
 
   Future<void> fetchReservationsHistory() async {
     final String apiUrl =
-        "http://localhost:3000/api/reservations/history/$role/$userId";
+        "${Environment.apiHost}/api/reservations/history/$role/$userId";
 
     try {
       final response = await http.get(Uri.parse(apiUrl));
@@ -108,7 +109,7 @@ class HistoryCard extends StatelessWidget {
         children: [
           ListTile(
             leading: CircleAvatar(
-              backgroundImage: NetworkImage("http://localhost:3000${data['profile_picture']}"),
+              backgroundImage: NetworkImage("${Environment.apiHost}${data['profile_picture']}"),
             ),
             title: Text(
               data["name"]!,

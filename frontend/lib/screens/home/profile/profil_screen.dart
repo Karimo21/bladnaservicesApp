@@ -1,3 +1,4 @@
+import 'package:bladnaservices/env.dart';
 import 'package:bladnaservices/screens/auth/login_screen.dart';
 import 'package:bladnaservices/screens/home/profile/addImage_screen.dart';
 import 'package:bladnaservices/screens/home/profile/editProfil_screen.dart';
@@ -14,7 +15,7 @@ class ProfileScreen extends StatelessWidget {
 
  // Function to update the availability of the provider
 Future<void> updateProviderAvailability(int providerId, int value) async {
-  final url = Uri.parse('http://localhost:3000/update-provider-availiblity'); // Your API URL
+  final url = Uri.parse('${Environment.apiHost}/update-provider-availiblity'); // Your API URL
 
   // Create the data to be sent in the body of the request
   final data = {
@@ -63,7 +64,7 @@ Future<void> updateProviderAvailability(int providerId, int value) async {
                   CircleAvatar(
                     radius: 40,
                     backgroundImage:
-                        NetworkImage("http://localhost:3000${User.profile}"),
+                        NetworkImage("${Environment.apiHost}${User.profile}"),
                   ),
                   const SizedBox(width: 14),
                   Column(

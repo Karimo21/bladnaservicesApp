@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:bladnaservices/env.dart';
 import 'package:bladnaservices/screens/auth/info_screen.dart';
 import 'package:bladnaservices/screens/auth/login_screen.dart';
 import 'package:http_parser/http_parser.dart';
@@ -45,7 +46,7 @@ class _CreatePasswordScreenState extends State<PasswordScreen> {
 
   // Fetch cities from the API
   Future<void> fetchCities() async {
-    final response = await http.get(Uri.parse('http://localhost:3000/cities'));
+    final response = await http.get(Uri.parse('${Environment.apiHost}/cities'));
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       setState(() {
@@ -238,9 +239,9 @@ class _CreatePasswordScreenState extends State<PasswordScreen> {
                         String role = userData["role"];
                         print(userData);
                         if (role == "client") {
-                          url = "http://localhost:3000/create-client";
+                          url = "${Environment.apiHost}/create-client";
                         } else if (role == "provider") {
-                          url = "http://localhost:3000/create-provider";
+                          url = "${Environment.apiHost}/create-provider";
                         }
 
                         var request = http.MultipartRequest('POST', Uri.parse(url))

@@ -41,7 +41,7 @@ void _verifyOTP() async {
  
     // Send the OTP and phone number to the backend for verification
   //   final response = await http.post(
-  //     Uri.parse('http://localhost:3000/verify'),
+  //     Uri.parse('${Environment.apiHost}/verify'),
   //     headers: <String, String>{
   //       'Content-Type': 'application/json',
   //     },

@@ -1,3 +1,4 @@
+import 'package:bladnaservices/env.dart';
 import 'package:bladnaservices/screens/home/services/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -35,7 +36,7 @@ class _MoroccoMapState extends State<MoroccoMap> {
   Future<void> _fetchProviders() async {
     try {
       final response = await http.get(
-        Uri.parse('http://localhost:3000/api/providers'),
+        Uri.parse('${Environment.apiHost}/api/providers'),
         headers: {'Accept': 'application/json'},
       );
 
@@ -57,13 +58,13 @@ class _MoroccoMapState extends State<MoroccoMap> {
             // Construction de l'URL complète
             if (imageUrl.isNotEmpty && !imageUrl.startsWith('http')) {
               imageUrl =
-                  'http://localhost:3000${imageUrl.startsWith('/') ? '' : '/'}$imageUrl';
+                  '${Environment.apiHost}${imageUrl.startsWith('/') ? '' : '/'}$imageUrl';
             }
 
             // Fallback si l'image est vide
             if (imageUrl.isEmpty) {
               imageUrl =
-                  'http://localhost:3000/uploads/profile_pictures/no_profile.jpg';
+                  '${Environment.apiHost}/uploads/profile_pictures/no_profile.jpg';
             }
 
             return {
@@ -152,7 +153,7 @@ class _MoroccoMapState extends State<MoroccoMap> {
   Future<void> _storeCurrentPosition(double latitude, double longitude) async {
     try {
       final response = await http.post(
-        Uri.parse('http://localhost:3000/api/providers/2/position'),
+        Uri.parse('${Environment.apiHost}/api/providers/2/position'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
           'latitude': latitude,
@@ -316,7 +317,7 @@ class _MoroccoMapState extends State<MoroccoMap> {
 
   String _getSafeImageUrl(String? url) {
     if (url == null || url.isEmpty) {
-      return 'http://localhost:3000/uploads/profile_pictures/no_profile.jpg';
+      return '${Environment.apiHost}/uploads/profile_pictures/no_profile.jpg';
     }
 
     // Normalisation des chemins
@@ -325,7 +326,7 @@ class _MoroccoMapState extends State<MoroccoMap> {
 
     // Construction de l'URL complète si nécessaire
     if (!url.startsWith('http')) {
-      url = 'http://localhost:3000${url.startsWith('/') ? '' : '/'}$url';
+      url = '${Environment.apiHost}${url.startsWith('/') ? '' : '/'}$url';
     }
 
     return url;

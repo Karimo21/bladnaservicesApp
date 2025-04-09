@@ -1,3 +1,4 @@
+import 'package:bladnaservices/env.dart';
 import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
@@ -14,7 +15,7 @@ class SocketService with WidgetsBindingObserver {
   }
 
   void _initializeSocket() {
-    socket = IO.io('http://localhost:3000', 
+    socket = IO.io('${Environment.apiHost}', 
         IO.OptionBuilder().setTransports(['websocket']).build());
     
     socket.onConnect((_) {

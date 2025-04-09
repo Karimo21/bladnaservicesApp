@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bladnaservices/env.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
@@ -110,7 +111,7 @@ class _ChatScreenState extends State<ChatScreen> {
   // Fetch messages from the API
   Future<void> _fetchMessages() async {
     final response = await http.get(
-      Uri.parse('http://localhost:3000/api/messages/${widget.userId}/${widget.contactId}'),
+      Uri.parse('${Environment.apiHost}/api/messages/${widget.userId}/${widget.contactId}'),
     );
 
     if (response.statusCode == 200) {

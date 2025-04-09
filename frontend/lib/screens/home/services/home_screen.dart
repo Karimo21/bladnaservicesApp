@@ -4,6 +4,7 @@ import 'package:bladnaservices/screens/home/services/profile_screen.dart';
 import 'package:bladnaservices/screens/home/services/search_screen.dart';
 import 'package:bladnaservices/screens/home/services/service_list_screen.dart';
 import 'package:bladnaservices/screens/home/services_screen.dart';
+import 'package:bladnaservices/env.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -59,7 +60,7 @@ class _HomescreenState extends State<Homescreen> {
 
 Future<void> fetchProviders() async {
 
-  final response = await http.get(Uri.parse('http://localhost:3000/providers'));
+  final response = await http.get(Uri.parse('${Environment.apiHost}/providers'));
 
   if (response.statusCode == 200) {
     List<dynamic> data = jsonDecode(response.body);
@@ -71,7 +72,7 @@ Future<void> fetchProviders() async {
         "profession": provider["title"],
         "city_name": provider["city_name"],
         "rating": double.tryParse(provider["rating"] ?? "0") ?? 0.0,
-        "image": "http://localhost:3000" + provider["profile_picture"],
+        "image": "${Environment.apiHost}" + provider["profile_picture"],
         "reservations": provider["nbr_res"],
         "location": provider["adresse"],
         "description": provider["description"],
@@ -90,7 +91,7 @@ Future<void> fetchProviders() async {
 
 int unreadNotifications = 0;
 Future<void> fetchUnreadNotifications() async {
-  final response = await http.get(Uri.parse('http://localhost:3000/notifications/unread/${User.userId}'));
+  final response = await http.get(Uri.parse('${Environment.apiHost}/notifications/unread/${User.userId}'));
 
   if (response.statusCode == 200) {
     final data = jsonDecode(response.body);
@@ -102,7 +103,7 @@ Future<void> fetchUnreadNotifications() async {
   }
 }
 Future<void> markNotificationAsRead() async {
-  final response = await http.post(Uri.parse('http://localhost:3000/notifications/read/${User.userId}'));
+  final response = await http.post(Uri.parse('${Environment.apiHost}/notifications/read/${User.userId}'));
 
   if (response.statusCode == 200) {
      print("Notification lues avec success");

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:bladnaservices/env.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:bladnaservices/screens/auth/DocumentUploadScreen.dart';
@@ -34,7 +35,7 @@ class _PrestataireSignupScreenState extends State<PrestataireSignupScreen> {
 
   // Fetch cities from the API
   Future<void> fetchCities() async {
-    final response = await http.get(Uri.parse('http://localhost:3000/cities'));
+    final response = await http.get(Uri.parse('${Environment.apiHost}/cities'));
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       setState(() {
@@ -49,7 +50,7 @@ class _PrestataireSignupScreenState extends State<PrestataireSignupScreen> {
 
   // Fetch services from the API
   Future<void> fetchServices() async {
-    final response = await http.get(Uri.parse('http://localhost:3000/services'));
+    final response = await http.get(Uri.parse('${Environment.apiHost}/services'));
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       setState(() {

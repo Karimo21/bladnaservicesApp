@@ -1,3 +1,4 @@
+import 'package:bladnaservices/env.dart';
 import 'package:bladnaservices/screens/home/chat/chat_screen.dart';
 import 'package:bladnaservices/screens/home/profile/User.dart';
 import 'package:bladnaservices/screens/home/reservation/rate_screen.dart';
@@ -27,7 +28,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<void> fetchData() async {
     try {
       final response =
-          await http.get(Uri.parse('http://localhost:3000/provider/${widget.provider['provider_id']}'));
+          await http.get(Uri.parse('${Environment.apiHost}/provider/${widget.provider['provider_id']}'));
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
@@ -35,7 +36,7 @@ class _ProfilePageState extends State<ProfilePage> {
         // Add fetched images to galleryImages list
         for (var image in data['images']) {
           setState(() {
-            galleryImages.add('http://localhost:3000${image['image_url']}');
+            galleryImages.add('${Environment.apiHost}${image['image_url']}');
           });
         }
 
@@ -47,7 +48,7 @@ class _ProfilePageState extends State<ProfilePage> {
               'date': rating['created_at'],
               'comment': rating['feedback'],
               'rating': rating['rating'],
-              'profileImage':'http://localhost:3000${rating['profile_picture']}'
+              'profileImage':'${Environment.apiHost}${rating['profile_picture']}'
             });
           });
         }
@@ -61,7 +62,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   //create-contact 
  Future<void> createContact(int senderId, int receiverId) async {
-  const String url = 'http://localhost:3000/add-contact';
+  const String url = '${Environment.apiHost}/add-contact';
   print(senderId);
   print(receiverId);
 

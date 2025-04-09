@@ -1,3 +1,4 @@
+import 'package:bladnaservices/env.dart';
 import 'package:bladnaservices/services/socket_service.dart';
 import 'package:flutter/material.dart';
 import 'package:bladnaservices/screens/home/profile/User.dart';
@@ -48,7 +49,7 @@ class ClientsTab extends StatefulWidget  {
     Future<void> fetchReservations() async {
 
     if (!mounted) return;  
-    final response = await http.get(Uri.parse('http://localhost:3000/api/reservations/reserved/$userId'));
+    final response = await http.get(Uri.parse('${Environment.apiHost}/api/reservations/reserved/$userId'));
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
