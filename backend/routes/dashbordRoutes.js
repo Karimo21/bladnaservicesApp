@@ -8,7 +8,7 @@ const isAuthenticated = (req, res, next) => {
     if (req.session && req.session.user) {
         next(); // L'utilisateur est connecté
     } else {
-        res.redirect('/login'); // Redirection si non connecté
+        res.redirect('/login/login.html'); // Redirection si non connecté
     }
 };
 router.get('/interface/tableauBord.html', (req, res) => {
