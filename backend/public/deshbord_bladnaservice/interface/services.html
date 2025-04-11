@@ -42,6 +42,33 @@
     max-width: 500px;
     display: none; /* Caché par défaut */
 }
+html, body {
+    height: 100%;
+    margin: 0; /* Pour s'assurer qu'il n'y a pas d'espace blanc autour */
+}
+
+.wrapper {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.main-sidebar {
+    height: 100%; /* Assure que la sidebar prend toute la hauteur */
+    position: fixed; /* Pour la garder fixe sur l'écran */
+    top: 0; /* En haut de la page */
+    bottom: 0; /* Joue un rôle clé pour qu'elle ne soit pas affectée par le contenu */
+}
+.content-wrapper {
+    margin-left: 250px; /* Assure que le contenu commence après la sidebar */
+    padding: 20px; /* Ajuste les espaces autour du contenu principal */
+    flex-grow: 1;
+    background-color: #f4f6f9; /* Pour le fond de contenu principal */
+}
+
+.navbar-nav {
+    flex-grow: 1;
+}
 
   </style>
 </head>
@@ -195,8 +222,7 @@
 <div id="success-alert-supprimer" class="alert alert-success text-center" style="display: none;">
   <strong>Succès !</strong> Service suppremé avec succès !
 </div>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
 
 <!-- Modale de confirmation pour la suppression -->
 <div id="confirmDeleteModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
@@ -218,121 +244,123 @@
       </div>
   </div>
 </div>
+
 <!-- Div pour afficher un message d'erreur -->
 <div id="error-alert" class="alert alert-danger" style="display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999;">
-  <strong>Erreur : </strong> Le service ne peut pas être supprimé !
+  <strong>Erreur : </strong> Ce service est déjà utilisé. !
 </div>
 
-<script>
-$(document).ready(function () {
-  let servicesList = [];
-  let serviceIdToDelete = null; // Variable pour stocker l'ID du service à supprimer
+<script src="../env.js"></script> <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<script> 
+  $(document).ready(function () {
+    let servicesList = [];
+    let serviceIdToDelete = null; // Variable pour stocker l'ID du service à supprimer
 
-  // Charger les services au démarrage
-  function chargerServices() {
-      $.get("http://localhost:3000/services", function (data) {
-          servicesList = data.services; // Stocker la liste des services
-          afficherServices(servicesList);
+    // Charger les services au démarrage
+    function chargerServices() {
+      $.get(`${Environment.apiHost}/services`, function (data) {
+        servicesList = data.services; // Stocker la liste des services
+        afficherServices(servicesList);
       });
-  }
+    }
 
-  // Afficher les services
-  function afficherServices(services) {
+    // Afficher les services
+    function afficherServices(services) {
       let tbody = $("#prestataires-list");
       tbody.empty(); // Vider le tableau avant d'ajouter de nouvelles lignes
 
       if (services.length === 0) {
-          tbody.append(`<tr><td colspan="3" class="text-center">Aucun service trouvé</td></tr>`);
-          return;
+        tbody.append(`<tr><td colspan="3" class="text-center">Aucun service trouvé</td></tr>`);
+        return;
       }
 
       services.forEach((service, index) => {
-          let row = `
-              <tr>
-                  <td>${index + 1}</td>
-                  <td>${service.title || "N/A"}</td>
-                  <td class="project-actions text-right">
-                      <a class="btn btn-danger btn-sm" href="#" onclick="demanderSuppression(${service.service_id})">
-                          <i class="fas fa-trash"></i> Supprimer
-                      </a>
-                  </td>
-              </tr>
-          `;
-          tbody.append(row);
+        let row = `
+          <tr>
+            <td>${index + 1}</td>
+            <td>${service.title || "N/A"}</td>
+            <td class="project-actions text-right">
+              <a class="btn btn-danger btn-sm" href="#" onclick="demanderSuppression(${service.service_id})">
+                <i class="fas fa-trash"></i> Supprimer
+              </a>
+            </td>
+          </tr>
+        `;
+        tbody.append(row);
       });
-  }
+    }
 
-  // Demander confirmation pour supprimer un service
-  window.demanderSuppression = function (service_id) {
+    // Demander confirmation pour supprimer un service
+    window.demanderSuppression = function (service_id) {
       serviceIdToDelete = service_id; // Stocker l'ID du service
       $("#confirmDeleteModal").modal("show"); // Afficher la modale de confirmation
-  };
+    };
 
-  // Confirmer la suppression du service
-  $("#confirmDeleteButton").click(function () {
+    // Confirmer la suppression du service
+    $("#confirmDeleteButton").click(function () {
       if (serviceIdToDelete) {
-          $.ajax({
-              url: `http://localhost:3000/services/${serviceIdToDelete}`,
-              type: "DELETE",
-              success: function () {
-                  $("#confirmDeleteModal").modal("hide");
-                  $("#success-alert-supprimer").show().delay(3000).fadeOut();
-                  chargerServices(); // Recharger la liste après suppression
-              },
-              error: function() {
-            // Afficher le message d'erreur dans la div
-            $("#error-alert").fadeIn().delay(3000).fadeOut(); // Affiche et masque l'alerte après 3 secondes
-        }
-
-          });
+        $.ajax({
+          url: `${Environment.apiHost}/services/${serviceIdToDelete}`,
+          type: "DELETE",
+          success: function () {
+            $("#confirmDeleteModal").modal("hide");
+            $("#success-alert-supprimer").show().delay(3000).fadeOut();
+            chargerServices(); // Recharger la liste après suppression
+          },
+          error: function () {
+            $("#error-alert").fadeIn().delay(3000).fadeOut();
+          }
+        });
       }
-  });
+    });
 
-  // Fonction pour afficher la modal d'ajout
-  window.ajouterService = function () {
+    // Fonction pour afficher la modal d'ajout
+    window.ajouterService = function () {
       $("#addServiceModal").modal("show");
-  };
+    };
 
-  // Ajouter un service via AJAX
-  $("#addServiceButton").click(function () {
+    // Ajouter un service via AJAX
+    $("#addServiceButton").click(function () {
       let serviceData = {
-          title: $("#serviceTitle").val().trim(),
+        title: $("#serviceTitle").val().trim(),
       };
 
       if (!serviceData.title) {
-          alert("Le champ titre est requis !");
-          return;
+        alert("Le champ titre est requis !");
+        return;
       }
 
       $.ajax({
-          url: "http://localhost:3000/servicesAdd",
-          type: "POST",
-          contentType: "application/json",
-          data: JSON.stringify(serviceData),
-          success: function () {
-              $("#addServiceModal").modal("hide");
-              $("#success-alert").show().delay(3000).fadeOut();
-              chargerServices(); // Recharger la liste après ajout
-          },
-          error: function () {
-              alert("Erreur lors de l'ajout du service");
-          },
+        url: `${Environment.apiHost}/servicesAdd`,
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(serviceData),
+        success: function () {
+          $("#addServiceModal").modal("hide");
+          $("#success-alert").show().delay(3000).fadeOut();
+          chargerServices(); // Recharger la liste après ajout
+        },
+        error: function () {
+          alert("Erreur lors de l'ajout du service");
+        }
       });
-  });
+    });
 
-  // 🔍 Filtrage des services localement sans requête AJAX
-  $("#searchInput").on("input", function () {
+    // 🔍 Filtrage des services localement sans requête AJAX
+    $("#searchInput").on("input", function () {
       let searchTerm = $(this).val().toLowerCase();
       let filteredServices = servicesList.filter(service =>
-          (service.title || "").toLowerCase().includes(searchTerm)
+        (service.title || "").toLowerCase().includes(searchTerm)
       );
       afficherServices(filteredServices);
-  });
+    });
 
-  // Charger les services au démarrage
-  chargerServices();
-});
+    // Charger les services au démarrage
+    chargerServices();
+  });
 </script>
+
 
 </script>
 </body>

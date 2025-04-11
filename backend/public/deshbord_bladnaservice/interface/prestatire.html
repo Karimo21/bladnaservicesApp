@@ -130,13 +130,13 @@
   <!-- jQuery & AdminLTE -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/js/adminlte.min.js"></script>
-
-  <script>
+  <script src="../env.js"></script> 
+  <script> 
     document.addEventListener("DOMContentLoaded", function () {
       let prestatairesData = [];
   
       // Charger les prestataires depuis l'API
-      fetch("http://localhost:3000/prestataires")
+      fetch(`${Environment.apiHost}/prestataires`)
         .then(response => response.json())
         .then(data => {
           prestatairesData = data; // Stocker les prestataires
@@ -185,6 +185,7 @@
       });
     });
   </script>
+  
   
 
 

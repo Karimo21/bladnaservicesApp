@@ -153,15 +153,15 @@
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <!-- AdminLTE -->
   <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/js/adminlte.min.js"></script>
-
-  <script>
+  <script src="../env.js"></script> 
+  <script> 
     $(document).ready(function () {
       fetchPrestatairesNonValides();
     });
-
+  
     function fetchPrestatairesNonValides() {
       $.ajax({
-        url: "http://localhost:3000/prestatairesNoval", // Assurez-vous que votre API fonctionne
+        url: `${Environment.apiHost}/prestatairesNoval`,
         method: "GET",
         dataType: "json",
         success: function (data) {
@@ -172,16 +172,16 @@
         }
       });
     }
-
+  
     function afficherPrestataires(prestataires) {
       let tbody = $("#prestataires-list");
-      tbody.empty(); // Vider le tableau avant d'ajouter de nouvelles lignes
-
+      tbody.empty();
+  
       if (prestataires.length === 0) {
         tbody.append(`<tr><td colspan="8" class="text-center">Aucun prestataire trouvé</td></tr>`);
         return;
       }
-
+  
       prestataires.forEach((prestataire, index) => {
         let row = `
           <tr>
@@ -193,116 +193,103 @@
             <td>${prestataire.phone || "N/A"}</td>
             <td>${prestataire.description || "Aucune description"}</td>
             <td class="project-actions text-right">
-
               <a class="btn btn-primary btn-sm" href="image.html?id=${prestataire.providers_id}">
-  <i class="fas fa-folder"></i> Voir
-</a>
-
-
-
-
-              <a class="btn btn-info btn-sm" href="#" onclick="confirmerValidation(${prestataire.providers_id})"><i class="fas fa-check"></i> Valider  </a>
-<a class="btn btn-danger btn-sm" href="#" onclick="refuserPrestataire(${prestataire.providers_id})"><i class="fas fa-trash"></i> Refuser
-</a>
-
+                <i class="fas fa-folder"></i> Voir
+              </a>
+              <a class="btn btn-info btn-sm" href="#" onclick="confirmerValidation(${prestataire.providers_id})">
+                <i class="fas fa-check"></i> Valider
+              </a>
+              <a class="btn btn-danger btn-sm" href="#" onclick="refuserPrestataire(${prestataire.providers_id})">
+                <i class="fas fa-trash"></i> Refuser
+              </a>
             </td>
           </tr>
         `;
         tbody.append(row);
       });
     }
-
+  
     function confirmerValidation(providers_id) {
-    let confirmationBox = `
-        <div id="confirm-box" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+      let confirmationBox = `
+        <div id="confirm-box" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
         background: white; padding: 20px; box-shadow: 0px 0px 10px rgba(0,0,0,0.2); text-align: center; z-index: 1050;">
-            <p>Voulez-vous vraiment valider ce prestataire ?</p>
-            <button class="btn btn-success" onclick="validerPrestataire(${providers_id})">Oui</button>
-            <button class="btn btn-danger" onclick="fermerConfirmation()">Non</button>
+          <p>Voulez-vous vraiment valider ce prestataire ?</p>
+          <button class="btn btn-success" onclick="validerPrestataire(${providers_id})">Oui</button>
+          <button class="btn btn-danger" onclick="fermerConfirmation()">Non</button>
         </div>`;
-    
-    $("body").append(confirmationBox);
-}
-
-function fermerConfirmation() {
-    $("#confirm-box").remove();
-}
-
-function validerPrestataire(providers_id) {
-    fermerConfirmation();
-    $.ajax({
-        url: `http://localhost:3000/prestatairs/valider/${providers_id}`,
+      $("body").append(confirmationBox);
+    }
+  
+    function fermerConfirmation() {
+      $("#confirm-box").remove();
+    }
+  
+    function validerPrestataire(providers_id) {
+      fermerConfirmation();
+      $.ajax({
+        url: `${Environment.apiHost}/prestatairs/valider/${providers_id}`,
         method: "POST",
         success: function () {
-            $("#success-alert").fadeIn().delay(2000).fadeOut(); 
-            fetchPrestatairesNonValides();
+          $("#success-alert").fadeIn().delay(2000).fadeOut(); 
+          fetchPrestatairesNonValides();
         },
         error: function () {
-            alert("Erreur lors de la validation.");
+          alert("Erreur lors de la validation.");
         }
-    });
-}
-
-
-
-
-
-function refuserPrestataire(providers_id) {
-    let confirmationBox = `
-        <div id="confirm-box" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+      });
+    }
+  
+    function refuserPrestataire(providers_id) {
+      let confirmationBox = `
+        <div id="confirm-box" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
         background: white; padding: 20px; box-shadow: 0px 0px 10px rgba(0,0,0,0.2); text-align: center; z-index: 1050;">
-            <p>Voulez-vous vraiment refuser ce prestataire ?</p>
-            <button class="btn btn-success" onclick="supprimerPrestataire(${providers_id})">Oui</button>
-            <button class="btn btn-danger" onclick="fermerConfirmation()">Non</button>
+          <p>Voulez-vous vraiment refuser ce prestataire ?</p>
+          <button class="btn btn-success" onclick="supprimerPrestataire(${providers_id})">Oui</button>
+          <button class="btn btn-danger" onclick="fermerConfirmation()">Non</button>
         </div>`;
-    
-    $("body").append(confirmationBox);
-}
-
-function supprimerPrestataire(providers_id) {
-  console.log("ID du prestataire à supprimer :", providers_id);
-    fermerConfirmation();
-    $.ajax({
-        url: `http://localhost:3000/prestatairs/suppremer/${providers_id}`,
+      $("body").append(confirmationBox);
+    }
+  
+    function supprimerPrestataire(providers_id) {
+      console.log("ID du prestataire à supprimer :", providers_id);
+      fermerConfirmation();
+      $.ajax({
+        url: `${Environment.apiHost}/prestatairs/suppremer/${providers_id}`,
         method: "DELETE",
         success: function () {
-            $("#success-alert").text("Prestataire supprimé avec succès !").fadeIn().delay(2000).fadeOut();
-            fetchPrestatairesNonValides();
+          $("#success-alert").text("Prestataire supprimé avec succès !").fadeIn().delay(2000).fadeOut();
+          fetchPrestatairesNonValides();
         },
         error: function () {
-            alert("Erreur lors de la suppression.");
+          alert("Erreur lors de la suppression.");
         }
-    });
-}
-
-function fermerConfirmation() {
-    $("#confirm-box").remove();
-}
-
-$(document).ready(function () {
-    $("#searchInput").on("keyup", function () {
+      });
+    }
+  
+    $(document).ready(function () {
+      $("#searchInput").on("keyup", function () {
         let value = $(this).val().toLowerCase();
         let rows = $("#prestataires-list tr");
         let found = false;
-
+  
         rows.each(function () {
-            if ($(this).text().toLowerCase().indexOf(value) > -1) {
-                $(this).show();
-                found = true;
-            } else {
-                $(this).hide();
-            }
+          if ($(this).text().toLowerCase().indexOf(value) > -1) {
+            $(this).show();
+            found = true;
+          } else {
+            $(this).hide();
+          }
         });
-
-        // Afficher ou cacher le message "Aucun prestataire trouvé"
+  
         if (found) {
-            $("#noResultsMessage").hide();
+          $("#noResultsMessage").hide();
         } else {
-            $("#noResultsMessage").show();
+          $("#noResultsMessage").show();
         }
+      });
     });
-});
   </script>
+  
 
 </body>
 </html>

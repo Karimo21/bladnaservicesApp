@@ -29,7 +29,7 @@
 
   </style>
 </head>
-<body class="hold-transition sidebar-mini">
+
   <body class="hold-transition sidebar-mini">
     <div class="wrapper">
     
@@ -148,123 +148,122 @@
   </div> <!-- Fin Content -->
 </div> <!-- Fin Content Wrapper -->
 
-    
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-          // Charger les données des prestataires par service
-          fetch("http://localhost:3000/chart-services")
-              .then(response => response.json())
-              .then(data => {
-                  console.log("Données des services :", data);
-                  var labels = data.total.map(item => item.title);
-                  var values = data.total.map(item => item.total_provider);
-                  var colors = ["#ff6384", "#36a2eb", "#ffce56", "#4bc0c0", "#9966ff"]; 
+<script src="../env.js"></script> 
+<script> 
+  document.addEventListener("DOMContentLoaded", function () {
+      // Charger les données des prestataires par service
+      fetch(`${Environment.apiHost}/chart-services`)
+          .then(response => response.json())
+          .then(data => {
+              console.log("Données des services :", data);
+              var labels = data.total.map(item => item.title);
+              var values = data.total.map(item => item.total_provider);
+              var colors = ["#ff6384", "#36a2eb", "#ffce56", "#4bc0c0", "#9966ff"]; 
 
-                  var serviceChartCanvas = document.getElementById("serviceChart").getContext("2d");
-                  new Chart(serviceChartCanvas, {
-                      type: "bar",
-                      data: {
-                          labels: labels,
-                          datasets: [{
-                              label: "Nombre de prestataires",
-                              backgroundColor: colors.slice(0, labels.length),
-                              data: values
-                          }]
-                      },
-                      options: {
-                          responsive: true,
-                          scales: {
-                              y: {
-                                  beginAtZero: true
+              var serviceChartCanvas = document.getElementById("serviceChart").getContext("2d");
+              new Chart(serviceChartCanvas, {
+                  type: "bar",
+                  data: {
+                      labels: labels,
+                      datasets: [{
+                          label: "Nombre de prestataires",
+                          backgroundColor: colors.slice(0, labels.length),
+                          data: values
+                      }]
+                  },
+                  options: {
+                      responsive: true,
+                      scales: {
+                          y: {
+                              beginAtZero: true
+                          }
+                      }
+                  }
+              });
+          })
+          .catch(error => console.error("Erreur lors du chargement des données :", error));
+
+      // Charger les données des réservations
+      fetch(`${Environment.apiHost}/chart-status`)
+          .then(response => response.json())
+          .then(data => {
+              console.log("Données des réservations :", data);
+              var labels = data.total.map(item => item.name);
+              var values = data.total.map(item => item.total);
+              var colors = ["#ff6384", "#36a2eb", "#ffce56", "#4bc0c0", "#9966ff"]; 
+
+              var reservationsChartCanvas = document.getElementById("reservationsChart").getContext("2d");
+              new Chart(reservationsChartCanvas, {
+                  type: "pie",
+                  data: {
+                      labels: labels,
+                      datasets: [{
+                          label: "Réservations par statut",
+                          backgroundColor: colors.slice(0, labels.length),
+                          data: values
+                      }]
+                  },
+                  options: {
+                      responsive: true
+                  }
+              });
+          })
+          .catch(error => console.error("Erreur lors du chargement des données :", error));
+  });
+
+  // Attendre que la page charge complètement
+  document.addEventListener("DOMContentLoaded", function () {
+      // Récupérer le canvas
+      var ctx = document.getElementById("statsChart").getContext("2d");
+
+      // Récupérer les données du backend
+      fetch(`${Environment.apiHost}/count-stats`)
+          .then(response => response.json())
+          .then(data => {
+              console.log("Données récupérées :", data);
+
+              // Vérifier si les données existent
+              if (!data.prestataires || !data.clients || !data.reservations) {
+                  console.error("Données incorrectes reçues :", data);
+                  return;
+              }
+
+              // Labels et valeurs
+              var labels = ["Prestataires", "Clients", "Réservations"];
+              var values = [data.prestataires, data.clients, data.reservations];
+              var colors = ["#007bff", "#28a745", "#ffc107"]; // Couleurs des barres
+
+              // Création du graphique
+              new Chart(ctx, {
+                  type: "bar",
+                  data: {
+                      labels: labels,
+                      datasets: [{
+                          label: "Nombre total",
+                          data: values,
+                          backgroundColor: colors,
+                          borderColor: ["#0056b3", "#1e7e34", "#d39e00"],
+                          borderWidth: 1
+                      }]
+                  },
+                  options: {
+                      responsive: true,
+                      maintainAspectRatio: false,
+                      scales: {
+                          y: {
+                              beginAtZero: true,
+                              ticks: {
+                                  stepSize: 1 // Ajuste selon tes données
                               }
                           }
                       }
-                  });
-              })
-              .catch(error => console.error("Erreur lors du chargement des données :", error));
+                  }
+              });
+          })
+          .catch(error => console.error("Erreur lors du chargement des données :", error));
+  });
+</script>
 
-          // Charger les données des réservations
-          fetch("http://localhost:3000/chart-status")
-              .then(response => response.json())
-              .then(data => {
-                  console.log("Données des réservations :", data);
-                  var labels = data.total.map(item => item.name);
-                  var values = data.total.map(item => item.total);
-                  var colors = ["#ff6384", "#36a2eb", "#ffce56", "#4bc0c0", "#9966ff"]; 
-
-                  var reservationsChartCanvas = document.getElementById("reservationsChart").getContext("2d");
-                  new Chart(reservationsChartCanvas, {
-                      type: "pie",
-                      data: {
-                          labels: labels,
-                          datasets: [{
-                              label: "Réservations par statut",
-                              backgroundColor: colors.slice(0, labels.length),
-                              data: values
-                          }]
-                      },
-                      options: {
-                          responsive: true
-                      }
-                  });
-              })
-              .catch(error => console.error("Erreur lors du chargement des données :", error));
-      });
-
-
-
-// Attendre que la page charge complètement
-document.addEventListener("DOMContentLoaded", function () {
-    // Récupérer le canvas
-    var ctx = document.getElementById("statsChart").getContext("2d");
-
-    // Récupérer les données du backend
-    fetch("http://localhost:3000/count-stats")
-        .then(response => response.json())
-        .then(data => {
-            console.log("Données récupérées :", data);
-
-            // Vérifier si les données existent
-            if (!data.prestataires || !data.clients || !data.reservations) {
-                console.error("Données incorrectes reçues :", data);
-                return;
-            }
-
-            // Labels et valeurs
-            var labels = ["Prestataires", "Clients", "Réservations"];
-            var values = [data.prestataires, data.clients, data.reservations];
-            var colors = ["#007bff", "#28a745", "#ffc107"]; // Couleurs des barres
-
-            // Création du graphique
-            new Chart(ctx, {
-                type: "bar",
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: "Nombre total",
-                        data: values,
-                        backgroundColor: colors,
-                        borderColor: ["#0056b3", "#1e7e34", "#d39e00"],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                stepSize: 1 // Ajuste selon tes données
-                            }
-                        }
-                    }
-                }
-            });
-        })
-        .catch(error => console.error("Erreur lors du chargement des données :", error));
-});
-
-    </script>
+  
 </body>
 </html>

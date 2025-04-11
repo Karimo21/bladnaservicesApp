@@ -42,6 +42,33 @@
     max-width: 500px;
     display: none; /* Caché par défaut */
 }
+html, body {
+    height: 100%;
+    margin: 0; /* Pour s'assurer qu'il n'y a pas d'espace blanc autour */
+}
+
+.wrapper {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.main-sidebar {
+    height: 100%; /* Assure que la sidebar prend toute la hauteur */
+    position: fixed; /* Pour la garder fixe sur l'écran */
+    top: 0; /* En haut de la page */
+    bottom: 0; /* Joue un rôle clé pour qu'elle ne soit pas affectée par le contenu */
+}
+.content-wrapper {
+    margin-left: 250px; /* Assure que le contenu commence après la sidebar */
+    padding: 20px; /* Ajuste les espaces autour du contenu principal */
+    flex-grow: 1;
+    background-color: #f4f6f9; /* Pour le fond de contenu principal */
+}
+
+.navbar-nav {
+    flex-grow: 1;
+}
 
   </style>
 </head>
@@ -217,126 +244,124 @@
   </div>
 </div>
 <div id="error-alert" class="alert alert-danger" style="display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999;">
-  <strong>Erreur : </strong> La ville ne peut pas être supprimé !
+  <strong>Erreur : </strong> Cette ville est déjà utilisé. !
 </div>
-
+<script src="../env.js"></script> 
 <script>
-$(document).ready(function () {
-  let citiesList = [];
-  let cityIdToDelete = null; // Variable pour stocker l'ID de la ville à supprimer
+  $(document).ready(function () {
+    let citiesList = [];
+    let cityIdToDelete = null; // Variable pour stocker l'ID de la ville à supprimer
 
-  // Charger les villes au démarrage
-  function chargerCities() {
-      $.get("http://localhost:3000/cities", function (data) {
-          citiesList = data.cities; // Stocker la liste des villes
-          afficherCities(citiesList);
+    // Charger les villes au démarrage
+    function chargerCities() {
+      $.get(`${Environment.apiHost}/cities`, function (data) {
+        citiesList = data.cities; // Stocker la liste des villes
+        afficherCities(citiesList);
       });
-  }
+    }
 
-  // Afficher les villes
-  function afficherCities(cities) {
+    // Afficher les villes
+    function afficherCities(cities) {
       let tbody = $("#cities-list");
       tbody.empty(); // Vider le tableau avant d'ajouter de nouvelles lignes
 
       if (cities.length === 0) {
-          tbody.append(`<tr><td colspan="3" class="text-center">Aucune ville trouvée</td></tr>`);
-          return;
+        tbody.append(`<tr><td colspan="3" class="text-center">Aucune ville trouvée</td></tr>`);
+        return;
       }
 
       cities.forEach((city, index) => {
-          let row = `
-              <tr>
-                  <td>${index + 1}</td>
-                  <td>${city.city_name || "N/A"}</td>
-                  <td class="project-actions text-right">
-                      <a class="btn btn-danger btn-sm" href="#" onclick="demanderSuppressionCity(${city.city_id})">
-                          <i class="fas fa-trash"></i> Supprimer
-                      </a>
-                  </td>
-              </tr>
-          `;
-          tbody.append(row);
+        let row = `
+          <tr>
+            <td>${index + 1}</td>
+            <td>${city.city_name || "N/A"}</td>
+            <td class="project-actions text-right">
+              <a class="btn btn-danger btn-sm" href="#" onclick="demanderSuppressionCity(${city.city_id})">
+                <i class="fas fa-trash"></i> Supprimer
+              </a>
+            </td>
+          </tr>
+        `;
+        tbody.append(row);
       });
-  }
+    }
 
-  // Demander confirmation pour supprimer une ville
-  window.demanderSuppressionCity = function (city_id) {
+    // Demander confirmation pour supprimer une ville
+    window.demanderSuppressionCity = function (city_id) {
       cityIdToDelete = city_id; // Stocker l'ID de la ville
       $("#confirmDeleteCityModal").modal("show"); // Afficher la modale de confirmation
-  };
+    };
 
-  // Confirmer la suppression de la ville
-  $("#confirmDeleteCityButton").click(function () {
+    // Confirmer la suppression de la ville
+    $("#confirmDeleteCityButton").click(function () {
       if (cityIdToDelete) {
-          $.ajax({
-              url: `http://localhost:3000/cities/${cityIdToDelete}`,
-              type: "DELETE",
-              success: function () {
-                  $("#confirmDeleteCityModal").modal("hide");
-                  $("#success-alert").show().delay(3000).fadeOut();
-                  chargerCities(); // Recharger la liste après suppression
-              },
-              error: function () {
-                  alert("Erreur lors de la suppression de la ville");
-              },
-          });
+        $.ajax({
+          url: `${Environment.apiHost}/cities/${cityIdToDelete}`,
+          type: "DELETE",
+          success: function () {
+            $("#confirmDeleteCityModal").modal("hide");
+            $("#success-alert").show().delay(3000).fadeOut();
+            chargerCities(); // Recharger la liste après suppression
+          },
+          error: function () {
+            $("#error-alert").fadeIn().delay(3000).fadeOut();
+          },
+        });
       }
-  });
+    });
 
-  // Fonction pour afficher la modal d'ajout
-  window.ajouterCity = function () {
+    // Fonction pour afficher la modal d'ajout
+    window.ajouterCity = function () {
       $('#addCityModal').modal('show');
-  };
+    };
 
-  // Ajouter une ville via AJAX
-  $("#addCityButton").click(function () {
+    // Ajouter une ville via AJAX
+    $("#addCityButton").click(function () {
       let cityData = {
-          city_name: $("#cityName").val().trim(),
+        city_name: $("#cityName").val().trim(),
       };
 
-      // Vérifier si le champ 'city_name' est rempli
       if (!cityData.city_name) {
-          alert("Le champ 'Nom de la ville' est requis !");
-          return;
+        alert("Le champ 'Nom de la ville' est requis !");
+        return;
       }
 
-      // Requête AJAX pour ajouter la ville
       $.ajax({
-          url: "http://localhost:3000/citiesAdd",
-          type: "POST",
-          data: cityData,
-          success: function () {
-              $('#addCityModal').modal('hide');  // Ferme la modal
-              $("#success-alert").show().delay(3000).fadeOut();  // Affiche un message de succès
-              chargerCities(); // Rafraîchir la liste des villes
-          },
-          error: function() {
-            // Afficher le message d'erreur dans la div
-            $("#error-alert").fadeIn().delay(3000).fadeOut(); // Affiche et masque l'alerte après 3 secondes
+        url: `${Environment.apiHost}/citiesAdd`,
+        type: "POST",
+        data: cityData,
+        success: function () {
+          $('#addCityModal').modal('hide');
+          $("#success-alert").show().delay(3000).fadeOut();
+          chargerCities(); // Rafraîchir la liste des villes
+        },
+        error: function () {
+          $("#error-alert").fadeIn().delay(3000).fadeOut();
         }
       });
-  });
+    });
 
-  // Fonction pour filtrer les villes en fonction du texte saisi dans le champ de recherche
-  $("#searchInput").on("input", function () {
-      let searchTerm = $(this).val().toLowerCase();  // Récupérer la valeur du champ de recherche
+    // Recherche en temps réel
+    $("#searchInput").on("input", function () {
+      let searchTerm = $(this).val().toLowerCase();
       filterCities(searchTerm);
-  });
+    });
 
-  // Fonction pour filtrer les villes
-  function filterCities(searchTerm) {
-      $.get("http://localhost:3000/cities", function (data) {
-          let filteredCities = data.cities.filter(city => 
-              city.city_name.toLowerCase().includes(searchTerm) // Filtrer en fonction du terme de recherche
-          );
-          afficherCities(filteredCities);  // Afficher les villes filtrées
+    // Filtrer les villes
+    function filterCities(searchTerm) {
+      $.get(`${Environment.apiHost}/cities`, function (data) {
+        let filteredCities = data.cities.filter(city =>
+          city.city_name.toLowerCase().includes(searchTerm)
+        );
+        afficherCities(filteredCities);
       });
-  }
+    }
 
-  // Appel de l'API pour récupérer les villes et afficher la liste
-  chargerCities();
-});
+    // Initialisation
+    chargerCities();
+  });
 </script>
+
 
 </body>
 </html>

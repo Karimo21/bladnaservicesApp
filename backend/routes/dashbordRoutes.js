@@ -3,7 +3,7 @@ const path = require('path');
 
 const router = express.Router();
 
-// Middleware pour vérifier si l'utilisateur est connecté
+// Middleware pour vérifier si l'utilisateur est connecté 
 const isAuthenticated = (req, res, next) => {
     if (req.session && req.session.user) {
         next(); // L'utilisateur est connecté
@@ -55,6 +55,7 @@ router.get('/interface/srch.css', (req, res) => {
 router.get('/interface/logo.png', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/deshbord_bladnaservice/interface/logo.png'));
 });
-
-
+router.get('/env.js', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/deshbord_bladnaservice/env.js'));
+});
 module.exports = router;

@@ -116,81 +116,81 @@
     <!-- jQuery & AdminLTE -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/js/adminlte.min.js"></script>
-  <script>
-    const BASE_URL = "http://localhost:3000";
-
-    // Fonction pour récupérer l'ID du prestataire depuis l'URL
-    function getProviderIdFromURL() {
-        const params = new URLSearchParams(window.location.search);
-        return params.get("id"); // On attend un paramètre ?id=xx
-    }
-
-    // Fonction pour récupérer et afficher les images du prestataire
-    function loadProviderImages() {
-        const providerId = getProviderIdFromURL();
-        if (!providerId) {
-            alert("Erreur : Aucun ID de prestataire fourni !");
-            return;
-        }
-
-        console.log("Chargement des images pour le prestataire ID :", providerId);
-
-        fetch(`http://localhost:3000/prestatairs/documents-image/${providerId}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error("Erreur lors de la récupération des images.");
-                }
-                return response.json();
-            })
-            .then(data => {
-                const gallery = document.getElementById("imageGallery");
-                gallery.innerHTML = ""; // Vider la galerie avant d'ajouter les nouvelles images
-
-                if (!data || data.length === 0) {
-                    gallery.innerHTML = "<p>Aucune image trouvée.</p>";
-                    return;
-                }
-
-                let imageFound = false; // Vérifie si au moins une image est trouvée
-
-        data.forEach(item => {
-            if (item.front_card_image) {
-                gallery.insertAdjacentHTML("beforeend", createImageCard(`${BASE_URL}${item.front_card_image}`, "Carte d'identité (avant)"));
-                imageFound = true;
-            }
-            if (item.back_card_image) {
-                gallery.insertAdjacentHTML("beforeend", createImageCard(`${BASE_URL}${item.back_card_image}`, "Carte d'identité (arrière)"));
-                imageFound = true;
-            }
-            if (item.diplomat_image) {
-                gallery.insertAdjacentHTML("beforeend", createImageCard(`${BASE_URL}${item.diplomat_image}`, "Diplôme"));
-                imageFound = true;
-            }
-        });
-
-        // Si aucune image n'est trouvée, afficher un message
-        if (!imageFound) {
-            gallery.innerHTML = "<p class='text-danger'>Aucune image disponible pour ce prestataire.</p>";
-        }
-
-                console.log("Images chargées avec succès.");
-            })
-            .catch(error => console.error("Erreur de chargement des images :", error));
-    }
-
-    // Fonction pour créer une carte d'image avec le Lightbox
-    function createImageCard(imagePath, title) {
-        return `
-            <div class="col-sm-3">
-                <a href="${imagePath}" data-toggle="lightbox" data-title="${title}" data-gallery="gallery">
-                    <img src="${imagePath}" class="img-fluid mb-2" alt="${title}" style="max-height: 150px; object-fit: cover;"/>
-                </a>
-            </div>`;
-    }
-
-    // Charger les images au chargement de la page
-    document.addEventListener("DOMContentLoaded", loadProviderImages);
-  </script>
-
+    <script src="../env.js"></script> 
+    <script> 
+      const BASE_URL = `${Environment.apiHost}`;
+  
+      // Fonction pour récupérer l'ID du prestataire depuis l'URL
+      function getProviderIdFromURL() {
+          const params = new URLSearchParams(window.location.search);
+          return params.get("id"); // On attend un paramètre ?id=xx
+      }
+  
+      // Fonction pour récupérer et afficher les images du prestataire
+      function loadProviderImages() {
+          const providerId = getProviderIdFromURL();
+          if (!providerId) {
+              alert("Erreur : Aucun ID de prestataire fourni !");
+              return;
+          }
+  
+          console.log("Chargement des images pour le prestataire ID :", providerId);
+  
+          fetch(`${Environment.apiHost}/prestatairs/documents-image/${providerId}`)
+              .then(response => {
+                  if (!response.ok) {
+                      throw new Error("Erreur lors de la récupération des images.");
+                  }
+                  return response.json();
+              })
+              .then(data => {
+                  const gallery = document.getElementById("imageGallery");
+                  gallery.innerHTML = ""; // Vider la galerie avant d'ajouter les nouvelles images
+  
+                  if (!data || data.length === 0) {
+                      gallery.innerHTML = "<p>Aucune image trouvée.</p>";
+                      return;
+                  }
+  
+                  let imageFound = false; // Vérifie si au moins une image est trouvée
+  
+                  data.forEach(item => {
+                      if (item.front_card_image) {
+                          gallery.insertAdjacentHTML("beforeend", createImageCard(`${BASE_URL}${item.front_card_image}`, "Carte d'identité (avant)"));
+                          imageFound = true;
+                      }
+                      if (item.back_card_image) {
+                          gallery.insertAdjacentHTML("beforeend", createImageCard(`${BASE_URL}${item.back_card_image}`, "Carte d'identité (arrière)"));
+                          imageFound = true;
+                      }
+                      if (item.diplomat_image) {
+                          gallery.insertAdjacentHTML("beforeend", createImageCard(`${BASE_URL}${item.diplomat_image}`, "Diplôme"));
+                          imageFound = true;
+                      }
+                  });
+  
+                  // Si aucune image n'est trouvée, afficher un message
+                  if (!imageFound) {
+                      gallery.innerHTML = "<p class='text-danger'>Aucune image disponible pour ce prestataire.</p>";
+                  }
+  
+                  console.log("Images chargées avec succès.");
+              })
+              .catch(error => console.error("Erreur de chargement des images :", error));
+      }
+  
+      // Fonction pour créer une carte d'image avec le Lightbox
+      function createImageCard(imagePath, title) {
+          return `
+              <div class="col-sm-3">
+                  <a href="${imagePath}" data-toggle="lightbox" data-title="${title}" data-gallery="gallery">
+                      <img src="${imagePath}" class="img-fluid mb-2" alt="${title}" style="max-height: 150px; object-fit: cover;"/>
+                  </a>
+              </div>`;
+      }
+  
+      // Charger les images au chargement de la page
+      document.addEventListener("DOMContentLoaded", loadProviderImages);
+  </script>  
 </body>
 </html>

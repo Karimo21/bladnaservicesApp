@@ -122,13 +122,13 @@
   
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/js/adminlte.min.js"></script>
-  
+  <script src="../env.js"></script> 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       let clientsData = [];
       
       // Charger la liste des clients depuis l'API
-      fetch("http://localhost:3000/clients")
+      fetch(`${Environment.apiHost}/clients`)
         .then(response => response.json())
         .then(data => {
           clientsData = data;
@@ -180,7 +180,6 @@
   
           afficherClients(filteredClients);
   
-          // Afficher un message si aucun client ne correspond à la recherche
           if (filteredClients.length === 0) {
             document.getElementById("clientsTable").innerHTML = 
               "<tr><td colspan='5' class='text-center text-warning'>Aucun client ne correspond à votre recherche</td></tr>";
@@ -191,6 +190,7 @@
       }
     });
   </script>
+  
   
 </body>
 </html>
